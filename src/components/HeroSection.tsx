@@ -108,7 +108,7 @@ export function HeroSection() {
   }));
 
   return (
-    <section ref={ref} className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section ref={ref} className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden px-4">
       <div className="absolute inset-0 scanline" />
       
       <motion.div style={{ y, opacity }} className="absolute inset-0">
@@ -152,7 +152,7 @@ export function HeroSection() {
         ))}
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 text-center">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 text-center py-20 md:py-0">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -175,7 +175,7 @@ export function HeroSection() {
           </motion.div>
 
           <motion.h1
-            className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black mb-8 leading-tight"
+            className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-6 md:mb-8 leading-tight"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.5, duration: 0.8 }}
@@ -210,7 +210,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2 }}
-            className="text-xl md:text-3xl text-white/70 mb-12 max-w-3xl mx-auto font-space font-medium"
+            className="text-lg md:text-xl lg:text-2xl xl:text-3xl text-white/70 mb-8 md:mb-12 max-w-3xl mx-auto font-space font-medium px-4"
           >
             No cards. No setup. No limits.{" "}
             <span className="text-gradient-neon font-bold">Just pure multiplayer chaos.</span>
@@ -220,37 +220,39 @@ export function HeroSection() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.4 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-6"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 px-4"
           >
-            <Link href="/games">
+            <Link href="/games" className="w-full sm:w-auto">
               <motion.div
-                whileHover={{ scale: 1.1, rotate: [0, -2, 2, -2, 0] }}
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                className="w-full"
               >
                 <Button
                   size="lg"
-                  className="relative font-display font-black text-xl px-10 py-8 rounded-2xl bg-gradient-to-r from-[#ff006e] via-[#8338ec] to-[#00f5ff] text-white overflow-hidden group pulse-glow"
+                  className="w-full sm:w-auto relative font-display font-black text-lg md:text-xl px-8 md:px-10 py-6 md:py-8 rounded-2xl bg-gradient-to-r from-[#ff006e] via-[#8338ec] to-[#00f5ff] text-white overflow-hidden group pulse-glow touch-manipulation"
                 >
                   <span className="absolute inset-0 bg-gradient-to-r from-[#00f5ff] via-[#fb00ff] to-[#ff006e] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <span className="relative flex items-center gap-3">
-                    <Play className="w-6 h-6 fill-white" />
+                  <span className="relative flex items-center gap-2 md:gap-3 justify-center">
+                    <Play className="w-5 h-5 md:w-6 md:h-6 fill-white" />
                     PLAY NOW
-                    <Zap className="w-6 h-6" />
+                    <Zap className="w-5 h-5 md:w-6 md:h-6" />
                   </span>
                 </Button>
               </motion.div>
             </Link>
-            <Link href="/lobbies/create">
+            <Link href="/lobbies/create" className="w-full sm:w-auto">
               <motion.div
-                whileHover={{ scale: 1.08, y: -4 }}
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                className="w-full"
               >
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-3 border-[#00f5ff] text-[#00f5ff] hover:bg-[#00f5ff]/20 font-display font-black text-xl px-10 py-8 rounded-2xl neon-glow-cyan"
+                  className="w-full sm:w-auto border-3 border-[#00f5ff] text-[#00f5ff] hover:bg-[#00f5ff]/20 font-display font-black text-lg md:text-xl px-8 md:px-10 py-6 md:py-8 rounded-2xl neon-glow-cyan touch-manipulation"
                 >
-                  <Users className="w-6 h-6 mr-3" />
+                  <Users className="w-5 h-5 md:w-6 md:h-6 mr-2 md:mr-3" />
                   CREATE LOBBY
                 </Button>
               </motion.div>
@@ -263,7 +265,7 @@ export function HeroSection() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2 }}
-        className="absolute bottom-12 left-1/2 -translate-x-1/2"
+        className="absolute bottom-8 md:bottom-12 left-1/2 -translate-x-1/2"
       >
         <motion.div
           animate={{ y: [0, 15, 0] }}

@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased min-h-screen bg-[#0a0a14]">
+      <body className="antialiased">
         {children}
         <Toaster position="top-right" richColors />
         <VisualEditsMessenger />

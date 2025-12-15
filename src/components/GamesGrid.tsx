@@ -70,7 +70,7 @@ const games = [
 
 export function GamesGrid() {
   return (
-    <section className="relative py-32 px-4 overflow-hidden">
+    <section className="relative py-20 md:py-32 px-4 overflow-hidden">
       <div className="absolute inset-0">
         <motion.div
           animate={{
@@ -95,7 +95,7 @@ export function GamesGrid() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-20"
+          className="text-center mb-12 md:mb-20"
         >
           <motion.div
             initial={{ scale: 0, rotate: -180 }}
@@ -118,7 +118,7 @@ export function GamesGrid() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="font-display text-5xl md:text-7xl font-black text-white mb-6 tracking-tight"
+            className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-4 md:mb-6 tracking-tight px-4"
           >
             <span className="block">CHOOSE YOUR</span>
             <span className="block text-gradient-neon glitch">ADVENTURE</span>
@@ -129,14 +129,14 @@ export function GamesGrid() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
-            className="text-white/70 text-xl md:text-2xl max-w-3xl mx-auto font-space font-medium"
+            className="text-white/70 text-lg md:text-xl lg:text-2xl max-w-3xl mx-auto font-space font-medium px-4"
           >
             From quick card games to epic strategy battles -{" "}
             <span className="text-gradient-neon font-bold">there's something for everyone</span>
           </motion.p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 auto-rows-fr">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 auto-rows-fr">
           {games.map((game, index) => (
             <motion.div
               key={game.id}
@@ -149,7 +149,7 @@ export function GamesGrid() {
                 stiffness: 100,
                 damping: 15,
               }}
-              className="h-[420px]"
+              className="h-[400px] sm:h-[420px]"
             >
               <GameCard {...game} />
             </motion.div>
@@ -161,7 +161,7 @@ export function GamesGrid() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.8 }}
-          className="text-center mt-16"
+          className="text-center mt-12 md:mt-16"
         >
           <motion.p
             animate={{
@@ -169,7 +169,7 @@ export function GamesGrid() {
               scale: [1, 1.05, 1],
             }}
             transition={{ duration: 3, repeat: Infinity }}
-            className="text-[#00f5ff] font-display font-bold text-lg neon-text-cyan"
+            className="text-[#00f5ff] font-display font-bold text-base md:text-lg neon-text-cyan"
           >
             More games dropping soon...
           </motion.p>

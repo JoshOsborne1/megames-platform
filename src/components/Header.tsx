@@ -40,7 +40,7 @@ export function Header() {
       }`}
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-16 md:h-20">
           <Link href="/" className="flex items-center gap-3 group">
             <motion.div
               whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
@@ -83,7 +83,7 @@ export function Header() {
             })}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
             <div className="hidden md:flex items-center gap-4 mr-4">
               <motion.div
                 className="relative flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#1a0f2e] to-[#2d1b4e] border border-[#ff006e]/30"
@@ -143,7 +143,7 @@ export function Header() {
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
                   variant="outline"
-                  className="border-[#8338ec] text-white hover:bg-[#8338ec]/20 hover:border-[#ff006e] font-display font-semibold"
+                  className="border-[#8338ec] text-white hover:bg-[#8338ec]/20 hover:border-[#ff006e] font-display font-semibold text-sm md:text-base px-3 md:px-4 py-2 touch-manipulation"
                 >
                   Login
                 </Button>
@@ -155,7 +155,7 @@ export function Header() {
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Button className="relative font-display font-bold bg-gradient-to-r from-[#ff006e] via-[#8338ec] to-[#00f5ff] text-white overflow-hidden group">
+                <Button className="relative font-display font-bold text-sm md:text-base px-3 md:px-4 py-2 bg-gradient-to-r from-[#ff006e] via-[#8338ec] to-[#00f5ff] text-white overflow-hidden group touch-manipulation">
                   <span className="absolute inset-0 bg-gradient-to-r from-[#00f5ff] via-[#fb00ff] to-[#ff006e] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <span className="relative flex items-center gap-2">
                     <Zap className="w-4 h-4" />
@@ -168,7 +168,7 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden text-white/70 hover:text-[#ff006e] rounded-full"
+              className="lg:hidden text-white/70 hover:text-[#ff006e] rounded-full touch-manipulation min-w-[44px] min-h-[44px]"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -184,14 +184,14 @@ export function Header() {
               exit={{ height: 0, opacity: 0 }}
               className="lg:hidden overflow-hidden"
             >
-              <div className="py-6 space-y-3">
+              <div className="py-6 space-y-3 pb-safe">
                 {navLinks.map((link) => {
                   const Icon = link.icon;
                   return (
                     <Link
                       key={link.href}
                       href={link.href}
-                      className="flex items-center gap-3 px-4 py-3 text-white/80 hover:text-white hover:bg-[#ff006e]/10 rounded-lg transition-all font-display font-semibold border border-transparent hover:border-[#ff006e]/30"
+                      className="flex items-center gap-3 px-4 py-4 text-white/80 hover:text-white hover:bg-[#ff006e]/10 rounded-lg transition-all font-display font-semibold border border-transparent hover:border-[#ff006e]/30 touch-manipulation min-h-[44px]"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Icon className="w-5 h-5" />
@@ -203,13 +203,13 @@ export function Header() {
                   <Link href="/login" className="flex-1">
                     <Button
                       variant="outline"
-                      className="w-full border-[#8338ec] text-white font-display"
+                      className="w-full border-[#8338ec] text-white font-display py-4 touch-manipulation min-h-[44px]"
                     >
                       Login
                     </Button>
                   </Link>
                   <Link href="/signup" className="flex-1">
-                    <Button className="w-full bg-gradient-to-r from-[#ff006e] to-[#8338ec] text-white font-display font-bold">
+                    <Button className="w-full bg-gradient-to-r from-[#ff006e] to-[#8338ec] text-white font-display font-bold py-4 touch-manipulation min-h-[44px]">
                       Sign Up
                     </Button>
                   </Link>

@@ -69,7 +69,7 @@ export const rhymeDeck: RhymeCard[] = [
   { phrase: "Pitch Perfect actress being ordinary", celeb: "Skylar Astin", rhyme: "quite plain", difficulty: 2, category: 'celeb' },
   { phrase: "Killing Me Softly singer on animal", celeb: "Roberta Flack", rhyme: "riding a yak", difficulty: 2, category: 'celeb' },
   { phrase: "9 to 5 singer in Scottish pattern", celeb: "Dolly Parton", rhyme: "dressed in tartan", difficulty: 2, category: 'celeb' },
-  { phrase: "Some Like It Hot actress refusing to expand", celeb: "Marilyn Monroe", rhyme: "won't grow", difficulty: 2, category: celeb' },
+  { phrase: "Some Like It Hot actress refusing to expand", celeb: "Marilyn Monroe", rhyme: "won't grow", difficulty: 2, category: 'celeb' },
   { phrase: "Footloose actor being Caribbean", celeb: "Kevin Bacon", rhyme: "acting Jamaican", difficulty: 1, category: 'celeb' },
   { phrase: "Stefani singer riding purple dinosaur", celeb: "Gwen Stefani", rhyme: "on top of Barney", difficulty: 2, category: 'celeb' },
   { phrase: "Sex and the City actress admiring host", celeb: "Sarah Jessica Parker", rhyme: "loving Bob Barker", difficulty: 3, category: 'celeb' },
