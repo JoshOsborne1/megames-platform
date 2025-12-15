@@ -280,7 +280,7 @@ export default function RhymeRebelsPage() {
     );
   }
 
-  if (!gameState || phase !== "playing") return null;
+  if (!gameState) return null;
 
   const currentTeam = gameState.teams[gameState.currentTeamIndex];
   const isClueGiver = players[0]?.id === gameState.currentClueGiverId;
