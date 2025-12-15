@@ -2,58 +2,159 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Zap, Play, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function CTASection() {
   return (
-    <section className="py-24 px-4 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-r from-[#00BFFF]/20 via-[#9370DB]/20 to-[#FF4500]/20" />
-      <div className="absolute inset-0 bg-[#0a0a14]/80" />
-      
-      <div className="relative z-10 max-w-4xl mx-auto text-center">
+    <section className="relative py-32 px-4 overflow-hidden">
+      <div className="absolute inset-0">
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{ duration: 8, repeat: Infinity }}
+          className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[600px] h-[600px] bg-[#ff006e] rounded-full filter blur-[150px]"
+        />
+        <motion.div
+          animate={{
+            scale: [1.2, 1, 1.2],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{ duration: 10, repeat: Infinity }}
+          className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[650px] h-[650px] bg-[#8338ec] rounded-full filter blur-[160px]"
+        />
+      </div>
+
+      <div className="absolute inset-0 scanline opacity-50" />
+
+      <div className="relative z-10 max-w-5xl mx-auto">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
+          className="text-center"
         >
-          <div className="inline-flex items-center gap-2 bg-[#FFD700]/20 border border-[#FFD700]/30 rounded-full px-4 py-2 mb-8">
-            <Sparkles className="w-4 h-4 text-[#FFD700]" />
-            <span className="text-sm text-[#FFD700]">Join thousands of players today!</span>
-          </div>
+          <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            whileInView={{ scale: 1, rotate: 0 }}
+            viewport={{ once: true }}
+            transition={{ type: "spring", stiffness: 150, bounce: 0.6 }}
+            className="inline-flex items-center gap-3 bg-gradient-to-r from-[#39ff14] via-[#00f5ff] to-[#39ff14] rounded-full px-6 py-3 mb-8 animate-pulse"
+            style={{
+              boxShadow: "0 0 40px rgba(57, 255, 20, 0.6)",
+            }}
+          >
+            <motion.div
+              animate={{ rotate: [0, 360] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            >
+              <Sparkles className="w-5 h-5 text-[#0a0015]" />
+            </motion.div>
+            <span className="font-display text-sm font-black text-[#0a0015] tracking-wider">
+              JOIN 8,500+ PLAYERS TODAY!
+            </span>
+            <motion.div
+              animate={{ rotate: [0, -360] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            >
+              <Zap className="w-5 h-5 text-[#0a0015]" />
+            </motion.div>
+          </motion.div>
 
-          <h2 className="font-display text-4xl md:text-6xl font-bold text-white mb-6">
-            Ready to Play?
-          </h2>
-          <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
-            Create your free account in seconds and start playing your favorite board games with friends online.
-          </p>
+          <motion.h2
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="font-display text-5xl md:text-7xl lg:text-8xl font-black text-white mb-8 leading-tight"
+          >
+            <span className="block glitch">READY TO</span>
+            <span className="block text-gradient-neon">DOMINATE?</span>
+          </motion.h2>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+            className="text-xl md:text-3xl text-white/80 mb-12 max-w-3xl mx-auto font-space font-medium leading-relaxed"
+          >
+            Create your free account in{" "}
+            <span className="text-[#39ff14] font-bold drop-shadow-[0_0_10px_rgba(57,255,20,0.8)]">
+              seconds
+            </span>{" "}
+            and start playing your favorite games with friends online.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.6 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-6"
+          >
             <Link href="/signup">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <motion.div
+                whileHover={{ scale: 1.1, rotate: [0, -2, 2, -2, 0] }}
+                whileTap={{ scale: 0.95 }}
+              >
                 <Button
                   size="lg"
-                  className="bg-gradient-to-r from-[#00BFFF] to-[#9370DB] hover:opacity-90 text-white font-bold text-lg px-10 py-6 rounded-xl"
+                  className="relative font-display font-black text-xl px-12 py-8 rounded-2xl bg-gradient-to-r from-[#ff006e] via-[#8338ec] to-[#00f5ff] text-white overflow-hidden group pulse-glow"
                 >
-                  Sign Up Free
+                  <span className="absolute inset-0 bg-gradient-to-r from-[#00f5ff] via-[#fb00ff] to-[#ff006e] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <span className="relative flex items-center gap-3">
+                    <Play className="w-6 h-6 fill-white" />
+                    SIGN UP FREE
+                    <ArrowRight className="w-6 h-6" />
+                  </span>
                 </Button>
               </motion.div>
             </Link>
+
             <Link href="/games">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <motion.div
+                whileHover={{ scale: 1.08, y: -4 }}
+                whileTap={{ scale: 0.95 }}
+              >
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-2 border-white/20 text-white hover:bg-white/10 font-bold text-lg px-10 py-6 rounded-xl"
+                  className="border-3 border-[#00f5ff] text-[#00f5ff] hover:bg-[#00f5ff]/20 font-display font-black text-xl px-12 py-8 rounded-2xl neon-glow-cyan backdrop-blur-sm"
                 >
-                  Browse Games
+                  <Sparkles className="w-6 h-6 mr-3" />
+                  BROWSE GAMES
                 </Button>
               </motion.div>
             </Link>
-          </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.8 }}
+            className="mt-12 flex flex-wrap items-center justify-center gap-8 text-white/50"
+          >
+            <motion.div whileHover={{ scale: 1.1 }} className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[#39ff14] animate-pulse" />
+              <span className="text-sm font-display font-bold">NO CREDIT CARD</span>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.1 }} className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[#00f5ff] animate-pulse" />
+              <span className="text-sm font-display font-bold">FREE FOREVER</span>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.1 }} className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-[#ff006e] animate-pulse" />
+              <span className="text-sm font-display font-bold">INSTANT ACCESS</span>
+            </motion.div>
+          </motion.div>
         </motion.div>
       </div>
+
+      <div className="absolute bottom-0 left-0 right-0 h-2 bg-gradient-to-r from-transparent via-[#ff006e] to-transparent" />
     </section>
   );
 }
