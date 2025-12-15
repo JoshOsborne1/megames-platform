@@ -24,6 +24,17 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  experimental: {
+    serverComponentsExternalPackages: ['@supabase/supabase-js', '@supabase/ssr'],
+  },
+  webpack: (config) => {
+    config.resolve = config.resolve || {};
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      '@supabase/supabase-js': '@supabase/supabase-js/dist/module/index.js',
+    };
+    return config;
+  },
   turbopack: {
     rules: {
       "*.{jsx,tsx}": {
