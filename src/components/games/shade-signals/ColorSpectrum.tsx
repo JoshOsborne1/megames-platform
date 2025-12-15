@@ -4,7 +4,8 @@ import { useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { ColorWithPosition, HSVColor } from "@/lib/games/shade-signals/types";
 import { hsvToRgb, rgbToHex, positionToHSV, hsvToPosition } from "@/lib/games/shade-signals/colorUtils";
-import { Lightbulb } from "lucide-react";
+import { Lightbulb, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ColorSpectrumProps {
   onColorSelect: (color: ColorWithPosition) => void;
@@ -27,6 +28,7 @@ export function ColorSpectrum({
   const [hoverColor, setHoverColor] = useState<ColorWithPosition | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [previewColor, setPreviewColor] = useState<ColorWithPosition | null>(null);
+  const [pendingColor, setPendingColor] = useState<ColorWithPosition | null>(null);
 
   useEffect(() => {
     const updateSize = () => {
@@ -102,12 +104,12 @@ export function ColorSpectrum({
     }
   };
 
-  const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const handleMouseUp = () => {
     if (disabled || !isDragging) return;
     
     setIsDragging(false);
     if (previewColor) {
-      onColorSelect(previewColor);
+      setPendingColor(previewColor);
       setPreviewColor(null);
     }
   };
@@ -116,12 +118,22 @@ export function ColorSpectrum({
     setHoverColor(null);
     if (isDragging) {
       setIsDragging(false);
-      setPreviewColor(null);
+      if (previewColor) {
+        setPendingColor(previewColor);
+        setPreviewColor(null);
+      }
+    }
+  };
+
+  const handleConfirmPick = () => {
+    if (pendingColor) {
+      onColorSelect(pendingColor);
+      setPendingColor(null);
     }
   };
 
   const handleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (disabled || isDragging) return;
+    if (disabled || isDragging || pendingColor) return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -131,7 +143,7 @@ export function ColorSpectrum({
     const y = e.clientY - rect.top;
 
     const color = getColorFromPosition(x, y);
-    onColorSelect(color);
+    setPendingColor(color);
   };
 
   return (
@@ -212,23 +224,23 @@ export function ColorSpectrum({
           </motion.div>
         )}
 
-        {previewColor && isDragging && (
+        {(previewColor && isDragging) || pendingColor ? (
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className="absolute w-10 h-10 rounded-full border-4 border-[#00f5ff] pointer-events-none"
             style={{
-              left: previewColor.x - 20,
-              top: previewColor.y - 20,
-              backgroundColor: previewColor.hex,
-              boxShadow: `0 0 30px ${previewColor.hex}, 0 0 40px #00f5ff`,
+              left: (pendingColor?.x || previewColor?.x || 0) - 20,
+              top: (pendingColor?.y || previewColor?.y || 0) - 20,
+              backgroundColor: pendingColor?.hex || previewColor?.hex,
+              boxShadow: `0 0 30px ${pendingColor?.hex || previewColor?.hex}, 0 0 40px #00f5ff`,
             }}
           />
-        )}
+        ) : null}
       </div>
 
       <AnimatePresence>
-        {hoverColor && !disabled && (
+        {hoverColor && !disabled && !pendingColor && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -249,6 +261,41 @@ export function ColorSpectrum({
               <div className="font-bold text-lg">{isDragging ? "Preview" : "Hover"}</div>
               <div className="font-mono text-sm text-white/70">{hoverColor.hex.toUpperCase()}</div>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {pendingColor && !disabled && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+            className="flex flex-col items-center gap-4 bg-gradient-to-br from-[#00f5ff]/20 to-[#1a0f2e] border-2 border-[#00f5ff] rounded-3xl p-6 shadow-2xl"
+            style={{
+              boxShadow: `0 0 60px ${pendingColor.hex}80, 0 0 40px rgba(0, 245, 255, 0.4)`,
+            }}
+          >
+            <div className="flex items-center gap-4">
+              <div 
+                className="w-20 h-20 rounded-xl border-4 border-white/40"
+                style={{ 
+                  backgroundColor: pendingColor.hex,
+                  boxShadow: `0 0 30px ${pendingColor.hex}`
+                }}
+              />
+              <div className="text-white">
+                <div className="font-bold text-xl">Selected Color</div>
+                <div className="font-mono text-lg text-[#00f5ff]">{pendingColor.hex.toUpperCase()}</div>
+              </div>
+            </div>
+            <Button
+              onClick={handleConfirmPick}
+              className="w-full bg-gradient-to-r from-[#00f5ff] to-[#39ff14] hover:opacity-90 text-black font-bold py-4 text-lg"
+            >
+              <Check className="w-5 h-5 mr-2" />
+              Confirm Pick
+            </Button>
           </motion.div>
         )}
       </AnimatePresence>

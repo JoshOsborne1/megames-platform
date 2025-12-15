@@ -7,14 +7,14 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ColorSpectrum } from "@/components/games/shade-signals/ColorSpectrum";
-import { ArrowLeft, Users, Wifi, WifiOff, Play, Sparkles, X } from "lucide-react";
+import { ArrowLeft, Users, Wifi, WifiOff, Play, Sparkles, X, Trophy, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type { ColorWithPosition } from "@/lib/games/shade-signals/types";
 import { generateColorOptions, calculateHSVDistance, calculateScore } from "@/lib/games/shade-signals/colorUtils";
 import { validateClue, suggestClueWords } from "@/lib/games/shade-signals/clueWords";
 
 type GameMode = "select" | "local" | "online";
-type GamePhase = "setup" | "signal-pick" | "clue-1" | "guess-1" | "clue-2" | "guess-2" | "reveal" | "finished";
+type GamePhase = "setup" | "signal-pick" | "clue-1" | "guess-1" | "clue-2" | "guess-2" | "reveal" | "leaderboard" | "finished";
 
 export default function ShadeSignalsGame() {
   const [mode, setMode] = useState<GameMode>("select");
@@ -131,14 +131,18 @@ export default function ShadeSignalsGame() {
     }));
 
     setTimeout(() => {
-      if (currentRound < totalRounds) {
-        setCurrentRound(prev => prev + 1);
-        setSignalGiverIndex((prev + 1) % playerCount);
-        startRound();
-      } else {
-        setPhase("finished");
-      }
-    }, 5000);
+      setPhase("leaderboard");
+    }, 4000);
+  };
+
+  const handleContinueToNextRound = () => {
+    if (currentRound < totalRounds) {
+      setCurrentRound(prev => prev + 1);
+      setSignalGiverIndex((signalGiverIndex + 1) % playerCount);
+      startRound();
+    } else {
+      setPhase("finished");
+    }
   };
 
   if (mode === "select") {
@@ -232,6 +236,7 @@ export default function ShadeSignalsGame() {
 
   const signalGiver = players[signalGiverIndex];
   const currentPlayer = phase.includes("guess") ? players[currentGuesserIndex >= signalGiverIndex ? currentGuesserIndex + 1 : currentGuesserIndex] : null;
+  const nextSignalGiver = players[(signalGiverIndex + 1) % playerCount];
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a14]">
@@ -335,13 +340,90 @@ export default function ShadeSignalsGame() {
             </motion.div>
           )}
 
-          <ColorSpectrum
-            onColorSelect={handleGuess}
-            markers={players.flatMap(p => p.markers)}
-            targetColor={targetColor || undefined}
-            showTarget={showTarget}
-            disabled={!phase.includes("guess")}
-          />
+          {phase === "leaderboard" && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="max-w-3xl mx-auto"
+            >
+              <div className="bg-gradient-to-br from-[#1a0f2e] to-[#0a0a14] border-2 border-[#00f5ff]/40 rounded-3xl p-8 shadow-2xl" style={{ boxShadow: "0 0 60px rgba(0, 245, 255, 0.3)" }}>
+                <div className="text-center mb-8">
+                  <Trophy className="w-16 h-16 text-[#39ff14] mx-auto mb-4" />
+                  <h2 className="font-display text-4xl font-black text-white mb-2">Round {currentRound} Complete!</h2>
+                  <p className="text-white/70 text-lg">Current Standings</p>
+                </div>
+
+                <div className="space-y-3 mb-8">
+                  {players
+                    .map((p, idx) => ({ ...p, originalIndex: idx }))
+                    .sort((a, b) => b.score - a.score)
+                    .map((p, i) => (
+                      <motion.div
+                        key={p.originalIndex}
+                        initial={{ x: -50, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        transition={{ delay: i * 0.1 }}
+                        className={`flex justify-between items-center py-4 px-6 rounded-xl ${
+                          i === 0
+                            ? 'bg-gradient-to-r from-[#39ff14]/30 to-[#39ff14]/10 border-2 border-[#39ff14]'
+                            : 'bg-white/5 border border-white/10'
+                        }`}
+                      >
+                        <div className="flex items-center gap-4">
+                          <span className={`font-display text-3xl font-bold ${i === 0 ? 'text-[#39ff14]' : 'text-white/50'}`}>
+                            {i + 1}
+                          </span>
+                          <div>
+                            <span className="text-white font-bold text-xl">{p.name}</span>
+                            {p.originalIndex === signalGiverIndex && (
+                              <span className="ml-2 text-xs bg-[#00f5ff]/20 text-[#00f5ff] px-2 py-1 rounded">Signal-Giver</span>
+                            )}
+                          </div>
+                        </div>
+                        <span className="text-[#00f5ff] font-black text-2xl">{p.score} pts</span>
+                      </motion.div>
+                    ))}
+                </div>
+
+                {currentRound < totalRounds && (
+                  <div className="bg-[#16162a] border border-white/10 rounded-2xl p-6 mb-6">
+                    <h3 className="text-white font-bold text-lg mb-2">Next Round:</h3>
+                    <p className="text-white/70">
+                      <span className="text-[#ff006e] font-bold">{nextSignalGiver?.name}</span> will be the Signal-Giver
+                    </p>
+                    <p className="text-white/50 text-sm mt-2">Pass device to {nextSignalGiver?.name}</p>
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleContinueToNextRound}
+                  className="w-full bg-gradient-to-r from-[#00f5ff] to-[#ff006e] hover:opacity-90 text-white font-bold py-6 text-xl"
+                >
+                  {currentRound < totalRounds ? (
+                    <>
+                      <ArrowRight className="w-6 h-6 mr-2" />
+                      Continue to Round {currentRound + 1}
+                    </>
+                  ) : (
+                    <>
+                      <Trophy className="w-6 h-6 mr-2" />
+                      View Final Results
+                    </>
+                  )}
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {(phase.includes("guess") || phase === "reveal") && (
+            <ColorSpectrum
+              onColorSelect={handleGuess}
+              markers={players.flatMap(p => p.markers)}
+              targetColor={targetColor || undefined}
+              showTarget={showTarget}
+              disabled={!phase.includes("guess")}
+            />
+          )}
 
           {phase === "finished" && (
             <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="text-center mt-12">
