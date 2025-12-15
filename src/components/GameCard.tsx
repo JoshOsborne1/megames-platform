@@ -163,14 +163,6 @@ export function GameCard({
                 {duration}
               </motion.span>
             </div>
-
-            <motion.div
-              className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/50 text-xs font-display font-bold tracking-widest"
-              animate={{ opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              HOVER TO FLIP
-            </motion.div>
           </div>
 
           <div
