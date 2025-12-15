@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GameMode } from "@/lib/games/rhyme-rebels/types";
 import { Mic, Drama, Puzzle } from "lucide-react";
@@ -99,5 +100,3 @@ export function DiceRoller({ onRollComplete, isRolling }: DiceRollerProps) {
     </div>
   );
 }
-
-import { useState } from "react";

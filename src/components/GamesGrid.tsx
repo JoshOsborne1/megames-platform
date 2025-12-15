@@ -28,9 +28,9 @@ const games = [
   {
     id: "rhyme-rebels",
     name: "RHYME REBELS",
-    description: "Rebel against boring nights – rhyme celebs into hilarious chaos! 4-12 players (teams of 2+), perfect for online shout-fests or local drama.",
+    description: "Rebel against boring nights – rhyme celebs into hilarious chaos! 2-12 players (1v1 duels or teams), perfect for online shout-fests or local drama.",
     icon: <MessageCircle className="w-full h-full" />,
-    players: "4-12",
+    players: "2-12",
     duration: "15-30 min",
     difficulty: "Medium" as const,
     color: "#FF4500",

@@ -49,8 +49,8 @@ export default function RhymeRebelsPage() {
   };
 
   const startGameWithPlayers = () => {
-    if (players.length < 4) {
-      alert("Need at least 4 players to start!");
+    if (players.length < 2) {
+      alert("Need at least 2 players to start!");
       return;
     }
 
@@ -261,14 +261,14 @@ export default function RhymeRebelsPage() {
             </div>
 
             <div className="text-center text-white/60 font-space text-sm mb-4">
-              {players.length} / 12 players (min 4 to start)
+              {players.length} / 12 players (min 2 to start)
             </div>
 
             <motion.button
               onClick={startGameWithPlayers}
-              disabled={players.length < 4}
-              whileHover={players.length >= 4 ? { scale: 1.05 } : {}}
-              whileTap={players.length >= 4 ? { scale: 0.95 } : {}}
+              disabled={players.length < 2}
+              whileHover={players.length >= 2 ? { scale: 1.05 } : {}}
+              whileTap={players.length >= 2 ? { scale: 0.95 } : {}}
               className="w-full py-4 bg-gradient-to-r from-[#32CD32] to-[#00BFFF] rounded-xl font-display font-black text-white text-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
             >
               <Play className="w-6 h-6" />
