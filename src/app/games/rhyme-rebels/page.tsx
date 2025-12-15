@@ -401,6 +401,38 @@ export default function RhymeRebelsPage() {
             </motion.div>
           )}
 
+          {gameState.phase === "reveal" && gameState.currentCard && (
+            <motion.div
+              key="reveal"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-center space-y-8"
+            >
+              <div className="max-w-2xl mx-auto bg-red-500/20 border-2 border-red-500 rounded-3xl p-12">
+                <h3 className="font-display font-black text-5xl text-white mb-6">
+                  TIME'S UP!
+                </h3>
+                <p className="text-white/70 font-space text-xl mb-4">
+                  The answer was:
+                </p>
+                <p className="font-display font-black text-6xl text-[#FF4500] mb-8">
+                  {gameState.currentCard.answer}
+                </p>
+              </div>
+
+              <motion.button
+                onClick={handleNextTurn}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-12 py-4 bg-gradient-to-r from-[#FF4500] to-[#9370DB] rounded-full font-display font-black text-white text-xl shadow-lg flex items-center gap-3 mx-auto"
+              >
+                NEXT TURN
+                <ArrowRight className="w-6 h-6" />
+              </motion.button>
+            </motion.div>
+          )}
+
           {gameState.phase === "pair-match" && showPairs && (
             <motion.div
               key="pairs"
