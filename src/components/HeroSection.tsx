@@ -170,7 +170,7 @@ export function HeroSection() {
             >
               <Sparkles className="w-5 h-5 text-[#39ff14]" />
             </motion.div>
-            <span className="text-sm font-display font-bold text-white">4 EPIC GAMES LIVE NOW</span>
+            <span className="text-sm font-display font-bold text-white">5 EPIC GAMES LIVE NOW</span>
             <Gamepad2 className="w-5 h-5 text-[#00f5ff]" />
           </motion.div>
 

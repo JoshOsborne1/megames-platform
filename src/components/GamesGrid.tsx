@@ -2,9 +2,19 @@
 
 import { motion } from "framer-motion";
 import { GameCard } from "./GameCard";
-import { Layers, Brain, Swords, HelpCircle, Sparkles } from "lucide-react";
+import { Layers, Brain, Swords, HelpCircle, Sparkles, Droplet } from "lucide-react";
 
 const games = [
+  {
+    id: "shade-signals",
+    name: "SHADE SIGNALS",
+    description: "Guess the shade with clever signals! 2-10 players – endless rainbow chaos, perfect for online duels, big parties, or local swap & play.",
+    icon: <Droplet className="w-full h-full" />,
+    players: "2-10",
+    duration: "10-20 min",
+    difficulty: "Easy" as const,
+    color: "#00f5ff",
+  },
   {
     id: "card-clash",
     name: "CARD CLASH",

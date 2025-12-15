@@ -30,15 +30,6 @@ const nextConfig: NextConfig = {
         loaders: [loaderPath]
       }
     }
-  },
-  webpack: (config) => {
-    config.resolve = config.resolve || {}
-    config.resolve.alias = config.resolve.alias || {}
-    config.resolve.alias['@supabase/supabase-js'] = path.resolve(
-      __dirname,
-      'node_modules/@supabase/supabase-js/dist/module/index.js'
-    )
-    return config
   }
 } as NextConfig;
 

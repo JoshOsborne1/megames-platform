@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Users, Clock, Star, Trophy, Play, Plus, ArrowLeft, Layers, Brain, Swords, HelpCircle } from "lucide-react";
+import { Users, Clock, Star, Trophy, Play, Plus, ArrowLeft, Layers, Brain, Swords, HelpCircle, Droplet } from "lucide-react";
 
 const gamesData: Record<string, {
   name: string;
@@ -19,6 +19,24 @@ const gamesData: Record<string, {
   color: string;
   rules: string[];
 }> = {
+  "shade-signals": {
+    name: "Shade Signals",
+    description: "Guess the shade with clever signals!",
+    longDescription: "A hilarious party game of cryptic color clues and guessing on an infinite rainbow spectrum. Give 1-word then 2-3 word clues to guide your teammates to the exact shade. Score points based on how close you get with radial distance bonuses. Play online with friends or pass-and-play locally for in-person fun!",
+    icon: Droplet,
+    players: "2-10",
+    duration: "10-20 min",
+    difficulty: "Easy",
+    color: "#00f5ff",
+    rules: [
+      "Signal-Giver selects a secret color from 4 random vibrant shades",
+      "Give a 1-word clue (no direct color names!)",
+      "All guessers place their first marker on the spectrum",
+      "Give a 2-3 word clarifying clue",
+      "Guessers place their second marker to refine their guess",
+      "Score based on radial HSV distance with bonuses for accuracy",
+    ],
+  },
   "card-clash": {
     name: "Card Clash",
     description: "The ultimate card-shedding showdown!",
