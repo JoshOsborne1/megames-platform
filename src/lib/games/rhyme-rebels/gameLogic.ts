@@ -13,7 +13,7 @@ export function createInitialState(
   return {
     gameId,
     mode,
-    phase: 'setup',
+    phase: 'dice-roll',
     teams,
     currentTeamIndex: 0,
     currentClueGiverId: teams[0]?.players[0]?.id || '',
