@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { GameCard } from "./GameCard";
-import { Layers, Brain, Swords, HelpCircle, Sparkles, Droplet } from "lucide-react";
+import { Layers, Brain, Swords, HelpCircle, Sparkles, Droplet, Headphones } from "lucide-react";
 
 const games = [
   {
@@ -14,6 +14,16 @@ const games = [
     duration: "10-20 min",
     difficulty: "Easy" as const,
     color: "#00f5ff",
+  },
+  {
+    id: "lyric-echoes",
+    name: "LYRIC ECHOES",
+    description: "Guess the hit from echoed nonsense! 3-12 players – hilarious music madness, perfect for parties, karaoke nights, or quick duels.",
+    icon: <Headphones className="w-full h-full" />,
+    players: "3-12",
+    duration: "15-30 min",
+    difficulty: "Easy" as const,
+    color: "#FF4500",
   },
   {
     id: "card-clash",
