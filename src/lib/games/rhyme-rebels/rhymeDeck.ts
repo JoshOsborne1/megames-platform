@@ -7,6 +7,34 @@ export interface RhymeCard {
 }
 
 export const seedRhymes: RhymeCard[] = [
+  // Celebrity Solve-It Cards (Riddle format)
+  { phrase: "X-Men star with blades in his hands consuming a legume", celeb: "Wolverine", rhyme: "eating a bean", difficulty: 2, category: 'celeb' },
+  { phrase: "Life Stories host and ex-Mirror editor making music in church", celeb: "Piers Morgan", rhyme: "playing the Organ", difficulty: 3, category: 'celeb' },
+  { phrase: "007 actor stroking felines", celeb: "Roger Moore", rhyme: "petting cats", difficulty: 2, category: 'celeb' },
+  { phrase: "Friends' paleontologist digging up bones", celeb: "Ross Geller", rhyme: "in the cellar", difficulty: 2, category: 'celeb' },
+  { phrase: "Purple Rain singer causing discomfort", celeb: "Prince", rhyme: "giving a wince", difficulty: 2, category: 'celeb' },
+  { phrase: "Iron Man actor with a sweet treat", celeb: "Robert Downey", rhyme: "eating a brownie", difficulty: 2, category: 'celeb' },
+  { phrase: "The Matrix hero dodging projectiles", celeb: "Keanu Reeves", rhyme: "avoiding thieves", difficulty: 2, category: 'celeb' },
+  { phrase: "Singer who can't stop the feeling jumping on furniture", celeb: "Justin Timberlake", rhyme: "making things shake", difficulty: 2, category: 'celeb' },
+  { phrase: "Titanic actress with a precious stone", celeb: "Kate Winslet", rhyme: "wearing a bracelet", difficulty: 2, category: 'celeb' },
+  { phrase: "Breaking Bad teacher cooking chemicals", celeb: "Walter White", rhyme: "in the night", difficulty: 2, category: 'celeb' },
+  { phrase: "Pop star from Barbados holding an umbrella", celeb: "Rihanna", rhyme: "eating a banana", difficulty: 2, category: 'celeb' },
+  { phrase: "Hunger Games heroine shooting arrows", celeb: "Katniss Everdeen", rhyme: "painted in green", difficulty: 3, category: 'celeb' },
+  { phrase: "Wizard with a lightning scar getting warmer", celeb: "Harry Potter", rhyme: "getting hotter", difficulty: 1, category: 'character' },
+  { phrase: "Late night talk show host jumping on a sofa", celeb: "Jimmy Fallon", rhyme: "riding a stallion", difficulty: 2, category: 'celeb' },
+  { phrase: "Funny lady who voices Dory searching around", celeb: "Ellen DeGeneres", rhyme: "creating a mess", difficulty: 3, category: 'celeb' },
+  { phrase: "Rapper from Toronto eating dessert", celeb: "Drake", rhyme: "having some cake", difficulty: 1, category: 'celeb' },
+  { phrase: "Queen Bey in a coffee shop", celeb: "Beyonce", rhyme: "having a latte", difficulty: 2, category: 'celeb' },
+  { phrase: "Spider-Man actor from England spinning webs", celeb: "Tom Holland", rhyme: "eating from a can", difficulty: 2, category: 'celeb' },
+  { phrase: "Blonde pop star with a poker face doing exercise", celeb: "Lady Gaga", rhyme: "doing yoga", difficulty: 1, category: 'celeb' },
+  { phrase: "Wrinkle in Time star breaking spells", celeb: "Reese Witherspoon", rhyme: "over the moon", difficulty: 2, category: 'celeb' },
+  { phrase: "Rocket Man singer trimming grass", celeb: "Elton John", rhyme: "mowing the lawn", difficulty: 1, category: 'celeb' },
+  { phrase: "Sherlock actor with a difficult surname scratching an itch", celeb: "Benedict Cumberbatch", rhyme: "with a scratch", difficulty: 2, category: 'celeb' },
+  { phrase: "Anchorman comedian in trouble", celeb: "Will Ferrell", rhyme: "in peril", difficulty: 2, category: 'celeb' },
+  { phrase: "Friends' fashion lover counting numbers", celeb: "Rachel Green", rhyme: "to nineteen", difficulty: 2, category: 'character' },
+  { phrase: "Deadpool actor from Canada writing with a quill", celeb: "Ryan Reynolds", rhyme: "paying the bills", difficulty: 3, category: 'celeb' },
+  
+  // Original cards
   { phrase: "Kevin Spacey is lacey", celeb: "Kevin Spacey", rhyme: "lacey", difficulty: 1, category: 'celeb' },
   { phrase: "Captain Kirk at Central Perk", celeb: "Captain Kirk", rhyme: "Central Perk", difficulty: 2, category: 'character' },
   { phrase: "Megan Fox builds with blocks", celeb: "Megan Fox", rhyme: "blocks", difficulty: 1, category: 'celeb' },

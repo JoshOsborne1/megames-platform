@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { RhymeCard as RhymeCardType } from "@/lib/games/rhyme-rebels/rhymeDeck";
 import { GameMode } from "@/lib/games/rhyme-rebels/types";
-import { Sparkles, Star } from "lucide-react";
+import { Sparkles, Star, Brain } from "lucide-react";
 
 interface RhymeCardProps {
   card: RhymeCardType;
@@ -14,7 +14,7 @@ interface RhymeCardProps {
 const modeDescriptions = {
   describe: "Describe WITHOUT saying the rhyme words!",
   act: "ACT IT OUT - no words allowed!",
-  solve: "Give riddles and clues!",
+  solve: "Solve this riddle!",
 };
 
 const modeColors = {
@@ -25,15 +25,15 @@ const modeColors = {
 
 export function RhymeCard({ card, mode, isClueGiver }: RhymeCardProps) {
   return (
-    <div className="flex flex-col items-center gap-6">
+    <div className="flex flex-col items-center gap-6 w-full">
       <motion.div
         initial={{ rotateY: -90, opacity: 0 }}
         animate={{ rotateY: 0, opacity: 1 }}
         transition={{ duration: 0.6, type: "spring" }}
-        className="relative"
+        className="relative w-full max-w-4xl"
       >
         <motion.div
-          className="w-96 h-64 rounded-3xl p-8 shadow-2xl relative overflow-hidden"
+          className="w-full min-h-[400px] rounded-3xl p-12 shadow-2xl relative overflow-hidden"
           style={{
             background: `linear-gradient(135deg, ${modeColors[mode]} 0%, ${modeColors[mode]}88 100%)`,
             boxShadow: `0 0 60px ${modeColors[mode]}`,
@@ -65,7 +65,7 @@ export function RhymeCard({ card, mode, isClueGiver }: RhymeCardProps) {
           </div>
 
           <div className="relative z-10 flex flex-col h-full justify-between">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between mb-8">
               <span className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white font-space text-xs font-bold">
                 {card.category.toUpperCase()}
               </span>
@@ -76,13 +76,13 @@ export function RhymeCard({ card, mode, isClueGiver }: RhymeCardProps) {
               </div>
             </div>
 
-            {isClueGiver ? (
-              <div className="text-center">
+            {isClueGiver || mode !== 'solve' ? (
+              <div className="text-center flex-1 flex flex-col justify-center">
                 <motion.h2
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.3, type: "spring" }}
-                  className="font-display font-black text-5xl text-white mb-2 drop-shadow-lg"
+                  className="font-display font-black text-6xl md:text-7xl text-white mb-4 drop-shadow-lg"
                 >
                   {card.phrase}
                 </motion.h2>
@@ -90,28 +90,51 @@ export function RhymeCard({ card, mode, isClueGiver }: RhymeCardProps) {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.6 }}
-                  className="text-white/80 font-space text-sm"
+                  className="text-white/80 font-space text-xl"
                 >
                   {card.celeb} + {card.rhyme}
                 </motion.p>
               </div>
             ) : (
-              <div className="text-center">
-                <motion.div
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                  className="font-display font-black text-6xl text-white mb-4"
-                >
-                  ???
-                </motion.div>
-                <p className="text-white/80 font-space text-sm">
-                  Watch and guess!
-                </p>
+              <div className="text-center flex-1 flex flex-col justify-center">
+                {mode === 'solve' ? (
+                  <>
+                    <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.3, type: "spring" }}
+                      className="mb-6"
+                    >
+                      <Brain className="w-20 h-20 text-white mx-auto mb-4" />
+                    </motion.div>
+                    <motion.h2
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                      className="font-display font-bold text-3xl md:text-4xl text-white mb-4 drop-shadow-lg px-4"
+                    >
+                      {card.phrase}
+                    </motion.h2>
+                  </>
+                ) : (
+                  <>
+                    <motion.div
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                      className="font-display font-black text-6xl text-white mb-4"
+                    >
+                      ???
+                    </motion.div>
+                    <p className="text-white/80 font-space text-sm">
+                      Watch and guess!
+                    </p>
+                  </>
+                )}
               </div>
             )}
 
-            <div className="text-center">
-              <p className="text-white font-space font-bold text-lg">
+            <div className="text-center mt-8">
+              <p className="text-white font-space font-bold text-xl">
                 {modeDescriptions[mode]}
               </p>
             </div>
