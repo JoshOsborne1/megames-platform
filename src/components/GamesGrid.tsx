@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { GameCard } from "./GameCard";
-import { Layers, Brain, Swords, HelpCircle, Sparkles, Droplet } from "lucide-react";
+import { Layers, Brain, Swords, HelpCircle, Sparkles, Droplet, MessageCircle } from "lucide-react";
 
 const games = [
   {
@@ -24,6 +24,16 @@ const games = [
     duration: "15-30 min",
     difficulty: "Easy" as const,
     color: "#ff006e",
+  },
+  {
+    id: "rhyme-rebels",
+    name: "RHYME REBELS",
+    description: "Rebel against boring nights – rhyme celebs into hilarious chaos! 4-12 players (teams of 2+), perfect for online shout-fests or local drama.",
+    icon: <MessageCircle className="w-full h-full" />,
+    players: "4-12",
+    duration: "15-30 min",
+    difficulty: "Medium" as const,
+    color: "#FF4500",
   },
   {
     id: "trivia-royale",
