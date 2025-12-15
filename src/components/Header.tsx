@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Search, Trophy, Zap, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -135,6 +136,8 @@ export function Header() {
                 <Search className="w-5 h-5" />
               </Button>
             </motion.div>
+
+            <ThemeToggle />
 
             <Link href="/login" className="hidden sm:block">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
