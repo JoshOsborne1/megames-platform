@@ -84,7 +84,7 @@ export function validateClue(clue: string, type: "first" | "second"): boolean {
   }
   
   for (const word of words) {
-    if (FORBIDDEN_COLOR_WORDS.some(forbidden => word.includes(forbidden))) {
+    if (FORBIDDEN_COLOR_WORDS.includes(word)) {
       return false;
     }
   }
