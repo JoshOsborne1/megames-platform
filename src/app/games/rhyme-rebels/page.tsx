@@ -431,10 +431,10 @@ export default function RhymeRebelsPage() {
                     {gameState.guesses.some(g => g.isCorrect) ? "You guessed it!" : "The answer was:"}
                   </p>
                   <p className="font-display font-black text-6xl text-[#00f5ff] mb-8">
-                    {gameState.currentCard.phrase}
+                    {gameState.currentCard.celeb} {gameState.currentCard.rhyme}
                   </p>
                   <p className="text-white/60 font-space text-lg">
-                    {gameState.currentCard.celeb} + {gameState.currentCard.rhyme}
+                    {gameState.currentCard.phrase}
                   </p>
                 </div>
 

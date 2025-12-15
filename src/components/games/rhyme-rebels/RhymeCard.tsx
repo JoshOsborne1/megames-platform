@@ -86,50 +86,35 @@ export function RhymeCard({ card, mode, isClueGiver }: RhymeCardProps) {
                 >
                   {card.phrase}
                 </motion.h2>
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.6 }}
-                  className="text-white/80 font-space text-xl"
-                >
-                  {card.celeb} + {card.rhyme}
-                </motion.p>
+                {mode !== 'solve' && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                    className="text-white/80 font-space text-xl"
+                  >
+                    {card.celeb} + {card.rhyme}
+                  </motion.p>
+                )}
               </div>
             ) : (
               <div className="text-center flex-1 flex flex-col justify-center">
-                {mode === 'solve' ? (
-                  <>
-                    <motion.div
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ delay: 0.3, type: "spring" }}
-                      className="mb-6"
-                    >
-                      <Brain className="w-20 h-20 text-white mx-auto mb-4" />
-                    </motion.div>
-                    <motion.h2
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5 }}
-                      className="font-display font-bold text-3xl md:text-4xl text-white mb-4 drop-shadow-lg px-4"
-                    >
-                      {card.phrase}
-                    </motion.h2>
-                  </>
-                ) : (
-                  <>
-                    <motion.div
-                      animate={{ scale: [1, 1.1, 1] }}
-                      transition={{ duration: 1.5, repeat: Infinity }}
-                      className="font-display font-black text-6xl text-white mb-4"
-                    >
-                      ???
-                    </motion.div>
-                    <p className="text-white/80 font-space text-sm">
-                      Watch and guess!
-                    </p>
-                  </>
-                )}
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.3, type: "spring" }}
+                  className="mb-6"
+                >
+                  <Brain className="w-20 h-20 text-white mx-auto mb-4" />
+                </motion.div>
+                <motion.h2
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="font-display font-bold text-3xl md:text-4xl text-white mb-4 drop-shadow-lg px-4"
+                >
+                  {card.phrase}
+                </motion.h2>
               </div>
             )}
 
