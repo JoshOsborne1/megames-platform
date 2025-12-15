@@ -117,11 +117,23 @@ export function submitGuess(
   const normalizedGuess = guess.toLowerCase().trim();
   const normalizedPhrase = state.currentCard.phrase.toLowerCase().trim();
   const normalizedCeleb = state.currentCard.celeb.toLowerCase().trim();
+  const normalizedRhyme = state.currentCard.rhyme.toLowerCase().trim();
   
-  const isCorrect = 
-    normalizedGuess === normalizedPhrase ||
-    normalizedGuess === normalizedCeleb ||
-    normalizedPhrase.includes(normalizedGuess) && normalizedGuess.length > 3;
+  let isCorrect = false;
+  
+  if (state.currentMode === 'solve') {
+    const fullAnswer = `${normalizedCeleb} ${normalizedRhyme}`;
+    isCorrect = 
+      normalizedGuess === normalizedCeleb ||
+      normalizedGuess === normalizedRhyme ||
+      normalizedGuess === fullAnswer ||
+      normalizedGuess.includes(normalizedCeleb) && normalizedGuess.includes(normalizedRhyme);
+  } else {
+    isCorrect = 
+      normalizedGuess === normalizedPhrase ||
+      normalizedGuess === normalizedCeleb ||
+      normalizedPhrase.includes(normalizedGuess) && normalizedGuess.length > 3;
+  }
 
   const newGuess: Guess = {
     playerId,
