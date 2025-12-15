@@ -218,6 +218,18 @@ export default function ShadeSignalsGame() {
                   />
                 </div>
 
+                <div>
+                  <label className="block text-white mb-2 font-semibold">Number of Rounds (1-10)</label>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={10}
+                    value={totalRounds}
+                    onChange={(e) => setTotalRounds(Math.min(10, Math.max(1, parseInt(e.target.value) || 1)))}
+                    className="bg-white/5 border-white/10 text-white text-lg"
+                  />
+                </div>
+
                 <Button
                   onClick={startGame}
                   className="w-full py-6 text-xl font-bold bg-gradient-to-r from-[#00f5ff] to-[#ff006e] hover:opacity-90"
