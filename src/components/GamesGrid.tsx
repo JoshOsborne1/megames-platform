@@ -116,7 +116,7 @@ export function GamesGrid() {
           </motion.p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 auto-rows-fr">
           {games.map((game, index) => (
             <motion.div
               key={game.id}
@@ -129,6 +129,7 @@ export function GamesGrid() {
                 stiffness: 100,
                 damping: 15,
               }}
+              className="h-[420px]"
             >
               <GameCard {...game} />
             </motion.div>

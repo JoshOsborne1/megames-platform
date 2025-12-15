@@ -116,7 +116,7 @@ export function FeaturesSection() {
           </motion.p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
@@ -133,10 +133,11 @@ export function FeaturesSection() {
               className="relative group"
             >
               <div
-                className="relative h-full holographic-card holographic-shine rounded-2xl p-8 backdrop-blur-sm overflow-hidden"
+                className="relative h-full rounded-3xl p-8 backdrop-blur-md overflow-hidden transition-all duration-500"
                 style={{
-                  background: `linear-gradient(135deg, ${feature.color}15 0%, ${feature.color}05 100%)`,
-                  border: `2px solid ${feature.color}30`,
+                  background: `linear-gradient(135deg, ${feature.color}10 0%, ${feature.color}03 100%)`,
+                  border: `1px solid ${feature.color}20`,
+                  boxShadow: `0 8px 32px ${feature.color}10`,
                 }}
               >
                 <motion.div
@@ -162,9 +163,9 @@ export function FeaturesSection() {
                 </p>
 
                 <div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity pointer-events-none"
+                  className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-500 pointer-events-none rounded-3xl"
                   style={{
-                    background: `radial-gradient(circle at 50% 0%, ${feature.color}80 0%, transparent 70%)`,
+                    background: `radial-gradient(circle at 50% 0%, ${feature.color}60 0%, transparent 70%)`,
                   }}
                 />
               </div>

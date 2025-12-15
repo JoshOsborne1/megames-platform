@@ -36,33 +36,6 @@ export function CTASection() {
           viewport={{ once: true }}
           className="text-center"
         >
-          <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            whileInView={{ scale: 1, rotate: 0 }}
-            viewport={{ once: true }}
-            transition={{ type: "spring", stiffness: 150, bounce: 0.6 }}
-            className="inline-flex items-center gap-3 bg-gradient-to-r from-[#39ff14] via-[#00f5ff] to-[#39ff14] rounded-full px-6 py-3 mb-8 animate-pulse"
-            style={{
-              boxShadow: "0 0 40px rgba(57, 255, 20, 0.6)",
-            }}
-          >
-            <motion.div
-              animate={{ rotate: [0, 360] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            >
-              <Sparkles className="w-5 h-5 text-[#0a0015]" />
-            </motion.div>
-            <span className="font-display text-sm font-black text-[#0a0015] tracking-wider">
-              JOIN 8,500+ PLAYERS TODAY!
-            </span>
-            <motion.div
-              animate={{ rotate: [0, -360] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            >
-              <Zap className="w-5 h-5 text-[#0a0015]" />
-            </motion.div>
-          </motion.div>
-
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}

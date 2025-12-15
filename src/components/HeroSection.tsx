@@ -220,7 +220,7 @@ export function HeroSection() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1.4 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-16"
+            className="flex flex-col sm:flex-row items-center justify-center gap-6"
           >
             <Link href="/games">
               <motion.div
@@ -255,52 +255,6 @@ export function HeroSection() {
                 </Button>
               </motion.div>
             </Link>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.6 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-6 md:gap-12 text-white/60"
-          >
-            <motion.div
-              whileHover={{ scale: 1.1 }}
-              className="flex items-center gap-3 px-6 py-3 rounded-full bg-[#1a0f2e]/60 border border-[#ff006e]/30"
-            >
-              <div className="flex -space-x-3">
-                {[1, 2, 3, 4].map((i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 1.7 + i * 0.1 }}
-                    className="w-10 h-10 rounded-full bg-gradient-to-br from-[#ff006e] via-[#8338ec] to-[#00f5ff] border-3 border-[#0a0015] flex items-center justify-center font-display font-bold text-sm"
-                  >
-                    {i}K
-                  </motion.div>
-                ))}
-              </div>
-              <span className="text-sm font-display font-bold text-[#00f5ff]">8,500+ ONLINE</span>
-            </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.1, rotate: [0, -5, 5, 0] }}
-              className="flex items-center gap-3 px-6 py-3 rounded-full bg-[#1a0f2e]/60 border border-[#39ff14]/30"
-            >
-              <div className="flex gap-1">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <motion.span
-                    key={i}
-                    initial={{ opacity: 0, scale: 0, rotate: -180 }}
-                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                    transition={{ delay: 1.8 + i * 0.05 }}
-                    className="text-[#39ff14] text-xl drop-shadow-[0_0_8px_rgba(57,255,20,0.8)]"
-                  >
-                    ★
-                  </motion.span>
-                ))}
-              </div>
-              <span className="text-sm font-display font-bold text-[#39ff14]">4.9/5 RATING</span>
-            </motion.div>
           </motion.div>
         </motion.div>
       </div>
