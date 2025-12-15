@@ -13,9 +13,8 @@ import { toast } from "sonner";
 import { Layers, Brain, Swords, Globe, Lock, Users, Loader2 } from "lucide-react";
 
 const games = [
-  { id: "card-clash", name: "Card Clash", icon: Layers, color: "#00BFFF", maxPlayers: 8 },
-  { id: "trivia-royale", name: "Trivia Royale", icon: Brain, color: "#FF4500", maxPlayers: 12 },
-  { id: "kingdom-quest", name: "Kingdom Quest", icon: Swords, color: "#32CD32", maxPlayers: 6 },
+  { id: "shade-signals", name: "Shade Signals", icon: Layers, color: "#00f5ff", maxPlayers: 10 },
+  { id: "rhyme-rebels", name: "Rhyme Rebels", icon: Brain, color: "#FF4500", maxPlayers: 12 },
 ];
 
 function generateLobbyCode(): string {

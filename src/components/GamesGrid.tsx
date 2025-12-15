@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { GameCard } from "./GameCard";
-import { Layers, Brain, Swords, HelpCircle, Sparkles, Droplet, MessageCircle } from "lucide-react";
+import { Sparkles, Droplet, MessageCircle } from "lucide-react";
 
 const games = [
   {
@@ -16,16 +16,6 @@ const games = [
     color: "#00f5ff",
   },
   {
-    id: "card-clash",
-    name: "CARD CLASH",
-    description: "The ultimate card-shedding showdown! Race to empty your hand by matching colors and numbers. Special action cards add twists and turns to every round.",
-    icon: <Layers className="w-full h-full" />,
-    players: "2-8",
-    duration: "15-30 min",
-    difficulty: "Easy" as const,
-    color: "#ff006e",
-  },
-  {
     id: "rhyme-rebels",
     name: "RHYME REBELS",
     description: "Rebel against boring nights – rhyme celebs into hilarious chaos! 2-12 players (1v1 duels or teams), perfect for online shout-fests or local drama.",
@@ -34,37 +24,6 @@ const games = [
     duration: "15-30 min",
     difficulty: "Medium" as const,
     color: "#FF4500",
-  },
-  {
-    id: "trivia-royale",
-    name: "TRIVIA ROYALE",
-    description: "Test your knowledge across dozens of categories! Compete head-to-head or in teams. The ultimate battle of wits with thousands of questions.",
-    icon: <Brain className="w-full h-full" />,
-    players: "2-12",
-    duration: "20-45 min",
-    difficulty: "Medium" as const,
-    color: "#8338ec",
-  },
-  {
-    id: "kingdom-quest",
-    name: "KINGDOM QUEST",
-    description: "Build your empire, manage resources, and conquer territories in this epic strategy game. Form alliances or crush your enemies!",
-    icon: <Swords className="w-full h-full" />,
-    players: "2-6",
-    duration: "45-90 min",
-    difficulty: "Hard" as const,
-    color: "#00f5ff",
-  },
-  {
-    id: "mystery-mansion",
-    name: "MYSTERY MANSION",
-    description: "Solve puzzles, gather clues, and unmask the culprit in this thrilling deduction game. Trust no one - anyone could be the villain!",
-    icon: <HelpCircle className="w-full h-full" />,
-    players: "3-8",
-    duration: "30-60 min",
-    difficulty: "Medium" as const,
-    color: "#fb00ff",
-    comingSoon: true,
   },
 ];
 
