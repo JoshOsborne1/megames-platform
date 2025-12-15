@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ColorSpectrum } from "@/components/games/shade-signals/ColorSpectrum";
-import { ArrowLeft, Users, Wifi, WifiOff, Play, Sparkles } from "lucide-react";
+import { ArrowLeft, Users, Wifi, WifiOff, Play, Sparkles, X } from "lucide-react";
 import Link from "next/link";
 import type { ColorWithPosition } from "@/lib/games/shade-signals/types";
 import { generateColorOptions, calculateHSVDistance, calculateScore } from "@/lib/games/shade-signals/colorUtils";
@@ -30,6 +30,7 @@ export default function ShadeSignalsGame() {
   const [secondClue, setSecondClue] = useState("");
   const [currentGuesserIndex, setCurrentGuesserIndex] = useState(0);
   const [showTarget, setShowTarget] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const startGame = () => {
     const newPlayers = Array.from({ length: playerCount }, (_, i) => ({
@@ -39,6 +40,8 @@ export default function ShadeSignalsGame() {
     }));
     setPlayers(newPlayers);
     setTotalRounds(playerCount <= 6 ? playerCount * 2 : playerCount);
+    setCurrentRound(1);
+    setSignalGiverIndex(0);
     startRound();
   };
 
@@ -49,7 +52,9 @@ export default function ShadeSignalsGame() {
     setFirstClue("");
     setSecondClue("");
     setShowTarget(false);
+    setTargetColor(null);
     setPlayers(prev => prev.map(p => ({ ...p, markers: [] })));
+    setCurrentGuesserIndex(0);
   };
 
   const handleColorOptionSelect = (color: ColorWithPosition) => {
@@ -59,7 +64,7 @@ export default function ShadeSignalsGame() {
 
   const submitFirstClue = () => {
     if (!validateClue(firstClue, "first")) {
-      alert("Invalid clue! Must be 1 word and no color names.");
+      setErrorMessage("Invalid clue! Must be 1 word and no color names.");
       return;
     }
     setPhase("guess-1");
@@ -84,6 +89,7 @@ export default function ShadeSignalsGame() {
     } else {
       if (phase === "guess-1") {
         setPhase("clue-2");
+        setCurrentGuesserIndex(0);
       } else {
         revealResults();
       }
@@ -92,7 +98,7 @@ export default function ShadeSignalsGame() {
 
   const submitSecondClue = () => {
     if (!validateClue(secondClue, "second")) {
-      alert("Invalid clue! Must be 2-3 words and no color names.");
+      setErrorMessage("Invalid clue! Must be 2-3 words and no color names.");
       return;
     }
     setPhase("guess-2");
@@ -102,6 +108,7 @@ export default function ShadeSignalsGame() {
   const revealResults = () => {
     if (!targetColor) return;
 
+    setPhase("reveal");
     setShowTarget(true);
     setPlayers(prev => prev.map((player, idx) => {
       if (idx === signalGiverIndex) return player;
@@ -265,6 +272,18 @@ export default function ShadeSignalsGame() {
             </motion.div>
           )}
 
+          {(phase === "clue-1" || phase === "clue-2") && targetColor && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-center mb-4">
+              <div className="flex items-center gap-4 bg-[#16162a] border border-white/10 rounded-2xl px-6 py-3">
+                <span className="text-white/70 font-semibold">Your Color:</span>
+                <div 
+                  className="w-16 h-16 rounded-lg border-2 border-white/30"
+                  style={{ backgroundColor: targetColor.hex, boxShadow: `0 0 20px ${targetColor.hex}` }}
+                />
+              </div>
+            </motion.div>
+          )}
+
           {phase === "clue-1" && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-2xl mx-auto mb-8">
               <div className="bg-[#16162a] border border-white/10 rounded-3xl p-8">
@@ -344,6 +363,46 @@ export default function ShadeSignalsGame() {
         </div>
       </main>
       <Footer />
+
+      <AnimatePresence>
+        {errorMessage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+            onClick={() => setErrorMessage(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.8, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.8, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-gradient-to-br from-[#ff006e]/20 to-[#1a0f2e] border-2 border-[#ff006e] rounded-3xl p-8 max-w-md mx-4 shadow-2xl"
+              style={{ boxShadow: "0 0 60px rgba(255, 0, 110, 0.4)" }}
+            >
+              <div className="flex items-start gap-4">
+                <div className="flex-1">
+                  <h3 className="font-display text-2xl font-bold text-white mb-2">Oops!</h3>
+                  <p className="text-white/80">{errorMessage}</p>
+                </div>
+                <button
+                  onClick={() => setErrorMessage(null)}
+                  className="text-white/70 hover:text-white transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              <Button
+                onClick={() => setErrorMessage(null)}
+                className="w-full mt-6 bg-[#ff006e] hover:bg-[#ff006e]/80 text-white font-bold py-3"
+              >
+                Got it!
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
