@@ -7,6 +7,10 @@ import { ChallengeOne } from "@/components/challenges/ChallengeOne";
 import { ChallengeTwo } from "@/components/challenges/ChallengeTwo";
 import { ChallengeThree } from "@/components/challenges/ChallengeThree";
 import { ChallengeFour } from "@/components/challenges/ChallengeFour";
+import { Snowflakes } from "@/components/christmas/Snowflakes";
+import { WinterBackground } from "@/components/christmas/WinterBackground";
+import { ChristmasLights } from "@/components/christmas/ChristmasLights";
+import { SnowPile } from "@/components/christmas/SnowPile";
 
 type ChallengeAnswer = string | number;
 
@@ -41,8 +45,12 @@ export default function HiddenPage() {
   const CurrentChallengeComponent = challenges[currentChallenge].component;
 
   return (
-    <div className="min-h-screen bg-[#0a0015] flex flex-col overflow-hidden">
-      <div className="flex-1 flex flex-col max-w-md mx-auto w-full px-4 py-6 safe-area-inset">
+    <div className="min-h-screen bg-[#0a0015] flex flex-col overflow-hidden relative">
+      <WinterBackground />
+      <Snowflakes />
+      <ChristmasLights />
+      
+      <div className="flex-1 flex flex-col max-w-md mx-auto w-full px-4 py-6 safe-area-inset relative z-20">
         
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
@@ -93,8 +101,9 @@ export default function HiddenPage() {
               </h2>
               <p className="text-gray-400 mb-8">Your 4-digit code is:</p>
               <div className="relative">
-                <div className="text-6xl font-pixel tracking-wider text-white neon-glow-pink px-8 py-4 rounded-2xl bg-white/5 border-2 border-[#ff006e]/50">
-                  {finalCode}
+                <div className="text-6xl font-pixel tracking-wider text-white neon-glow-pink px-8 py-4 rounded-2xl bg-white/5 border-2 border-[#ff006e]/50 relative overflow-hidden">
+                  <SnowPile />
+                  <div className="relative z-10">{finalCode}</div>
                 </div>
               </div>
             </motion.div>
@@ -108,10 +117,11 @@ export default function HiddenPage() {
               className="flex-1 flex flex-col"
             >
               <div 
-                className="mb-4 p-4 rounded-2xl border-2 bg-black/40"
+                className="mb-4 p-4 rounded-2xl border-2 bg-black/40 relative overflow-hidden"
                 style={{ borderColor: `${challenges[currentChallenge].color}40` }}
               >
-                <div className="flex items-center gap-2 mb-2">
+                <SnowPile />
+                <div className="flex items-center gap-2 mb-2 relative z-10">
                   <div 
                     className="w-8 h-8 rounded-full flex items-center justify-center font-display text-sm"
                     style={{ backgroundColor: challenges[currentChallenge].color }}
