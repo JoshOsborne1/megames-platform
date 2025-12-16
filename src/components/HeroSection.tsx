@@ -4,7 +4,15 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { Sparkles, Users, Zap, Gamepad2, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+function createSeededRandom(seed: number) {
+  let t = seed >>> 0;
+  return () => {
+    t = (t * 1664525 + 1013904223) >>> 0;
+    return t / 4294967296;
+  };
+}
 
 function FloatingCard({
   delay,
@@ -75,7 +83,7 @@ function Particle({ delay, x, size }: { delay: number; x: number; size: number }
         left: `${x}%`,
         width: size,
         height: size,
-        background: `radial-gradient(circle, rgba(255, 0, 110, 0.8), transparent)`,
+        backgroundImage: `radial-gradient(circle, rgba(255, 0, 110, 0.8), transparent)`,
         filter: `blur(${size / 4}px)`,
       }}
     />
@@ -92,6 +100,10 @@ export function HeroSection() {
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
+  // Avoid SSR/CSR hydration mismatches from animated/randomized particles.
+  const [showParticles, setShowParticles] = useState(false);
+  useEffect(() => setShowParticles(true), []);
+
   const cards = [
     { delay: 0.2, x: 8, y: 15, rotation: -20, gradientFrom: "#ff006e", gradientTo: "#8338ec", icon: "♠" },
     { delay: 0.4, x: 82, y: 10, rotation: 25, gradientFrom: "#8338ec", gradientTo: "#00f5ff", icon: "♥" },
@@ -101,11 +113,20 @@ export function HeroSection() {
     { delay: 1.2, x: 22, y: 85, rotation: 15, gradientFrom: "#ff006e", gradientTo: "#00f5ff", icon: "🎲" },
   ];
 
-  const particles = Array.from({ length: 20 }, (_, i) => ({
-    delay: i * 0.3,
-    x: Math.random() * 100,
-    size: 2 + Math.random() * 4,
-  }));
+  const particles = useMemo(() => {
+    const rand = createSeededRandom(1337);
+
+    return Array.from({ length: 20 }, (_, i) => {
+      const x = Math.round(rand() * 10000) / 100;
+      const size = Math.round((2 + rand() * 4) * 100) / 100;
+
+      return {
+        delay: i * 0.3,
+        x,
+        size,
+      };
+    });
+  }, []);
 
   return (
     <section ref={ref} className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden px-4">
@@ -141,9 +162,8 @@ export function HeroSection() {
       </motion.div>
 
       <div className="hidden lg:block">
-        {particles.map((particle, index) => (
-          <Particle key={index} {...particle} />
-        ))}
+        {showParticles &&
+          particles.map((particle, index) => <Particle key={index} {...particle} />)}
       </div>
 
       <div className="hidden md:block">
