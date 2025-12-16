@@ -1,25 +1,64 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { GameCard } from "@/components/GameCard";
+import { Droplet, MessageCircle } from "lucide-react";
+
+const games = [
+  {
+    id: "shade-signals",
+    name: "Shade Signals",
+    description: "Guess the shade with clever signals! 2-10 players – endless rainbow chaos, perfect for online duels, big parties, or local swap & play.",
+    icon: <Droplet className="w-full h-full" />,
+    players: "2-10",
+    duration: "10-20 min",
+    difficulty: "Easy" as const,
+    color: "#00f5ff",
+  },
+  {
+    id: "rhyme-rebels",
+    name: "Rhyme Rebels",
+    description: "Rebel against boring nights – rhyme celebs into hilarious chaos! 2-12 players (1v1 duels or teams), perfect for online shout-fests or local drama.",
+    icon: <MessageCircle className="w-full h-full" />,
+    players: "2-12",
+    duration: "15-30 min",
+    difficulty: "Medium" as const,
+    color: "#FF4500",
+  },
+];
 
 export default function HiddenPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 pt-24 pb-16 px-4 bg-[#0a0a14]">
-        <div className="max-w-2xl mx-auto">
-          <div className="bg-[#16162a] border border-white/10 rounded-2xl p-6 sm:p-8">
-            <p className="text-xs font-bold text-[#00f5ff] bg-[#00f5ff]/10 px-3 py-1 rounded-full w-fit mb-4">
-              [PLACEHOLDER]
-            </p>
-            <h1 className="font-display text-3xl sm:text-4xl font-bold text-white mb-3">
-              Hidden Page
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-12"
+          >
+            <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
+              Hidden <span className="text-gradient">Games</span>
             </h1>
-            <p className="text-gray-400 leading-relaxed">
-              This route isn’t linked anywhere in the site navigation and is only accessible via a direct URL.
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              Secret collection. Not linked from the main site.
             </p>
-            <p className="text-gray-400 leading-relaxed mt-3">
-              We’ll build this page later.
-            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {games.map((game, index) => (
+              <motion.div
+                key={game.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <GameCard {...game} />
+              </motion.div>
+            ))}
           </div>
         </div>
       </main>
