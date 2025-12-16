@@ -108,7 +108,10 @@ export function ChallengeOne({ onComplete }: ChallengeOneProps) {
                   <Sparkles className="w-6 h-6" />
                 </div>
                 <p className="text-gray-300 text-sm">
-                  Your first digit is the number of vowels in the answer (E-O = <span className="font-pixel text-2xl text-[#ff006e]">2</span>)
+                  The answer is the number of vowels in the word!
+                </p>
+                <p className="text-gray-300 text-sm">
+                  Your first digit: (E-O = <span className="font-pixel text-2xl text-[#ff006e]">2</span>)
                 </p>
               </motion.div>
             ) : (

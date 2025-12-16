@@ -134,9 +134,12 @@ export default function HiddenPage() {
                 </div>
               </div>
 
-              <div className="flex-1 flex items-center justify-center">
-                <CurrentChallengeComponent onComplete={handleChallengeComplete} />
-              </div>
+                <div className="flex-1 flex items-center justify-center">
+                  <CurrentChallengeComponent 
+                    onComplete={handleChallengeComplete} 
+                    completedAnswers={answers}
+                  />
+                </div>
             </motion.div>
           )}
         </AnimatePresence>
