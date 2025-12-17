@@ -50,34 +50,52 @@ export default function HiddenPage() {
       <Snowflakes />
       <ChristmasLights />
       
-      <div className="flex-1 flex flex-col max-w-md mx-auto w-full px-4 py-6 safe-area-inset relative z-20">
-        
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
-        >
-          <h1 className="font-display text-2xl font-bold text-white text-center mb-2 neon-text-pink">
-            Challenge Sequence
-          </h1>
-          <div className="flex justify-center gap-2 mb-4">
-            {challenges.map((_, idx) => (
-              <motion.div
-                key={idx}
-                className={`h-2 rounded-full transition-all ${
-                  completedChallenges[idx] 
-                    ? 'w-12 bg-gradient-to-r from-[#ff006e] to-[#8338ec]' 
-                    : idx === currentChallenge
-                    ? 'w-12 bg-white/40'
-                    : 'w-8 bg-white/10'
-                }`}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: idx * 0.1 }}
-              />
-            ))}
-          </div>
-        </motion.div>
+        <div className="flex-1 flex flex-col max-w-md mx-auto w-full px-4 py-6 safe-area-inset relative z-20">
+          
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6"
+          >
+            <h1 className="font-display text-2xl font-bold text-white text-center mb-2 neon-text-pink">
+              Challenge Sequence
+            </h1>
+            <div className="flex justify-center gap-2 mb-4">
+              {challenges.map((_, idx) => (
+                <motion.div
+                  key={idx}
+                  className={`h-2 rounded-full transition-all ${
+                    completedChallenges[idx] 
+                      ? 'w-12 bg-gradient-to-r from-[#ff006e] to-[#8338ec]' 
+                      : idx === currentChallenge
+                      ? 'w-12 bg-white/40'
+                      : 'w-8 bg-white/10'
+                  }`}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: idx * 0.1 }}
+                />
+              ))}
+            </div>
+            
+            <div className="flex justify-center gap-3 mb-4">
+              {[0, 1, 2, 3].map((idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: idx * 0.1 + 0.3 }}
+                  className={`w-12 h-12 rounded-lg flex items-center justify-center text-xl font-pixel border-2 transition-all ${
+                    completedChallenges[idx]
+                      ? 'bg-green-500/20 border-green-500 text-green-400'
+                      : 'bg-white/5 border-white/20 text-white/40'
+                  }`}
+                >
+                  {completedChallenges[idx] ? answers[idx] : '?'}
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
 
         <AnimatePresence mode="wait">
           {allComplete ? (

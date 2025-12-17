@@ -38,41 +38,16 @@ export function ChallengeOne({ onComplete, completedAnswers }: ChallengeOneProps
     }
   };
 
-  const digitBoxes = [
-    { value: 2, revealed: step === 3 },
-    { value: null, revealed: false },
-    { value: null, revealed: false },
-    { value: null, revealed: false },
-  ];
-
-  return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="w-full max-w-sm"
-    >
-      <div className="bg-gradient-to-br from-[#1a0f2e]/80 to-[#0a0015]/80 backdrop-blur-sm p-8 rounded-3xl border-2 border-[#ff006e]/30">
-        <h3 className="font-display text-xl text-white mb-4 text-center">
-          The Festive Brain Teaser
-        </h3>
-
-        <div className="flex justify-center gap-3 mb-6">
-          {digitBoxes.map((box, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: idx * 0.1 }}
-              className={`w-12 h-12 rounded-lg flex items-center justify-center text-xl font-pixel border-2 transition-all ${
-                box.revealed
-                  ? 'bg-green-500/20 border-green-500 text-green-400'
-                  : 'bg-red-500/20 border-red-500 text-red-400'
-              }`}
-            >
-              {box.revealed ? box.value : '?'}
-            </motion.div>
-          ))}
-        </div>
+    return (
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="w-full max-w-sm"
+      >
+        <div className="bg-gradient-to-br from-[#1a0f2e]/80 to-[#0a0015]/80 backdrop-blur-sm p-8 rounded-3xl border-2 border-[#ff006e]/30">
+          <h3 className="font-display text-xl text-white mb-4 text-center">
+            The Festive Brain Teaser
+          </h3>
 
         <AnimatePresence mode="wait">
           {step === 1 && (
@@ -119,17 +94,23 @@ export function ChallengeOne({ onComplete, completedAnswers }: ChallengeOneProps
             </motion.div>
           )}
 
-          {step === 2 && (
-            <motion.div
-              key="step2"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <div className="bg-black/40 p-4 rounded-xl mb-6 border border-[#ff006e]/20">
-                <p className="text-gray-300 text-sm text-center">
-                  The answer is the number of vowels in the word!
-                </p>
-              </div>
+            {step === 2 && (
+              <motion.div
+                key="step2"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+              >
+                <div className="bg-black/40 p-4 rounded-xl mb-4 border border-[#ff006e]/20">
+                  <p className="text-gray-300 text-sm text-center mb-2">
+                    Correct! The answer is: <span className="font-bold text-white">ECHO</span>
+                  </p>
+                </div>
+                
+                <div className="bg-black/40 p-4 rounded-xl mb-6 border border-[#ff006e]/20">
+                  <p className="text-gray-300 text-sm text-center">
+                    Now, enter the number of vowels in the word!
+                  </p>
+                </div>
 
               <motion.div
                 animate={showError ? { x: [-10, 10, -10, 10, 0] } : {}}
