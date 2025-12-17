@@ -29,7 +29,12 @@ export function GameCard({
   comingSoon = false,
 }: GameCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
+  const [isTouch, setIsTouch] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setIsTouch('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  }, []);
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -80,8 +85,9 @@ export function GameCard({
       }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      onHoverStart={() => setIsFlipped(true)}
-      onHoverEnd={() => setIsFlipped(false)}
+      onHoverStart={() => !isTouch && setIsFlipped(true)}
+      onHoverEnd={() => !isTouch && setIsFlipped(false)}
+      onClick={() => isTouch && setIsFlipped(!isFlipped)}
       whileHover={{ scale: 1.05 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
