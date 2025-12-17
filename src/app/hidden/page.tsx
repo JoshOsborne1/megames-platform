@@ -7,11 +7,6 @@ import { ChallengeOne } from "@/components/challenges/ChallengeOne";
 import { ChallengeTwo } from "@/components/challenges/ChallengeTwo";
 import { ChallengeThree } from "@/components/challenges/ChallengeThree";
 import { ChallengeFour } from "@/components/challenges/ChallengeFour";
-import { Snowflakes } from "@/components/christmas/Snowflakes";
-import { WinterBackground } from "@/components/christmas/WinterBackground";
-import { ChristmasLights } from "@/components/christmas/ChristmasLights";
-import { SnowPile } from "@/components/christmas/SnowPile";
-import { SnowballExplosion } from "@/components/christmas/SnowballExplosion";
 
 type ChallengeAnswer = string | number;
 
@@ -41,7 +36,6 @@ export default function HiddenPage() {
       if (e.key === sequence[currentIndex]) {
         currentIndex++;
         if (currentIndex === sequence.length) {
-          // Dev skip logic: use correct answers if known, otherwise dummy
           const correctAnswers: ChallengeAnswer[] = [2, 4, 3, 7];
           handleChallengeComplete(correctAnswers[currentChallenge]);
           currentIndex = 0;
@@ -76,56 +70,52 @@ export default function HiddenPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0015] flex flex-col overflow-hidden relative">
-      <WinterBackground />
-      <Snowflakes />
-      <ChristmasLights />
-      
-        <div className="flex-1 flex flex-col max-w-md mx-auto w-full px-4 py-6 safe-area-inset relative z-20">
+      <div className="flex-1 flex flex-col max-w-md mx-auto w-full px-4 py-6 safe-area-inset relative z-20">
+        
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6"
+        >
+          <h1 className="font-display text-2xl font-bold text-white text-center mb-2 neon-text-pink">
+            Challenge Sequence
+          </h1>
+          <div className="flex justify-center gap-2 mb-4">
+            {challenges.map((_, idx) => (
+              <motion.div
+                key={idx}
+                className={`h-2 rounded-full transition-all ${
+                  completedChallenges[idx] 
+                    ? 'w-12 bg-gradient-to-r from-[#ff006e] to-[#8338ec]' 
+                    : idx === currentChallenge
+                    ? 'w-12 bg-white/40'
+                    : 'w-8 bg-white/10'
+                }`}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: idx * 0.1 }}
+              />
+            ))}
+          </div>
           
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-6"
-          >
-            <h1 className="font-display text-2xl font-bold text-white text-center mb-2 neon-text-pink">
-              Challenge Sequence
-            </h1>
-            <div className="flex justify-center gap-2 mb-4">
-              {challenges.map((_, idx) => (
-                <motion.div
-                  key={idx}
-                  className={`h-2 rounded-full transition-all ${
-                    completedChallenges[idx] 
-                      ? 'w-12 bg-gradient-to-r from-[#ff006e] to-[#8338ec]' 
-                      : idx === currentChallenge
-                      ? 'w-12 bg-white/40'
-                      : 'w-8 bg-white/10'
-                  }`}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: idx * 0.1 }}
-                />
-              ))}
-            </div>
-            
-            <div className="flex justify-center gap-3 mb-4">
-              {[0, 1, 2, 3].map((idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: idx * 0.1 + 0.3 }}
-                  className={`w-12 h-12 rounded-lg flex items-center justify-center text-xl font-pixel border-2 transition-all ${
-                    completedChallenges[idx]
-                      ? 'bg-green-500/20 border-green-500 text-green-400'
-                      : 'bg-white/5 border-white/20 text-white/40'
-                  }`}
-                >
-                  {completedChallenges[idx] ? answers[idx] : '?'}
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+          <div className="flex justify-center gap-3 mb-4">
+            {[0, 1, 2, 3].map((idx) => (
+              <motion.div
+                key={idx}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: idx * 0.1 + 0.3 }}
+                className={`w-12 h-12 rounded-lg flex items-center justify-center text-xl font-pixel border-2 transition-all ${
+                  completedChallenges[idx]
+                    ? 'bg-green-500/20 border-green-500 text-green-400'
+                    : 'bg-white/5 border-white/20 text-white/40'
+                }`}
+              >
+                {completedChallenges[idx] ? answers[idx] : '?'}
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
 
         <AnimatePresence>
           {showSuccessModal && (
@@ -135,7 +125,6 @@ export default function HiddenPage() {
               exit={{ opacity: 0 }}
               className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
             >
-              <SnowballExplosion />
               <motion.div
                 initial={{ scale: 0.8, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -198,7 +187,6 @@ export default function HiddenPage() {
               <p className="text-gray-400 mb-8">Your 4-digit code is:</p>
               <div className="relative">
                 <div className="text-6xl font-pixel tracking-wider text-white neon-glow-pink px-8 py-4 rounded-2xl bg-white/5 border-2 border-[#ff006e]/50 relative">
-                  <SnowPile />
                   <div className="relative z-10">{finalCode}</div>
                 </div>
               </div>
@@ -216,7 +204,6 @@ export default function HiddenPage() {
                 className="mb-4 p-4 rounded-2xl border-2 bg-black/40 relative"
                 style={{ borderColor: `${challenges[currentChallenge].color}40` }}
               >
-                <SnowPile />
                 <div className="flex items-center gap-2 mb-2 relative z-10">
                   <div 
                     className="w-8 h-8 rounded-full flex items-center justify-center font-display text-sm"
@@ -230,12 +217,12 @@ export default function HiddenPage() {
                 </div>
               </div>
 
-                <div className="flex-1 flex items-center justify-center">
-                  <CurrentChallengeComponent 
-                    onComplete={handleChallengeComplete} 
-                    completedAnswers={answers}
-                  />
-                </div>
+              <div className="flex-1 flex items-center justify-center">
+                <CurrentChallengeComponent 
+                  onComplete={handleChallengeComplete} 
+                  completedAnswers={answers}
+                />
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

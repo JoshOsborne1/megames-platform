@@ -2,9 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Snowflake, Gift, Bell } from "lucide-react";
-import { Snowflakes } from "@/components/christmas/Snowflakes";
-import { SnowPile } from "@/components/christmas/SnowPile";
+import { Sparkles, Snowflake } from "lucide-react";
 
 interface ChallengeTwoProps {
   onComplete: (answer: string | number) => void;
@@ -13,27 +11,7 @@ interface ChallengeTwoProps {
 
 const GRID_SIZE = 4;
 const TILE_COUNT = GRID_SIZE * GRID_SIZE;
-const IMAGE_URL = "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1766012895243.png?width=8000&height=8000&resize=contain";
-
-// Define tiles that should have a Santa hat
-const HAT_TILES: number[] = []; // New image already has hats!
-
-function FestiveLights() {
-  return (
-    <div className="absolute -top-2 left-0 w-full flex justify-around pointer-events-none z-30">
-      {[...Array(8)].map((_, i) => (
-        <motion.div
-          key={i}
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.2 }}
-          className={`w-3 h-4 rounded-full shadow-[0_0_10px_currentColor] ${
-            i % 3 === 0 ? 'text-red-500 bg-red-500' : i % 3 === 1 ? 'text-green-500 bg-green-500' : 'text-yellow-400 bg-yellow-400'
-          }`}
-        />
-      ))}
-    </div>
-  );
-}
+const IMAGE_URL = "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=800&auto=format&fit=crop";
 
 export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
   const [tiles, setTiles] = useState<number[]>([]);
@@ -45,6 +23,7 @@ export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
     let currentTiles = [...newTiles];
     let emptyIndex = TILE_COUNT - 1;
     
+    // Shuffle with valid moves to ensure solvability
     for (let i = 0; i < 200; i++) {
       const neighbors = [];
       const row = Math.floor(emptyIndex / GRID_SIZE);
@@ -99,39 +78,19 @@ export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
     <motion.div 
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="w-full max-w-md mx-auto relative"
+      className="w-full max-w-md mx-auto"
     >
-      <FestiveLights />
-      
-      {/* Local snow effect */}
-      <div className="absolute inset-0 pointer-events-none z-10 overflow-hidden rounded-3xl">
-        <Snowflakes />
-      </div>
-
-      <div className="bg-gradient-to-br from-[#1a0f2e]/95 via-[#2a1b4e]/90 to-[#0a0015]/95 backdrop-blur-xl p-4 sm:p-6 rounded-3xl border-2 border-white/20 shadow-[0_0_50px_rgba(255,255,255,0.15)] relative">
-        <SnowPile />
-        {/* Frosty corners */}
-        <div className="absolute -top-10 -left-10 w-32 h-32 bg-white/5 blur-3xl rounded-full pointer-events-none" />
-        <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full pointer-events-none" />
-        
-        <div className="flex justify-between items-center mb-4 px-2 relative z-20">
-          <div className="flex items-center gap-2">
-            <motion.div
-              animate={{ rotate: [0, -10, 10, -10, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <Bell className="w-5 h-5 text-yellow-400" />
-            </motion.div>
-            <h3 className="font-display text-lg text-white font-bold tracking-tight">
-              Festive Puzzle
-            </h3>
-          </div>
-          <div className="text-blue-200 font-pixel text-sm flex items-center gap-3">
-            <span className="flex items-center gap-1"><Gift className="w-3 h-3" /> {moves}</span>
+      <div className="bg-[#1a0f2e]/80 backdrop-blur-xl p-6 rounded-3xl border-2 border-white/10 shadow-2xl">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="font-display text-xl text-white font-bold tracking-tight">
+            Slider Puzzle
+          </h3>
+          <div className="text-white/60 font-pixel text-sm">
+            Moves: {moves}
           </div>
         </div>
         
-        <div className="grid grid-cols-4 gap-1 sm:gap-2 aspect-square w-full bg-blue-900/20 p-2 sm:p-3 rounded-2xl border border-white/20 relative z-20 shadow-inner">
+        <div className="grid grid-cols-4 gap-2 aspect-square w-full bg-black/40 p-3 rounded-2xl border border-white/10">
           {tiles.map((tile, index) => {
             const isEmpty = tile === TILE_COUNT;
             const correctPos = tile - 1;
@@ -143,36 +102,27 @@ export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
                 key={tile}
                 layout
                 onClick={() => handleTileClick(index)}
-                className={`relative aspect-square rounded-lg cursor-pointer overflow-hidden group ${
-                  isEmpty ? "bg-white/5 border border-white/10" : "border border-white/20 shadow-lg"
+                className={`relative aspect-square rounded-lg cursor-pointer overflow-hidden ${
+                  isEmpty ? "bg-white/5 border border-white/5" : "border border-white/20 shadow-lg"
                 }`}
-                whileHover={!isEmpty && !isSolved ? { scale: 1.02, zIndex: 10 } : {}}
+                whileHover={!isEmpty && !isSolved ? { scale: 1.02 } : {}}
                 whileTap={!isEmpty && !isSolved ? { scale: 0.95 } : {}}
               >
-                {!isEmpty ? (
+                {!isEmpty && (
                   <>
                     <div 
-                      className="absolute inset-0 bg-cover bg-no-repeat transition-all duration-500 group-hover:scale-110 brightness-110 saturate-125"
+                      className="absolute inset-0 bg-cover bg-no-repeat transition-transform duration-500"
                       style={{
                         backgroundImage: `url(${IMAGE_URL})`,
                         backgroundPosition: `${bgX}% ${bgY}%`,
                         backgroundSize: '400% 400%',
-                        filter: 'contrast(1.1) drop-shadow(0 0 5px rgba(255,255,255,0.3))'
                       }}
                     />
-                    
-                    {/* Snow filter overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-white/10 to-transparent pointer-events-none" />
-                    
-                    <div className="absolute inset-0 bg-blue-500/5 group-hover:bg-transparent transition-colors" />
-                    <div className="absolute top-1 left-1 w-5 h-5 sm:w-6 sm:h-6 bg-white/10 backdrop-blur-md rounded-md flex items-center justify-center border border-white/20">
-                      <span className="text-[10px] sm:text-xs font-pixel text-white/80 drop-shadow-md">{tile}</span>
+                    <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
+                    <div className="absolute top-1 left-1 w-6 h-6 bg-black/40 backdrop-blur-md rounded-md flex items-center justify-center border border-white/10">
+                      <span className="text-[10px] font-pixel text-white/80">{tile}</span>
                     </div>
                   </>
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center opacity-20">
-                    <Snowflake className="w-6 h-6 text-white" />
-                  </div>
                 )}
               </motion.div>
             );
@@ -184,23 +134,21 @@ export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-6 text-center relative z-20"
+              className="mt-6 text-center"
             >
-              <div className="inline-flex items-center gap-3 text-white bg-gradient-to-r from-red-500/20 to-green-500/20 px-6 py-3 rounded-full border border-white/30 backdrop-blur-md shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-                <Sparkles className="w-5 h-5 text-yellow-300" />
-                <p className="font-display font-bold text-lg">Merry Christmas!</p>
-                <Sparkles className="w-5 h-5 text-yellow-300" />
+              <div className="inline-flex items-center gap-2 text-green-400 bg-green-500/10 px-4 py-2 rounded-full border border-green-500/20">
+                <Sparkles className="w-4 h-4" />
+                <p className="font-display font-bold">Puzzle Solved!</p>
               </div>
-              <p className="text-blue-100/70 text-sm mt-3 font-pixel animate-pulse">Gift Unlocked! 🎁</p>
             </motion.div>
           )}
         </AnimatePresence>
 
         <button 
           onClick={initPuzzle}
-          className="w-full mt-6 py-2 text-[10px] text-blue-200/40 hover:text-white/80 transition-colors font-pixel relative z-20 tracking-widest uppercase"
+          className="w-full mt-6 py-2 text-[10px] text-white/20 hover:text-white/60 transition-colors font-pixel tracking-widest uppercase"
         >
-          Reset Magic Puzzle
+          Reset Puzzle
         </button>
       </div>
     </motion.div>
