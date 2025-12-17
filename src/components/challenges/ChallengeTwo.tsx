@@ -13,10 +13,10 @@ interface ChallengeTwoProps {
 
 const GRID_SIZE = 4;
 const TILE_COUNT = GRID_SIZE * GRID_SIZE;
-const IMAGE_URL = "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1766011648601.png?width=800&height=800&resize=contain";
+const IMAGE_URL = "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1766012895243.png?width=8000&height=8000&resize=contain";
 
 // Define tiles that should have a Santa hat
-const HAT_TILES = [2, 3, 6, 7]; // Assuming heads are in the upper middle area
+const HAT_TILES: number[] = []; // New image already has hats!
 
 function FestiveLights() {
   return (
@@ -163,32 +163,6 @@ export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
                     {/* Snow filter overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-white/10 to-transparent pointer-events-none" />
                     
-                    {/* Improved Santa Hat Overlay */}
-                    {HAT_TILES.includes(tile) && (
-                      <motion.div 
-                        initial={{ y: -20, opacity: 0, rotate: -15 }}
-                        animate={{ y: 0, opacity: 1, rotate: -5 }}
-                        className="absolute -top-1 -right-1 w-10 h-10 z-30 pointer-events-none drop-shadow-[0_4px_6px_rgba(0,0,0,0.4)]"
-                      >
-                        <svg viewBox="0 0 100 100" className="w-full h-full">
-                          {/* Hat body */}
-                          <path d="M20,80 Q50,10 85,75" fill="#e11d48" stroke="#be123c" strokeWidth="1"/>
-                          {/* Pom pom */}
-                          <circle cx="85" cy="70" r="10" fill="#fff" />
-                          <circle cx="85" cy="70" r="10" fill="url(#snow-grad)" opacity="0.4" />
-                          {/* Trim */}
-                          <rect x="15" y="72" width="65" height="18" rx="8" fill="#fff" />
-                          <rect x="15" y="72" width="65" height="18" rx="8" fill="url(#snow-grad)" opacity="0.3" />
-                          <defs>
-                            <radialGradient id="snow-grad">
-                              <stop offset="0%" stopColor="white" />
-                              <stop offset="100%" stopColor="#e2e8f0" />
-                            </radialGradient>
-                          </defs>
-                        </svg>
-                      </motion.div>
-                    )}
-
                     <div className="absolute inset-0 bg-blue-500/5 group-hover:bg-transparent transition-colors" />
                     <div className="absolute top-1 left-1 w-5 h-5 sm:w-6 sm:h-6 bg-white/10 backdrop-blur-md rounded-md flex items-center justify-center border border-white/20">
                       <span className="text-[10px] sm:text-xs font-pixel text-white/80 drop-shadow-md">{tile}</span>
