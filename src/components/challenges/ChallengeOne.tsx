@@ -10,31 +10,36 @@ interface ChallengeOneProps {
 }
 
 export function ChallengeOne({ onComplete, completedAnswers }: ChallengeOneProps) {
-  const [answer, setAnswer] = useState("");
-  const [isCorrect, setIsCorrect] = useState(false);
+  const [riddleAnswer, setRiddleAnswer] = useState("");
+  const [vowelAnswer, setVowelAnswer] = useState("");
+  const [step, setStep] = useState(1);
   const [showError, setShowError] = useState(false);
-  const [showHint, setShowHint] = useState(true);
-  const [showContinue, setShowContinue] = useState(false);
 
-  const handleSubmit = () => {
-    const normalized = answer.trim().toLowerCase();
+  const handleRiddleSubmit = () => {
+    const normalized = riddleAnswer.trim().toLowerCase();
     
     if (normalized === "echo") {
-      setIsCorrect(true);
-      setShowHint(false);
-      setShowContinue(true);
+      setStep(2);
     } else {
       setShowError(true);
       setTimeout(() => setShowError(false), 1000);
     }
   };
 
-  const handleContinue = () => {
-    onComplete(2);
+  const handleVowelSubmit = () => {
+    const answer = vowelAnswer.trim();
+    
+    if (answer === "2") {
+      setStep(3);
+      setTimeout(() => onComplete(2), 800);
+    } else {
+      setShowError(true);
+      setTimeout(() => setShowError(false), 1000);
+    }
   };
 
   const digitBoxes = [
-    { value: 2, revealed: showContinue },
+    { value: 2, revealed: step === 3 },
     { value: null, revealed: false },
     { value: null, revealed: false },
     { value: null, revealed: false },
@@ -69,69 +74,109 @@ export function ChallengeOne({ onComplete, completedAnswers }: ChallengeOneProps
           ))}
         </div>
 
-        <div className="bg-black/40 p-4 rounded-xl mb-6 border border-[#ff006e]/20">
-          <p className="text-gray-300 text-sm mb-3 italic">
-            "I speak without a mouth and hear without ears. I have no body, but I come alive with the wind. What am I?"
-          </p>
-        </div>
-
         <AnimatePresence mode="wait">
-          {showHint && (
+          {step === 1 && (
             <motion.div
-              key="hint"
+              key="step1"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <div className="bg-black/40 p-4 rounded-xl mb-6 border border-[#ff006e]/20">
+                <p className="text-gray-300 text-sm italic">
+                  "I speak without a mouth and hear without ears. I have no body, but I come alive with the wind. What am I?"
+                </p>
+              </div>
+
+              <motion.div
+                animate={showError ? { x: [-10, 10, -10, 10, 0] } : {}}
+                transition={{ duration: 0.4 }}
+              >
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    value={riddleAnswer}
+                    onChange={(e) => setRiddleAnswer(e.target.value)}
+                    placeholder="Type your answer..."
+                    className={`w-full px-4 py-3 bg-black/40 border-2 rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all ${
+                      showError 
+                        ? 'border-red-500 shake' 
+                        : 'border-[#ff006e]/40 focus:border-[#ff006e]'
+                    }`}
+                    onKeyDown={(e) => e.key === "Enter" && handleRiddleSubmit()}
+                  />
+                  
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleRiddleSubmit}
+                    disabled={!riddleAnswer.trim()}
+                    className="w-full py-3 bg-gradient-to-r from-[#ff006e] to-[#8338ec] text-white font-display rounded-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[#ff006e]/50 transition-all"
+                  >
+                    Submit <ChevronRight className="w-5 h-5" />
+                  </motion.button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+
+          {step === 2 && (
+            <motion.div
+              key="step2"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="bg-black/40 p-4 rounded-xl mb-6 border border-[#ff006e]/20"
             >
-              <p className="text-gray-300 text-sm text-center">
-                The answer is the number of vowels in the word!
-              </p>
+              <div className="bg-black/40 p-4 rounded-xl mb-6 border border-[#ff006e]/20">
+                <p className="text-gray-300 text-sm text-center">
+                  The answer is the number of vowels in the word!
+                </p>
+              </div>
+
+              <motion.div
+                animate={showError ? { x: [-10, 10, -10, 10, 0] } : {}}
+                transition={{ duration: 0.4 }}
+              >
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    value={vowelAnswer}
+                    onChange={(e) => setVowelAnswer(e.target.value)}
+                    placeholder="Enter number..."
+                    className={`w-full px-4 py-3 bg-black/40 border-2 rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all ${
+                      showError 
+                        ? 'border-red-500 shake' 
+                        : 'border-[#ff006e]/40 focus:border-[#ff006e]'
+                    }`}
+                    onKeyDown={(e) => e.key === "Enter" && handleVowelSubmit()}
+                  />
+                  
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleVowelSubmit}
+                    disabled={!vowelAnswer.trim()}
+                    className="w-full py-3 bg-gradient-to-r from-[#ff006e] to-[#8338ec] text-white font-display rounded-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[#ff006e]/50 transition-all"
+                  >
+                    Submit <ChevronRight className="w-5 h-5" />
+                  </motion.button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+
+          {step === 3 && (
+            <motion.div
+              key="step3"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center py-8"
+            >
+              <div className="flex items-center justify-center gap-2 text-green-400">
+                <Sparkles className="w-6 h-6" />
+                <p className="font-display text-xl">Correct!</p>
+                <Sparkles className="w-6 h-6" />
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
-
-        <motion.div
-          animate={showError ? { x: [-10, 10, -10, 10, 0] } : {}}
-          transition={{ duration: 0.4 }}
-        >
-          <div className="space-y-4">
-            <input
-              type="text"
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              placeholder="A: 2"
-              disabled={showContinue}
-              className={`w-full px-4 py-3 bg-black/40 border-2 rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all ${
-                showError 
-                  ? 'border-red-500 shake' 
-                  : 'border-[#ff006e]/40 focus:border-[#ff006e]'
-              }`}
-              onKeyDown={(e) => e.key === "Enter" && !showContinue && handleSubmit()}
-            />
-            
-            {!showContinue ? (
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={handleSubmit}
-                disabled={!answer.trim()}
-                className="w-full py-3 bg-gradient-to-r from-[#ff006e] to-[#8338ec] text-white font-display rounded-xl disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[#ff006e]/50 transition-all"
-              >
-                Submit <ChevronRight className="w-5 h-5" />
-              </motion.button>
-            ) : (
-              <motion.button
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={handleContinue}
-                className="w-full py-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-display rounded-xl flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-green-500/50 transition-all"
-              >
-                Continue <ChevronRight className="w-5 h-5" />
-              </motion.button>
-            )}
-          </div>
-        </motion.div>
       </div>
     </motion.div>
   );
