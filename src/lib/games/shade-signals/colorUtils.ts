@@ -78,11 +78,12 @@ export function calculateHSVDistance(
 }
 
 export function calculateScore(distance: number): number {
-  if (distance < 0.01) return 5 + 1;
-  if (distance < 0.1) return 4;
-  if (distance < 0.2) return 3;
-  if (distance < 0.3) return 2;
-  if (distance < 0.5) return 1;
+  if (distance < 0.02) return 6;
+  if (distance < 0.08) return 5;
+  if (distance < 0.15) return 4;
+  if (distance < 0.25) return 3;
+  if (distance < 0.4) return 2;
+  if (distance < 0.6) return 1;
   return 0;
 }
 

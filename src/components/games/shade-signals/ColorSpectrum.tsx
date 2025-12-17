@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { ColorWithPosition, HSVColor } from "@/lib/games/shade-signals/types";
 import { hsvToRgb, rgbToHex, positionToHSV, hsvToPosition } from "@/lib/games/shade-signals/colorUtils";
@@ -23,16 +23,18 @@ export function ColorSpectrum({
   disabled = false
 }: ColorSpectrumProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 600, height: 600 });
   const [brightness, setBrightness] = useState(0.8);
   const [hoverColor, setHoverColor] = useState<ColorWithPosition | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [previewColor, setPreviewColor] = useState<ColorWithPosition | null>(null);
   const [pendingColor, setPendingColor] = useState<ColorWithPosition | null>(null);
+  const [dragPreviewPosition, setDragPreviewPosition] = useState<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     const updateSize = () => {
-      const size = Math.min(window.innerWidth - 100, 600);
+      const size = Math.min(window.innerWidth - 40, 600);
       setCanvasSize({ width: size, height: size });
     };
     updateSize();
@@ -118,6 +120,7 @@ export function ColorSpectrum({
     setHoverColor(null);
     if (isDragging) {
       setIsDragging(false);
+      setDragPreviewPosition(null);
       if (previewColor) {
         setPendingColor(previewColor);
         setPreviewColor(null);
@@ -144,6 +147,54 @@ export function ColorSpectrum({
 
     const color = getColorFromPosition(x, y);
     setPendingColor(color);
+  };
+
+  const getTouchPosition = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return null;
+
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches[0] || e.changedTouches[0];
+    const x = touch.clientX - rect.left;
+    const y = touch.clientY - rect.top;
+    return { x, y, clientY: touch.clientY };
+  }, []);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (disabled || pendingColor) return;
+    e.preventDefault();
+    
+    const pos = getTouchPosition(e);
+    if (!pos) return;
+
+    setIsDragging(true);
+    const color = getColorFromPosition(pos.x, pos.y);
+    setPreviewColor(color);
+    setDragPreviewPosition({ x: pos.x, y: pos.y });
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (disabled || !isDragging) return;
+    e.preventDefault();
+    
+    const pos = getTouchPosition(e);
+    if (!pos) return;
+
+    const color = getColorFromPosition(pos.x, pos.y);
+    setPreviewColor(color);
+    setDragPreviewPosition({ x: pos.x, y: pos.y });
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (disabled || !isDragging) return;
+    e.preventDefault();
+    
+    setIsDragging(false);
+    setDragPreviewPosition(null);
+    if (previewColor) {
+      setPendingColor(previewColor);
+      setPreviewColor(null);
+    }
   };
 
   return (
@@ -173,11 +224,42 @@ export function ColorSpectrum({
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseLeave}
           onClick={handleClick}
-          className={`rounded-full ${disabled ? "cursor-not-allowed opacity-50" : "cursor-crosshair"} shadow-2xl border-4 border-white/10`}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          className={`rounded-full ${disabled ? "cursor-not-allowed opacity-50" : "cursor-crosshair"} shadow-2xl border-4 border-white/10 touch-none`}
           style={{
             filter: "drop-shadow(0 0 40px rgba(0, 245, 255, 0.3))",
           }}
         />
+
+        {isDragging && previewColor && dragPreviewPosition && (
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="absolute pointer-events-none z-20 flex flex-col items-center"
+            style={{
+              left: dragPreviewPosition.x,
+              top: dragPreviewPosition.y - 100,
+              transform: 'translateX(-50%)',
+            }}
+          >
+            <div
+              className="w-16 h-16 rounded-xl border-4 border-white shadow-2xl"
+              style={{
+                backgroundColor: previewColor.hex,
+                boxShadow: `0 0 30px ${previewColor.hex}, 0 0 60px ${previewColor.hex}50`,
+              }}
+            />
+            <div className="mt-2 bg-black/80 px-3 py-1 rounded-lg">
+              <span className="text-white font-mono text-sm">{previewColor.hex.toUpperCase()}</span>
+            </div>
+            <div
+              className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent"
+              style={{ borderTopColor: 'rgba(0,0,0,0.8)' }}
+            />
+          </motion.div>
+        )}
 
         {markers.map((marker, index) => {
           const pos = hsvToPosition(marker.hsv, canvasSize.width, canvasSize.height);
