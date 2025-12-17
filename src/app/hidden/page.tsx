@@ -2,13 +2,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, ChevronRight, CheckCircle2, Trophy, ArrowRight, Snowflake } from "lucide-react";
+import { Lock, ChevronRight, CheckCircle2, Trophy, ArrowRight } from "lucide-react";
 import { ChallengeOne } from "@/components/challenges/ChallengeOne";
 import { ChallengeTwo } from "@/components/challenges/ChallengeTwo";
 import { ChallengeThree } from "@/components/challenges/ChallengeThree";
 import { ChallengeFour } from "@/components/challenges/ChallengeFour";
-import { WinterBackground } from "@/components/christmas/WinterBackground";
-import { SnowPile } from "@/components/christmas/SnowPile";
 
 type ChallengeAnswer = string | number;
 
@@ -72,7 +70,6 @@ export default function HiddenPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0015] flex flex-col overflow-hidden relative">
-      <WinterBackground />
       <div className="flex-1 flex flex-col max-w-md mx-auto w-full px-4 py-6 safe-area-inset relative z-20">
         
         <motion.div 
@@ -80,9 +77,8 @@ export default function HiddenPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6 relative"
         >
-          <SnowPile className="-top-8" />
           <h1 className="font-display text-2xl font-bold text-white text-center mb-2 drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
-            Christmas Challenge
+            Hidden Challenge
           </h1>
           <div className="flex justify-center gap-2 mb-4">
             {challenges.map((_, idx) => (
@@ -90,7 +86,7 @@ export default function HiddenPage() {
                 key={idx}
                 className={`h-2 rounded-full transition-all ${
                   completedChallenges[idx] 
-                    ? 'w-12 bg-gradient-to-r from-red-500 to-green-500' 
+                    ? 'w-12 bg-gradient-to-r from-[#ff006e] to-[#8338ec]' 
                     : idx === currentChallenge
                     ? 'w-12 bg-white/40'
                     : 'w-8 bg-white/10'
@@ -134,10 +130,9 @@ export default function HiddenPage() {
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.8, opacity: 0, y: 20 }}
                 transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 20 }}
-                className="bg-[#1a0f2e] border-2 border-red-500/50 p-8 rounded-3xl max-w-sm w-full text-center relative overflow-hidden"
+                className="bg-[#1a0f2e] border-2 border-white/10 p-8 rounded-3xl max-w-sm w-full text-center relative overflow-hidden"
               >
-                <SnowPile className="-top-10" />
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent" />
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#ff006e] to-transparent" />
                 
                 <motion.div
                   initial={{ rotate: -10, scale: 0 }}
@@ -145,13 +140,13 @@ export default function HiddenPage() {
                   transition={{ delay: 0.4, type: "spring" }}
                   className="mb-6 inline-block"
                 >
-                  <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-green-600 rounded-2xl flex items-center justify-center text-4xl font-pixel text-white shadow-[0_0_20px_rgba(239,68,68,0.5)]">
+                  <div className="w-20 h-20 bg-gradient-to-br from-[#ff006e] to-[#8338ec] rounded-2xl flex items-center justify-center text-4xl font-pixel text-white shadow-[0_0_20px_rgba(255,0,110,0.5)]">
                     {lastUnlockedNumber}
                   </div>
                 </motion.div>
 
                 <h2 className="text-2xl font-display font-bold text-white mb-2">
-                  Gift Unlocked!
+                  Challenge Unlocked!
                 </h2>
                 <p className="text-gray-400 mb-8">
                   You've successfully completed Challenge {currentChallenge + 1}.
@@ -159,7 +154,7 @@ export default function HiddenPage() {
 
                 <button
                   onClick={handleContinue}
-                  className="w-full py-4 bg-white text-[#0a0015] rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-red-50 transition-colors group"
+                  className="w-full py-4 bg-white text-[#0a0015] rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors group"
                 >
                   {currentChallenge === 3 ? "Show Final Code" : "Continue"}
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -190,11 +185,8 @@ export default function HiddenPage() {
                 Complete!
               </h2>
               <p className="text-gray-400 mb-8">Your 4-digit code is:</p>
-              <div className="relative">
-                <SnowPile className="-top-12" />
-                <div className="text-6xl font-pixel tracking-wider text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] px-8 py-4 rounded-2xl bg-white/5 border-2 border-white/20 relative">
-                  <div className="relative z-10">{finalCode}</div>
-                </div>
+              <div className="text-6xl font-pixel tracking-wider text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] px-8 py-4 rounded-2xl bg-white/5 border-2 border-white/20 relative">
+                <div className="relative z-10">{finalCode}</div>
               </div>
             </motion.div>
           ) : (
@@ -208,12 +200,12 @@ export default function HiddenPage() {
             >
               <div 
                 className="mb-4 p-4 rounded-2xl border-2 bg-black/60 relative"
-                style={{ borderColor: `rgba(239, 68, 68, 0.3)` }}
+                style={{ borderColor: `${challenges[currentChallenge].color}33` }}
               >
-                <SnowPile className="-top-8" />
                 <div className="flex items-center gap-2 mb-2 relative z-10">
                   <div 
-                    className="w-8 h-8 rounded-full flex items-center justify-center font-display text-sm bg-red-600 text-white"
+                    className="w-8 h-8 rounded-full flex items-center justify-center font-display text-sm text-white"
+                    style={{ backgroundColor: challenges[currentChallenge].color }}
                   >
                     {currentChallenge + 1}
                   </div>
