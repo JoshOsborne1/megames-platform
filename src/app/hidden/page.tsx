@@ -197,7 +197,7 @@ export default function HiddenPage() {
               </h2>
               <p className="text-gray-400 mb-8">Your 4-digit code is:</p>
               <div className="relative">
-                <div className="text-6xl font-pixel tracking-wider text-white neon-glow-pink px-8 py-4 rounded-2xl bg-white/5 border-2 border-[#ff006e]/50 relative overflow-hidden">
+                <div className="text-6xl font-pixel tracking-wider text-white neon-glow-pink px-8 py-4 rounded-2xl bg-white/5 border-2 border-[#ff006e]/50 relative">
                   <SnowPile />
                   <div className="relative z-10">{finalCode}</div>
                 </div>
@@ -213,7 +213,7 @@ export default function HiddenPage() {
               className="flex-1 flex flex-col"
             >
               <div 
-                className="mb-4 p-4 rounded-2xl border-2 bg-black/40 relative overflow-hidden"
+                className="mb-4 p-4 rounded-2xl border-2 bg-black/40 relative"
                 style={{ borderColor: `${challenges[currentChallenge].color}40` }}
               >
                 <SnowPile />

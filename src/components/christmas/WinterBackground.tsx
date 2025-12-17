@@ -1,8 +1,10 @@
 "use client";
 
+import { motion } from "framer-motion";
+
 export function WinterBackground() {
   return (
-    <div className="fixed inset-0 pointer-events-none z-0">
+    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden bg-[#050510]">
       <svg
         className="absolute bottom-0 left-0 w-full h-full"
         viewBox="0 0 1440 900"
@@ -11,55 +13,104 @@ export function WinterBackground() {
       >
         <defs>
           <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#0a0820" />
-            <stop offset="100%" stopColor="#1a1040" />
+            <stop offset="0%" stopColor="#050510" />
+            <stop offset="60%" stopColor="#0c0c25" />
+            <stop offset="100%" stopColor="#1a1a4a" />
           </linearGradient>
+          
+          <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+          </radialGradient>
+
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="2" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
         </defs>
         
         <rect fill="url(#skyGradient)" width="1440" height="900"/>
+
+        {/* Moon */}
+        <circle cx="1200" cy="150" r="100" fill="url(#moonGlow)" />
+        <circle cx="1200" cy="150" r="40" fill="#f0f0ff" opacity="0.8" />
         
-        <g opacity="0.6">
-          <ellipse cx="200" cy="100" rx="60" ry="60" fill="#ffffff" opacity="0.1"/>
-          <ellipse cx="1200" cy="150" rx="80" ry="80" fill="#ffffff" opacity="0.08"/>
+        {/* Stars */}
+        {[...Array(50)].map((_, i) => (
+          <motion.circle
+            key={i}
+            cx={Math.random() * 1440}
+            cy={Math.random() * 500}
+            r={Math.random() * 1.5}
+            fill="white"
+            initial={{ opacity: Math.random() }}
+            animate={{ opacity: [0.2, 1, 0.2] }}
+            transition={{
+              duration: 2 + Math.random() * 3,
+              repeat: Infinity,
+              delay: Math.random() * 5
+            }}
+          />
+        ))}
+
+        {/* Distant Mountains */}
+        <g opacity="0.4">
+          <path d="M-100 600 L200 350 L500 550 L800 300 L1100 500 L1540 320 L1540 900 L-100 900 Z" fill="#1a1a3a"/>
+          {/* Snow caps */}
+          <path d="M200 350 L250 400 L150 400 Z" fill="white" opacity="0.5" />
+          <path d="M800 300 L870 380 L730 380 Z" fill="white" opacity="0.5" />
+          <path d="M1540 320 L1450 380 L1540 450 Z" fill="white" opacity="0.5" />
         </g>
+
+        {/* Midground Hills */}
+        <path d="M-100 700 Q300 600 700 700 T1540 700 L1540 900 L-100 900 Z" fill="#ffffff" opacity="0.05"/>
         
-        <g className="mountains" opacity="0.3">
-          <path d="M0 500 L200 300 L400 400 L600 250 L800 350 L1000 200 L1200 320 L1440 280 L1440 900 L0 900 Z" fill="#1a1a40"/>
-          <path d="M0 600 L150 450 L350 520 L550 400 L750 480 L950 380 L1150 450 L1440 420 L1440 900 L0 900 Z" fill="#0d0d28"/>
-        </g>
-        
+        {/* Christmas Trees */}
         <g className="trees">
-          <g transform="translate(100, 650)">
-            <polygon points="0,-80 -30,0 30,0" fill="#0d3d0d" opacity="0.6"/>
-            <polygon points="0,-60 -35,10 35,10" fill="#0d3d0d" opacity="0.6"/>
-            <polygon points="0,-40 -40,20 40,20" fill="#0d3d0d" opacity="0.6"/>
-            <rect x="-8" y="20" width="16" height="30" fill="#2d1810" opacity="0.6"/>
-          </g>
-          
-          <g transform="translate(300, 680)">
-            <polygon points="0,-60 -25,0 25,0" fill="#0f4d0f" opacity="0.5"/>
-            <polygon points="0,-45 -28,8 28,8" fill="#0f4d0f" opacity="0.5"/>
-            <polygon points="0,-30 -32,15 32,15" fill="#0f4d0f" opacity="0.5"/>
-            <rect x="-6" y="15" width="12" height="25" fill="#2d1810" opacity="0.5"/>
-          </g>
-          
-          <g transform="translate(1100, 670)">
-            <polygon points="0,-70 -28,0 28,0" fill="#0d3d0d" opacity="0.6"/>
-            <polygon points="0,-52 -32,8 32,8" fill="#0d3d0d" opacity="0.6"/>
-            <polygon points="0,-35 -36,18 36,18" fill="#0d3d0d" opacity="0.6"/>
-            <rect x="-7" y="18" width="14" height="28" fill="#2d1810" opacity="0.6"/>
-          </g>
-          
-          <g transform="translate(1300, 690)">
-            <polygon points="0,-55 -22,0 22,0" fill="#0f4d0f" opacity="0.5"/>
-            <polygon points="0,-40 -26,7 26,7" fill="#0f4d0f" opacity="0.5"/>
-            <polygon points="0,-25 -30,14 30,14" fill="#0f4d0f" opacity="0.5"/>
-            <rect x="-5" y="14" width="10" height="22" fill="#2d1810" opacity="0.5"/>
-          </g>
+          {[
+            { x: 150, y: 750, s: 1.2 },
+            { x: 350, y: 820, s: 0.8 },
+            { x: 1100, y: 780, s: 1.1 },
+            { x: 1300, y: 850, s: 0.9 },
+            { x: 600, y: 880, s: 0.7 },
+            { x: 850, y: 840, s: 1.0 }
+          ].map((t, i) => (
+            <g key={i} transform={`translate(${t.x}, ${t.y}) scale(${t.s})`}>
+              {/* Trunk */}
+              <rect x="-10" y="0" width="20" height="40" fill="#2d1810" />
+              {/* Leaves */}
+              <path d="M0 -120 L-50 0 L50 0 Z" fill="#062d06" />
+              <path d="M0 -100 L-60 20 L60 20 Z" fill="#083d08" />
+              <path d="M0 -80 L-70 40 L70 40 Z" fill="#0a4d0a" />
+              {/* Snow on tree */}
+              <path d="M0 -120 L-10 -95 L10 -95 Z" fill="white" opacity="0.4" />
+              <path d="M-30 -10 L-10 0 L10 0 L30 -10 Z" fill="white" opacity="0.3" />
+              
+              {/* Christmas Lights on Tree */}
+              {[...Array(12)].map((_, li) => {
+                const colors = ["#ff0000", "#00ff00", "#ffff00", "#00ffff", "#ff00ff"];
+                const lx = (Math.random() - 0.5) * 80;
+                const ly = -Math.random() * 100;
+                return (
+                  <motion.circle
+                    key={li}
+                    cx={lx}
+                    cy={ly}
+                    r="2"
+                    fill={colors[li % colors.length]}
+                    filter="url(#glow)"
+                    animate={{ opacity: [0.4, 1, 0.4] }}
+                    transition={{ duration: 1, repeat: Infinity, delay: Math.random() }}
+                  />
+                );
+              })}
+            </g>
+          ))}
         </g>
         
-        <path d="M0 750 Q360 730 720 750 T1440 750 L1440 900 L0 900 Z" fill="#ffffff" opacity="0.15"/>
-        <path d="M0 800 Q360 785 720 800 T1440 800 L1440 900 L0 900 Z" fill="#ffffff" opacity="0.2"/>
+        {/* Foreground Snowy Hills */}
+        <path d="M-100 820 Q400 750 800 820 T1540 820 L1540 900 L-100 900 Z" fill="#ffffff" opacity="0.1"/>
+        <path d="M-100 860 Q400 820 800 860 T1540 860 L1540 900 L-100 900 Z" fill="#ffffff" opacity="0.15"/>
       </svg>
     </div>
   );

@@ -108,7 +108,8 @@ export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
         <Snowflakes />
       </div>
 
-      <div className="bg-gradient-to-br from-[#1a0f2e]/95 via-[#2a1b4e]/90 to-[#0a0015]/95 backdrop-blur-xl p-4 sm:p-6 rounded-3xl border-2 border-white/20 shadow-[0_0_50px_rgba(255,255,255,0.15)] relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#1a0f2e]/95 via-[#2a1b4e]/90 to-[#0a0015]/95 backdrop-blur-xl p-4 sm:p-6 rounded-3xl border-2 border-white/20 shadow-[0_0_50px_rgba(255,255,255,0.15)] relative">
+        <SnowPile />
         {/* Frosty corners */}
         <div className="absolute -top-10 -left-10 w-32 h-32 bg-white/5 blur-3xl rounded-full pointer-events-none" />
         <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-blue-500/10 blur-3xl rounded-full pointer-events-none" />
@@ -176,10 +177,6 @@ export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
               </motion.div>
             );
           })}
-        </div>
-
-        <div className="absolute bottom-0 left-0 w-full h-10 z-30 pointer-events-none opacity-80 scale-110 origin-bottom">
-          <SnowPile />
         </div>
 
         <AnimatePresence>
