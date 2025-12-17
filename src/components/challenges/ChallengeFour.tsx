@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
+import { SnowPile } from "@/components/christmas/SnowPile";
 
 interface ChallengeFourProps {
   onComplete: (answer: string | number) => void;
@@ -21,10 +22,11 @@ export function ChallengeFour({ onComplete }: ChallengeFourProps) {
     <motion.div 
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="w-full max-w-sm"
+      className="w-full max-w-sm relative"
     >
-      <div className="bg-gradient-to-br from-[#1a0f2e]/80 to-[#0a0015]/80 backdrop-blur-sm p-8 rounded-3xl border-2 border-[#fb00ff]/30">
-        <h3 className="font-display text-xl text-white mb-4 text-center">
+      <div className="bg-red-950/40 backdrop-blur-sm p-8 rounded-3xl border-2 border-red-500/30 relative">
+        <SnowPile className="-top-8" />
+        <h3 className="font-display text-xl text-white mb-4 text-center relative z-10">
           Challenge 4
         </h3>
         <p className="text-gray-300 text-center mb-6">

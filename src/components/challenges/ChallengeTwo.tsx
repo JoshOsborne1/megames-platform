@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Snowflake } from "lucide-react";
+import { SnowPile } from "@/components/christmas/SnowPile";
 
 interface ChallengeTwoProps {
   onComplete: (answer: string | number) => void;
@@ -78,10 +79,11 @@ export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
     <motion.div 
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="w-full max-w-md mx-auto"
+      className="w-full max-w-md mx-auto relative"
     >
-      <div className="bg-[#1a0f2e]/80 backdrop-blur-xl p-6 rounded-3xl border-2 border-white/10 shadow-2xl">
-        <div className="flex justify-between items-center mb-6">
+      <div className="bg-red-950/40 backdrop-blur-xl p-6 rounded-3xl border-2 border-red-500/30 shadow-2xl relative">
+        <SnowPile className="-top-8" />
+        <div className="flex justify-between items-center mb-6 relative z-10">
           <h3 className="font-display text-xl text-white font-bold tracking-tight">
             Slider Puzzle
           </h3>
