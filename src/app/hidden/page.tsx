@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, ChevronRight, CheckCircle2, Trophy } from "lucide-react";
+import { Lock, ChevronRight, CheckCircle2, Trophy, ArrowRight } from "lucide-react";
 import { ChallengeOne } from "@/components/challenges/ChallengeOne";
 import { ChallengeTwo } from "@/components/challenges/ChallengeTwo";
 import { ChallengeThree } from "@/components/challenges/ChallengeThree";
@@ -11,6 +11,7 @@ import { Snowflakes } from "@/components/christmas/Snowflakes";
 import { WinterBackground } from "@/components/christmas/WinterBackground";
 import { ChristmasLights } from "@/components/christmas/ChristmasLights";
 import { SnowPile } from "@/components/christmas/SnowPile";
+import { SnowballExplosion } from "@/components/christmas/SnowballExplosion";
 
 type ChallengeAnswer = string | number;
 
@@ -18,6 +19,8 @@ export default function HiddenPage() {
   const [currentChallenge, setCurrentChallenge] = useState(0);
   const [answers, setAnswers] = useState<ChallengeAnswer[]>([]);
   const [completedChallenges, setCompletedChallenges] = useState<boolean[]>([false, false, false, false]);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [lastUnlockedNumber, setLastUnlockedNumber] = useState<ChallengeAnswer | null>(null);
 
   const handleChallengeComplete = (answer: ChallengeAnswer) => {
     const newAnswers = [...answers, answer];
@@ -26,9 +29,14 @@ export default function HiddenPage() {
     
     setAnswers(newAnswers);
     setCompletedChallenges(newCompleted);
-    
+    setLastUnlockedNumber(answer);
+    setShowSuccessModal(true);
+  };
+
+  const handleContinue = () => {
+    setShowSuccessModal(false);
     if (currentChallenge < 3) {
-      setTimeout(() => setCurrentChallenge(currentChallenge + 1), 800);
+      setCurrentChallenge(currentChallenge + 1);
     }
   };
 
@@ -96,6 +104,54 @@ export default function HiddenPage() {
               ))}
             </div>
           </motion.div>
+
+        <AnimatePresence>
+          {showSuccessModal && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+            >
+              <SnowballExplosion />
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.8, opacity: 0, y: 20 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 20 }}
+                className="bg-[#1a0f2e] border-2 border-[#ff006e]/50 p-8 rounded-3xl max-w-sm w-full text-center relative overflow-hidden"
+              >
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#ff006e] to-transparent" />
+                
+                <motion.div
+                  initial={{ rotate: -10, scale: 0 }}
+                  animate={{ rotate: 0, scale: 1 }}
+                  transition={{ delay: 0.4, type: "spring" }}
+                  className="mb-6 inline-block"
+                >
+                  <div className="w-20 h-20 bg-gradient-to-br from-[#ff006e] to-[#8338ec] rounded-2xl flex items-center justify-center text-4xl font-pixel text-white shadow-[0_0_20px_rgba(255,0,110,0.5)]">
+                    {lastUnlockedNumber}
+                  </div>
+                </motion.div>
+
+                <h2 className="text-2xl font-display font-bold text-white mb-2">
+                  Number Unlocked!
+                </h2>
+                <p className="text-gray-400 mb-8">
+                  You've successfully completed Challenge {currentChallenge + 1}.
+                </p>
+
+                <button
+                  onClick={handleContinue}
+                  className="w-full py-4 bg-white text-[#0a0015] rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors group"
+                >
+                  {currentChallenge === 3 ? "Show Final Code" : "Continue"}
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <AnimatePresence mode="wait">
           {allComplete ? (
