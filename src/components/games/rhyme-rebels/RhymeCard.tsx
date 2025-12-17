@@ -64,17 +64,12 @@ export function RhymeCard({ card, mode, isClueGiver }: RhymeCardProps) {
             </motion.div>
           </div>
 
-          <div className="relative z-10 flex flex-col h-full justify-between">
-            <div className="flex items-center justify-between mb-8">
-              <span className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white font-space text-xs font-bold">
-                {card.category.toUpperCase()}
-              </span>
-              <div className="flex gap-1">
-                {[...Array(card.difficulty)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 text-yellow-300 fill-yellow-300" />
-                ))}
+            <div className="relative z-10 flex flex-col h-full justify-between">
+              <div className="flex items-center justify-between mb-8">
+                <span className="px-4 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white font-space text-xs font-bold">
+                  {card.category.toUpperCase()}
+                </span>
               </div>
-            </div>
 
             {isClueGiver || mode !== 'solve' ? (
               <div className="text-center flex-1 flex flex-col justify-center">

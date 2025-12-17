@@ -54,9 +54,9 @@ export function Header() {
                 className="w-12 h-12 drop-shadow-[0_0_15px_rgba(255,0,110,0.6)]"
               />
             </motion.div>
-            <span className="font-display text-2xl font-black text-gradient-neon hidden sm:block tracking-wider">
-              MEGAMES
-            </span>
+              <span className="font-display text-2xl font-black text-gradient-neon hidden min-[450px]:block tracking-wider">
+                MEGAMES
+              </span>
           </Link>
 
           <div className="hidden lg:flex items-center gap-1">

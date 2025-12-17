@@ -150,15 +150,11 @@ export default function GameDetailPage() {
                         <Users className="w-4 h-4" />
                         {game.players} players
                       </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        {game.duration}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Star className="w-4 h-4" style={{ color: game.color }} />
-                        {game.difficulty}
-                      </span>
-                    </div>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          {game.duration}
+                        </span>
+                      </div>
                   </div>
                 </div>
 

@@ -209,23 +209,6 @@ export function GameCard({
             </p>
 
             <div className="space-y-4">
-              <motion.div
-                whileHover={{ scale: 1.05, x: 5 }}
-                className="flex items-center justify-between p-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20"
-              >
-                <span className="text-white/70 text-sm font-display font-semibold">DIFFICULTY</span>
-                <span
-                  className="font-display font-black text-sm flex items-center gap-2 px-3 py-1 rounded-full"
-                  style={{
-                    color: difficultyColors[difficulty],
-                    background: `${difficultyColors[difficulty]}20`,
-                  }}
-                >
-                  <Star className="w-4 h-4 fill-current" />
-                  {difficulty.toUpperCase()}
-                </span>
-              </motion.div>
-
               {!comingSoon ? (
                 <Link href={`/games/${id}`}>
                   <motion.button
