@@ -24,8 +24,8 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  serverExternalPackages: ['@supabase/supabase-js', '@supabase/ssr'],
   experimental: {
-    serverComponentsExternalPackages: ['@supabase/supabase-js', '@supabase/ssr'],
   },
   webpack: (config) => {
     config.resolve = config.resolve || {};
