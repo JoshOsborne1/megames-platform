@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock, ChevronRight, CheckCircle2, Trophy, ArrowRight } from "lucide-react";
 import { ChallengeOne } from "@/components/challenges/ChallengeOne";
@@ -22,7 +22,7 @@ export default function HiddenPage() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [lastUnlockedNumber, setLastUnlockedNumber] = useState<ChallengeAnswer | null>(null);
 
-  const handleChallengeComplete = (answer: ChallengeAnswer) => {
+  const handleChallengeComplete = useCallback((answer: ChallengeAnswer) => {
     const newAnswers = [...answers, answer];
     const newCompleted = [...completedChallenges];
     newCompleted[currentChallenge] = true;
@@ -31,7 +31,29 @@ export default function HiddenPage() {
     setCompletedChallenges(newCompleted);
     setLastUnlockedNumber(answer);
     setShowSuccessModal(true);
-  };
+  }, [answers, completedChallenges, currentChallenge]);
+
+  useEffect(() => {
+    const sequence = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown"];
+    let currentIndex = 0;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === sequence[currentIndex]) {
+        currentIndex++;
+        if (currentIndex === sequence.length) {
+          // Dev skip logic: use correct answers if known, otherwise dummy
+          const correctAnswers: ChallengeAnswer[] = [2, 4, 3, 7];
+          handleChallengeComplete(correctAnswers[currentChallenge]);
+          currentIndex = 0;
+        }
+      } else {
+        currentIndex = 0;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [currentChallenge, handleChallengeComplete]);
 
   const handleContinue = () => {
     setShowSuccessModal(false);
