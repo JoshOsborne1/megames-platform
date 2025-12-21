@@ -35,12 +35,18 @@ export function ForbiddenCard({ card, difficulty }: ForbiddenCardProps) {
         {card.points}pts
       </div>
 
-      <div className="mt-8">
-        <span className="text-xs font-pixel tracking-widest opacity-50 block mb-2">GUESS THIS WORD</span>
-        <h3 className="font-display font-black text-4xl uppercase tracking-tighter leading-none mb-4">
-          {card.word}
-        </h3>
-      </div>
+        <div className="mt-8 px-2 w-full overflow-hidden">
+          <span className="text-xs font-pixel tracking-widest opacity-50 block mb-2">GUESS THIS WORD</span>
+          <h3 
+            className="font-display font-black uppercase tracking-tighter leading-none mb-4 break-words"
+            style={{ 
+              fontSize: card.word.length > 12 ? '1.5rem' : card.word.length > 8 ? '2rem' : '2.5rem',
+              wordWrap: 'break-word'
+            }}
+          >
+            {card.word}
+          </h3>
+        </div>
 
       <div className="w-full space-y-4">
         <div className="flex items-center justify-center gap-2 text-red-500 mb-2">

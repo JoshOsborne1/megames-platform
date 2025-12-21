@@ -8,8 +8,7 @@ import {
   drawNextCard, 
   handleCorrect, 
   handlePass,
-  startNextTurn,
-  MAX_SKIPS
+  startNextTurn
 } from "@/lib/games/forbidden-flash/gameLogic";
 import { ForbiddenCard } from "./ForbiddenCard";
 import { GameSetup } from "./GameSetup";
@@ -101,11 +100,28 @@ export function ForbiddenFlashHub() {
                 <div className="text-3xl font-display font-black text-[#ff006e] uppercase tracking-wider">{clueGiver.name}</div>
                 <p className="text-white/60 font-space text-sm">Pass the phone to {clueGiver.name}. You see the word and the forbidden words!</p>
               </div>
-              <div className="space-y-4 p-6 bg-white/5 rounded-2xl border border-white/10">
-                <span className="text-[10px] font-pixel text-white/30 uppercase tracking-[0.2em] block">Guesser</span>
-                <div className="text-3xl font-display font-black text-[#00f5ff] uppercase tracking-wider">{guesser.name}</div>
-                <p className="text-white/60 font-space text-sm">{guesser.name}, your job is to guess the secret word as fast as possible!</p>
+              
+              {/* Mini Leaderboard */}
+              <div className="space-y-4 p-6 bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
+                <span className="text-[10px] font-pixel text-[#00f5ff] uppercase tracking-[0.2em] block">Current Leaderboard</span>
+                <div className="space-y-2 max-h-[120px] overflow-y-auto custom-scrollbar pr-2">
+                  {[...gameState.players].sort((a,b) => b.score - a.score).map((p, i) => (
+                    <div key={p.id} className="flex justify-between items-center py-1 border-b border-white/5 last:border-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[8px] font-pixel text-white/30">#{i+1}</span>
+                        <span className="font-display text-sm text-white/80 uppercase">{p.name}</span>
+                      </div>
+                      <span className="font-display font-bold text-[#00f5ff]">{p.score}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
+            </div>
+
+            <div className="bg-[#ff006e]/5 border border-[#ff006e]/20 rounded-2xl p-6 mb-10 text-center">
+                <span className="text-[10px] font-pixel text-white/30 uppercase tracking-[0.2em] block mb-2">Next Guesser</span>
+                <div className="text-3xl font-display font-black text-[#00f5ff] uppercase tracking-wider">{guesser.name}</div>
+                <p className="text-white/60 font-space text-sm mt-2">{guesser.name}, get ready to guess!</p>
             </div>
 
             <div className="space-y-6 mb-10">
@@ -149,7 +165,7 @@ export function ForbiddenFlashHub() {
             className="flex flex-col items-center"
           >
             {/* HUD */}
-            <div className="w-full grid grid-cols-3 items-center mb-10 px-4">
+            <div className="w-full flex justify-between items-center mb-10 px-4">
               <div className="flex flex-col">
                 <span className="text-[10px] font-pixel text-white/30 uppercase tracking-widest">Team Score</span>
                 <span className="text-3xl font-display font-black text-[#ff006e]">{gameState.roundScore}</span>
@@ -164,20 +180,15 @@ export function ForbiddenFlashHub() {
                 </div>
               </div>
 
-              <div className="flex flex-col items-end">
-                <span className="text-[10px] font-pixel text-white/30 uppercase tracking-widest">Cards Left</span>
-                <span className="text-3xl font-display font-black text-[#8338ec]">{gameState.maxCardsInRound - gameState.cardsInRound}</span>
+              <div className="flex flex-col items-end text-right">
+                <span className="text-[10px] font-pixel text-white/30 uppercase tracking-widest">Round Progress</span>
+                <span className="text-3xl font-display font-black text-[#8338ec]">{gameState.cardsInRound} <span className="text-xs opacity-50">solved</span></span>
               </div>
             </div>
 
-            <div className="mb-6 flex gap-4">
-              {Array.from({ length: MAX_SKIPS }).map((_, i) => (
-                <div 
-                  key={i}
-                  className={`w-12 h-2 rounded-full transition-colors ${i < gameState.skipsUsed ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'bg-white/10'}`}
-                />
-              ))}
-              <span className="text-[10px] font-pixel text-white/40 uppercase self-center ml-2">Skips Used</span>
+            <div className="mb-6 flex items-center gap-2">
+              <X className="w-4 h-4 text-red-500" />
+              <span className="text-[10px] font-pixel text-white/40 uppercase">Skips are unlimited - keep going!</span>
             </div>
 
             <ForbiddenCard card={gameState.currentCard} difficulty={gameState.difficulty} />
@@ -188,8 +199,7 @@ export function ForbiddenFlashHub() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onPass}
-                disabled={gameState.skipsUsed >= MAX_SKIPS}
-                className="group py-5 bg-white/5 border-2 border-white/10 hover:border-white/20 rounded-2xl flex flex-col items-center gap-2 transition-colors disabled:opacity-30"
+                className="group py-5 bg-white/5 border-2 border-white/10 hover:border-white/20 rounded-2xl flex flex-col items-center gap-2 transition-colors"
               >
                 <X className="w-6 h-6 text-white/40 group-hover:text-white" />
                 <span className="font-display font-bold text-white/60 group-hover:text-white uppercase tracking-wider">Pass</span>

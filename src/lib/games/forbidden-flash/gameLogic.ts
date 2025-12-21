@@ -2,8 +2,6 @@ import { FORBIDDEN_CARDS } from "./data";
 import { GameState, Player, Difficulty, Card } from "./types";
 
 export const INITIAL_TIMER = 60;
-export const CARDS_PER_ROUND = 5;
-export const MAX_SKIPS = 3;
 
 export function createInitialState(players: string[], difficulty: Difficulty): GameState {
   const playerObjects: Player[] = players.map((name, index) => ({
@@ -28,7 +26,7 @@ export function createInitialState(players: string[], difficulty: Difficulty): G
     roundScore: 0,
     skipsUsed: 0,
     cardsInRound: 0,
-    maxCardsInRound: CARDS_PER_ROUND,
+    maxCardsInRound: 0, // Not used anymore
   };
 }
 
@@ -67,13 +65,6 @@ export function handleCorrect(state: GameState): GameState {
     cardsInRound: state.cardsInRound + 1,
   };
 
-  if (nextState.cardsInRound >= nextState.maxCardsInRound) {
-    return {
-      ...nextState,
-      phase: "round-summary",
-    };
-  }
-
   return drawNextCard(nextState);
 }
 
@@ -85,13 +76,6 @@ export function handlePass(state: GameState): GameState {
     skipsUsed: updatedSkips,
     cardsInRound: state.cardsInRound + 1,
   };
-
-  if (updatedSkips >= MAX_SKIPS || nextState.cardsInRound >= nextState.maxCardsInRound) {
-    return {
-      ...nextState,
-      phase: "round-summary",
-    };
-  }
 
   return drawNextCard(nextState);
 }
