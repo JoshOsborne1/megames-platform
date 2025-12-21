@@ -85,23 +85,23 @@ export function GameCard({
       }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      onHoverStart={() => !isTouch && setIsFlipped(true)}
-      onHoverEnd={() => !isTouch && setIsFlipped(false)}
-      onClick={() => isTouch && setIsFlipped(!isFlipped)}
-      whileHover={{ scale: 1.05 }}
+        onHoverStart={() => !isTouch && setIsFlipped(true)}
+        onHoverEnd={() => !isTouch && setIsFlipped(false)}
+        onClick={() => isTouch && setIsFlipped(!isFlipped)}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
       <motion.div
-          className="relative w-full h-full"
+          className="relative w-full h-full transform-gpu"
           style={{
-            rotateX: isFlipped ? 0 : rotateX,
-            rotateY: isFlipped ? 180 : rotateY,
+            rotateX: isFlipped ? 0 : (isTouch ? 0 : rotateX),
+            rotateY: isFlipped ? 180 : (isTouch ? 0 : rotateY),
             transformStyle: "preserve-3d",
             WebkitTransformStyle: "preserve-3d",
           }}
           animate={{ 
             rotateY: isFlipped ? 180 : 0,
-            rotateX: isFlipped ? 0 : undefined
           }}
           transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
         >
@@ -112,6 +112,8 @@ export function GameCard({
               WebkitBackfaceVisibility: "hidden",
               background: `linear-gradient(135deg, ${color}15 0%, ${color}05 100%)`,
               border: `3px solid ${color}40`,
+              transform: "translateZ(0)", // Improved 3D rendering on mobile
+              WebkitTransform: "translateZ(0)",
             }}
           >
           {comingSoon && (

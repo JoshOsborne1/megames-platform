@@ -49,7 +49,7 @@ function FloatingCard({
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        whileHover={{ scale: 1.2, rotateY: 180 }}
+          whileHover={{ scale: 1.2 }}
         className="w-20 h-32 md:w-24 md:h-36 rounded-2xl flex items-center justify-center text-3xl md:text-4xl shadow-2xl cursor-pointer card-3d holographic-shine"
         style={{
           background: `linear-gradient(135deg, ${gradientFrom} 0%, ${gradientTo} 100%)`,
