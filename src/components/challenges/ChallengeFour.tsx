@@ -16,7 +16,11 @@ const WORDS = [
   "SECRET",
   "SANTA",
   "SNOW",
-  "NEPHEW"
+  "NEPHEW",
+  "OSBORNE",
+  "TREE",
+  "ELVES",
+  "SNOWMAN"
 ];
 
 const GRID_SIZE = 12;
