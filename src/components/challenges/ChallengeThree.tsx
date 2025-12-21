@@ -3,14 +3,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Lock, 
-  Key, 
-  Cpu, 
-  Shield, 
-  Database, 
-  Terminal, 
-  Wifi, 
-  Fingerprint,
+  Snowflake, 
+  Gift, 
+  TreePine, 
+  Bell, 
+  Star, 
+  Flame, 
+  Candy, 
+  CloudSnow,
   RefreshCw,
   Trophy,
   AlertCircle
@@ -24,16 +24,15 @@ interface Card {
   isMatched: boolean;
 }
 
-// To use images later: Change SYMBOLS to use image URLs and swap <card.icon /> for <img src={card.icon} />
 const SYMBOLS = [
-  { icon: Lock, value: "lock" },
-  { icon: Key, value: "key" },
-  { icon: Cpu, value: "cpu" },
-  { icon: Shield, value: "shield" },
-  { icon: Database, value: "database" },
-  { icon: Terminal, value: "terminal" },
-  { icon: Wifi, value: "wifi" },
-  { icon: Fingerprint, value: "fingerprint" },
+  { icon: Snowflake, value: "snowflake" },
+  { icon: Gift, value: "gift" },
+  { icon: TreePine, value: "tree" },
+  { icon: Bell, value: "bell" },
+  { icon: Star, value: "star" },
+  { icon: Flame, value: "flame" },
+  { icon: Candy, value: "candy" },
+  { icon: CloudSnow, value: "snow" },
 ];
 
 interface ChallengeThreeProps {
@@ -152,67 +151,96 @@ export function ChallengeThree({ onComplete }: ChallengeThreeProps) {
   };
 
   return (
-    <div className="w-full max-w-sm flex flex-col gap-4">
-      <div className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/10 backdrop-blur-sm">
+    <div className="w-full max-w-sm flex flex-col gap-4 relative overflow-hidden">
+      {/* Background Snow Particles */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(12)].map((_, i) => (
+          <motion.div
+            key={i}
+            initial={{ 
+              top: -20, 
+              left: `${Math.random() * 100}%`,
+              opacity: Math.random() * 0.5 + 0.2,
+              scale: Math.random() * 0.5 + 0.5
+            }}
+            animate={{ 
+              top: "120%",
+              left: `${(Math.random() * 10 - 5) + (i * 10)}%`,
+              rotate: 360
+            }}
+            transition={{ 
+              duration: Math.random() * 5 + 5, 
+              repeat: Infinity, 
+              ease: "linear",
+              delay: Math.random() * 5
+            }}
+            className="absolute text-white/10"
+          >
+            <Snowflake size={12} />
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/10 backdrop-blur-sm relative z-10">
         <div className="flex flex-col">
           <span className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">Moves</span>
           <span className={`text-lg font-pixel ${moves > maxMoves - 5 ? 'text-red-400' : 'text-white'}`}>
             {moves}/{maxMoves}
           </span>
         </div>
-        <div className="flex flex-col items-center">
-          <span className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">Code Breaker</span>
-          <div className="flex gap-1">
-            {cards.filter(c => c.isMatched).length / 2} / {SYMBOLS.length}
+          <div className="flex flex-col items-center">
+            <span className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">Christmas Match</span>
+            <div className="flex gap-1 text-white font-pixel">
+              {cards.filter(c => c.isMatched).length / 2} / {SYMBOLS.length}
+            </div>
+          </div>
+          <div className="flex flex-col items-end">
+            <span className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">Time</span>
+            <span className="text-lg font-pixel text-red-500">{formatTime(time)}</span>
           </div>
         </div>
-        <div className="flex flex-col items-end">
-          <span className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">Time</span>
-          <span className="text-lg font-pixel text-[#00f5ff]">{formatTime(time)}</span>
-        </div>
-      </div>
 
-      <div className="grid grid-cols-4 gap-2 relative">
-        {cards.map((card, index) => (
-          <motion.div
-            key={card.id}
-            whileHover={gameState === "playing" && !card.isFlipped ? { scale: 1.05 } : {}}
-            whileTap={gameState === "playing" && !card.isFlipped ? { scale: 0.95 } : {}}
-            onClick={() => handleCardClick(index)}
-            className="aspect-square relative cursor-pointer perspective-1000"
-          >
+        <div className="grid grid-cols-4 gap-2 relative">
+          {cards.map((card, index) => (
             <motion.div
-              initial={false}
-              animate={{ rotateY: card.isFlipped || card.isMatched ? 180 : 0 }}
-              transition={{ duration: 0.4, type: "spring", stiffness: 260, damping: 20 }}
-              className="w-full h-full relative preserve-3d"
+              key={card.id}
+              whileHover={gameState === "playing" && !card.isFlipped ? { scale: 1.05 } : {}}
+              whileTap={gameState === "playing" && !card.isFlipped ? { scale: 0.95 } : {}}
+              onClick={() => handleCardClick(index)}
+              className="aspect-square relative cursor-pointer perspective-1000"
             >
-              {/* Back of card (Hidden) */}
-              <div className="absolute inset-0 bg-white/5 border-2 border-white/10 rounded-xl flex items-center justify-center backface-hidden overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#00f5ff]/5 to-transparent opacity-50" />
-                <div className="text-[#00f5ff]/20 font-pixel text-xs">?</div>
-              </div>
-
-              {/* Front of card (Revealed) */}
-              <div 
-                className={`absolute inset-0 rounded-xl flex items-center justify-center backface-hidden rotate-y-180 border-2 ${
-                  card.isMatched 
-                    ? 'bg-green-500/20 border-green-500/50 text-green-400' 
-                    : 'bg-[#1a0f2e] border-[#00f5ff]/50 text-[#00f5ff]'
-                }`}
+              <motion.div
+                initial={false}
+                animate={{ rotateY: card.isFlipped || card.isMatched ? 180 : 0 }}
+                transition={{ duration: 0.4, type: "spring", stiffness: 260, damping: 20 }}
+                className="w-full h-full relative preserve-3d"
               >
-                <card.icon className="w-6 h-6" />
-                {card.isMatched && (
-                   <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.5)]"
-                   />
-                )}
-              </div>
+                {/* Back of card (Hidden) */}
+                <div className="absolute inset-0 bg-white/5 border-2 border-white/10 rounded-xl flex items-center justify-center backface-hidden overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent opacity-50" />
+                  <div className="text-red-500/20 font-pixel text-xs">*</div>
+                </div>
+
+                {/* Front of card (Revealed) */}
+                <div 
+                  className={`absolute inset-0 rounded-xl flex items-center justify-center backface-hidden rotate-y-180 border-2 ${
+                    card.isMatched 
+                      ? 'bg-green-500/20 border-green-500/50 text-green-400' 
+                      : 'bg-[#1a0f2e] border-red-500/50 text-red-500'
+                  }`}
+                >
+                  <card.icon className="w-6 h-6" />
+                  {card.isMatched && (
+                     <motion.div
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="absolute -top-1 -right-1 w-3 h-3 bg-red-400 rounded-full shadow-[0_0_8px_rgba(248,113,113,0.5)]"
+                     />
+                  )}
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        ))}
+          ))}
 
         <AnimatePresence>
           {gameState !== "playing" && (
@@ -226,44 +254,44 @@ export function ChallengeThree({ onComplete }: ChallengeThreeProps) {
                 animate={{ scale: 1, opacity: 1 }}
                 className="bg-[#1a0f2e] border-2 border-white/10 p-6 rounded-2xl w-full text-center"
               >
-                {gameState === "won" ? (
-                  <>
-                    <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-green-500">
-                      <Trophy className="w-8 h-8 text-green-400" />
-                    </div>
-                    <h3 className="text-xl font-display font-bold text-white mb-2">Code Cracked!</h3>
-                    <p className="text-gray-400 text-sm mb-6">You've unlocked the third digit:</p>
-                    <div className="text-5xl font-pixel text-[#00f5ff] mb-6 drop-shadow-[0_0_10px_rgba(0,245,255,0.5)]">
-                      3
-                    </div>
-                    <button
-                      onClick={() => onComplete(3)}
-                      className="w-full py-3 bg-white text-[#0a0015] rounded-xl font-bold hover:bg-gray-100 transition-colors"
-                    >
-                      Retrieve Digit
-                    </button>
-                  </>
-                  ) : (
+                  {gameState === "won" ? (
                     <>
-                      <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-red-500/50">
-                        <AlertCircle className="w-8 h-8 text-red-400" />
+                      <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-green-500">
+                        <Trophy className="w-8 h-8 text-green-400" />
                       </div>
-                      <h3 className="text-xl font-display font-bold text-white mb-2">
-                        {time === 0 ? "Time's Up!" : "System Locked"}
-                      </h3>
-                      <p className="text-gray-400 text-sm mb-6">
-                        {time === 0 
-                          ? "The security window has closed." 
-                          : "Exceeded maximum move limit."}
-                      </p>
+                      <h3 className="text-xl font-display font-bold text-white mb-2">Winter Gift Unlocked!</h3>
+                      <p className="text-gray-400 text-sm mb-6">You've found the third digit:</p>
+                      <div className="text-5xl font-pixel text-red-500 mb-6 drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">
+                        3
+                      </div>
                       <button
-                        onClick={initializeGame}
-                        className="w-full py-3 bg-white/10 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-white/20 transition-colors"
+                        onClick={() => onComplete(3)}
+                        className="w-full py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-colors"
                       >
-                        <RefreshCw className="w-4 h-4" /> Restart
+                        Retrieve Digit
                       </button>
                     </>
-                  )}
+                    ) : (
+                      <>
+                        <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-red-500/50">
+                          <AlertCircle className="w-8 h-8 text-red-400" />
+                        </div>
+                        <h3 className="text-xl font-display font-bold text-white mb-2">
+                          {time === 0 ? "Winter Storm!" : "Snowed In"}
+                        </h3>
+                        <p className="text-gray-400 text-sm mb-6">
+                          {time === 0 
+                            ? "The winter window has closed." 
+                            : "You ran out of magic snowballs."}
+                        </p>
+                        <button
+                          onClick={initializeGame}
+                          className="w-full py-3 bg-white/10 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-white/20 transition-colors"
+                        >
+                          <RefreshCw className="w-4 h-4" /> Try Again
+                        </button>
+                      </>
+                    )}
               </motion.div>
             </motion.div>
           )}
