@@ -44,8 +44,8 @@ export default function SnatchTheMicGame() {
     }
   };
 
-  const startGame = () => {
-    if (players.length >= 3) {
+    const startGame = () => {
+    if (players.length >= 2) {
       setGameState("lobby");
     }
   };
@@ -53,6 +53,11 @@ export default function SnatchTheMicGame() {
   const startRound = () => {
     setGameState("countdown");
     setCountdown(3);
+  };
+
+  const handleSkip = () => {
+    setCountdown(3);
+    setGameState("countdown");
   };
 
   useEffect(() => {
@@ -104,7 +109,7 @@ export default function SnatchTheMicGame() {
             <Mic2 className="w-16 h-16 text-[#00f5ff] mb-6 animate-pulse" />
             <h1 className="text-4xl font-black mb-8 text-center text-gradient-neon">SNATCH THE MIC</h1>
             <div className="bg-white/5 border border-white/10 p-6 rounded-2xl w-full mb-6">
-              <label className="block text-sm font-bold mb-2 text-white/60">ADD PLAYERS (3-10)</label>
+              <label className="block text-sm font-bold mb-2 text-white/60">ADD PLAYERS (2-10)</label>
               <div className="flex gap-2 mb-4">
                 <input 
                   type="text" 
@@ -131,10 +136,10 @@ export default function SnatchTheMicGame() {
               </div>
             </div>
             <button 
-              disabled={players.length < 3}
+              disabled={players.length < 2}
               onClick={startGame}
               className={`w-full py-4 rounded-xl font-black text-xl transition-all ${
-                players.length >= 3 
+                players.length >= 2 
                 ? "bg-gradient-to-r from-[#00f5ff] to-[#00d2ff] text-black shadow-[0_0_20px_rgba(0,245,255,0.4)] hover:scale-105" 
                 : "bg-white/10 text-white/30 cursor-not-allowed"
               }`}
@@ -191,15 +196,15 @@ export default function SnatchTheMicGame() {
             <span className="text-white/40 text-xl font-bold mb-4 tracking-widest uppercase">SING THE WORD</span>
             <motion.h2 
               initial={{ scale: 0.8 }}
-              animate={{ scale: [0.9, 1.1, 1] }}
-              transition={{ repeat: Infinity, duration: 2 }}
+              animate={{ scale: [1, 1.05, 1] }}
+              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
               className="text-7xl md:text-9xl font-black mb-12 text-[#00f5ff] drop-shadow-[0_0_30px_rgba(0,245,255,0.6)] uppercase italic"
             >
               {currentWord}
             </motion.h2>
             <div className="flex gap-4 w-full max-w-lg">
               <button 
-                onClick={() => setGameState("countdown")}
+                onClick={handleSkip}
                 className="flex-1 bg-white/10 hover:bg-white/20 py-6 rounded-2xl flex flex-col items-center gap-2 border border-white/10 transition-colors"
               >
                 <SkipForward className="w-8 h-8" />
@@ -218,13 +223,13 @@ export default function SnatchTheMicGame() {
         )}
 
         {gameState === "winner-selection" && (
-          <motion.div 
-            key="winner-selection"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="flex-1 flex flex-col max-w-md mx-auto w-full pt-10"
-          >
-            <h2 className="text-3xl font-black mb-8 text-center text-gradient-neon">WHO SANG IT BEST?</h2>
+            <motion.div 
+              key="winner-selection"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex-1 flex flex-col max-w-md mx-auto w-full pt-10"
+            >
+              <h2 className="text-3xl font-black mb-8 text-center text-gradient-neon uppercase">WHO WAS THE QUICKEST?</h2>
             <div className="grid grid-cols-1 gap-3 overflow-y-auto pr-2 custom-scrollbar pb-10">
               {players.map(p => (
                 <button
