@@ -82,9 +82,7 @@ export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
     >
       <div className="bg-black/60 backdrop-blur-xl p-6 rounded-3xl border-2 border-[#8338ec]/30 shadow-2xl relative">
         <div className="flex justify-between items-center mb-6 relative z-10">
-          <h3 className="font-display text-xl text-white font-bold tracking-tight">
-            Slider Puzzle
-          </h3>
+
           <div className="text-white/60 font-pixel text-sm">
             Moves: {moves}
           </div>

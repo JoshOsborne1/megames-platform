@@ -192,7 +192,6 @@ export function ChallengeFour({ onComplete }: ChallengeFourProps) {
       onPointerMove={selecting ? handlePointerMove : undefined}
     >
       <div className="text-center">
-        <h3 className="text-2xl font-display font-bold text-white mb-2">Christmas Wordsearch</h3>
         <p className="text-gray-400 text-sm">Find all the festive words!</p>
       </div>
 

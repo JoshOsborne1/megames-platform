@@ -33,9 +33,6 @@ export function ChallengeOne({ onComplete, completedAnswers }: ChallengeOneProps
       className="w-full max-w-sm relative"
     >
       <div className="bg-black/60 backdrop-blur-sm p-8 rounded-3xl border-2 border-[#ff006e]/30 relative">
-        <h3 className="font-display text-2xl text-white mb-6 text-center relative z-10 font-bold">
-          Challenge 1: The Echo
-        </h3>
 
         <AnimatePresence mode="wait">
           {step === 1 && (
