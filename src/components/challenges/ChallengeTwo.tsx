@@ -11,7 +11,7 @@ interface ChallengeTwoProps {
 
 const GRID_SIZE = 4;
 const TILE_COUNT = GRID_SIZE * GRID_SIZE;
-const IMAGE_URL = "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?q=80&w=800&auto=format&fit=crop";
+const IMAGE_URL = "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/unnamed-1766337648413.jpg?width=800&height=800&resize=contain";
 
 export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
   const [tiles, setTiles] = useState<number[]>([]);
