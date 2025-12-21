@@ -46,8 +46,7 @@ export function ChallengeThree({ onComplete }: ChallengeThreeProps) {
   const [moves, setMoves] = useState(0);
   const [maxMoves] = useState(20);
   const [gameState, setGameState] = useState<"playing" | "won" | "lost">("playing");
-  const [startTime, setStartTime] = useState<number | null>(null);
-  const [time, setTime] = useState(0);
+  const [time, setTime] = useState(90);
 
   const initializeGame = useCallback(() => {
     const gameCards: Card[] = [...SYMBOLS, ...SYMBOLS]
@@ -63,8 +62,7 @@ export function ChallengeThree({ onComplete }: ChallengeThreeProps) {
     setFlippedIndices([]);
     setMoves(0);
     setGameState("playing");
-    setStartTime(Date.now());
-    setTime(0);
+    setTime(90);
   }, []);
 
   useEffect(() => {
@@ -73,13 +71,19 @@ export function ChallengeThree({ onComplete }: ChallengeThreeProps) {
 
   useEffect(() => {
     let interval: any;
-    if (gameState === "playing" && startTime) {
+    if (gameState === "playing") {
       interval = setInterval(() => {
-        setTime(Math.floor((Date.now() - startTime) / 1000));
+        setTime(prev => {
+          if (prev <= 1) {
+            setGameState("lost");
+            return 0;
+          }
+          return prev - 1;
+        });
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [gameState, startTime]);
+  }, [gameState]);
 
   const handleCardClick = (index: number) => {
     if (
@@ -239,21 +243,27 @@ export function ChallengeThree({ onComplete }: ChallengeThreeProps) {
                       Retrieve Digit
                     </button>
                   </>
-                ) : (
-                  <>
-                    <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-red-500/50">
-                      <AlertCircle className="w-8 h-8 text-red-400" />
-                    </div>
-                    <h3 className="text-xl font-display font-bold text-white mb-2">System Locked</h3>
-                    <p className="text-gray-400 text-sm mb-6">Exceeded maximum move limit.</p>
-                    <button
-                      onClick={initializeGame}
-                      className="w-full py-3 bg-white/10 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-white/20 transition-colors"
-                    >
-                      <RefreshCw className="w-4 h-4" /> Retry
-                    </button>
-                  </>
-                )}
+                  ) : (
+                    <>
+                      <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-red-500/50">
+                        <AlertCircle className="w-8 h-8 text-red-400" />
+                      </div>
+                      <h3 className="text-xl font-display font-bold text-white mb-2">
+                        {time === 0 ? "Time's Up!" : "System Locked"}
+                      </h3>
+                      <p className="text-gray-400 text-sm mb-6">
+                        {time === 0 
+                          ? "The security window has closed." 
+                          : "Exceeded maximum move limit."}
+                      </p>
+                      <button
+                        onClick={initializeGame}
+                        className="w-full py-3 bg-white/10 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-white/20 transition-colors"
+                      >
+                        <RefreshCw className="w-4 h-4" /> Restart
+                      </button>
+                    </>
+                  )}
               </motion.div>
             </motion.div>
           )}
