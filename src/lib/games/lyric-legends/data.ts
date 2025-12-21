@@ -1,4 +1,4 @@
-export const SNATCH_WORDS = [
+export const LYRIC_WORDS = [
   "love", "baby", "heart", "dance", "night", "time", "you", "me", "forever", "party",
   "fire", "rain", "home", "dream", "fly", "break", "shake", "rock", "roll", "girl",
   "boy", "money", "car", "light", "dark", "blue", "red", "sun", "moon", "star",

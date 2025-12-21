@@ -6,8 +6,8 @@ import { Sparkles, Droplet, MessageCircle, ShieldAlert, Mic2 } from "lucide-reac
 
 const games = [
   {
-    id: "snatch-the-mic",
-    name: "SNATCH THE MIC",
+    id: "lyric-legends",
+    name: "LYRIC LEGENDS",
     description: "The ultimate karaoke race! Be the fastest to sing a lyric containing the prompt word. 3-10 players – pure musical chaos.",
     icon: <Mic2 className="w-full h-full" />,
     players: "3-10",
@@ -34,16 +34,6 @@ const games = [
     duration: "10-20 min",
     difficulty: "Easy" as const,
     color: "#00f5ff",
-  },
-  {
-    id: "rhyme-rebels",
-    name: "RHYME REBELS",
-    description: "Rebel against boring nights – rhyme celebs into hilarious chaos! 2-12 players (1v1 duels or teams), perfect for online shout-fests or local drama.",
-    icon: <MessageCircle className="w-full h-full" />,
-    players: "2-12",
-    duration: "15-30 min",
-    difficulty: "Medium" as const,
-    color: "#FF4500",
   },
 ];
 

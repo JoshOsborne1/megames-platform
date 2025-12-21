@@ -10,11 +10,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
-import { Layers, Brain, Swords, Globe, Lock, Users, Loader2 } from "lucide-react";
+import { Layers, Brain, Swords, Globe, Lock, Users, Loader2, Mic2, ShieldAlert } from "lucide-react";
 
 const games = [
+  { id: "lyric-legends", name: "Lyric Legends", icon: Mic2, color: "#8338ec", maxPlayers: 10 },
+  { id: "forbidden-flash", name: "Forbidden Flash", icon: ShieldAlert, color: "#ff006e", maxPlayers: 10 },
   { id: "shade-signals", name: "Shade Signals", icon: Layers, color: "#00f5ff", maxPlayers: 10 },
-  { id: "rhyme-rebels", name: "Rhyme Rebels", icon: Brain, color: "#FF4500", maxPlayers: 12 },
 ];
 
 function generateLobbyCode(): string {

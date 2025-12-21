@@ -4,9 +4,19 @@ import { motion } from "framer-motion";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { GameCard } from "@/components/GameCard";
-import { Droplet, MessageCircle, ShieldAlert } from "lucide-react";
+import { Droplet, Mic2, ShieldAlert } from "lucide-react";
 
 const games = [
+  {
+    id: "lyric-legends",
+    name: "Lyric Legends",
+    description: "The ultimate karaoke race! Be the fastest to sing a lyric containing the prompt word. 3-10 players – pure musical chaos.",
+    icon: <Mic2 className="w-full h-full" />,
+    players: "3-10",
+    duration: "10-20 min",
+    difficulty: "Medium" as const,
+    color: "#8338ec",
+  },
   {
     id: "forbidden-flash",
     name: "Forbidden Flash",
@@ -26,16 +36,6 @@ const games = [
     duration: "10-20 min",
     difficulty: "Easy" as const,
     color: "#00f5ff",
-  },
-  {
-    id: "rhyme-rebels",
-    name: "Rhyme Rebels",
-    description: "Rebel against boring nights – rhyme celebs into hilarious chaos! 2-12 players (1v1 duels or teams), perfect for online shout-fests or local drama.",
-    icon: <MessageCircle className="w-full h-full" />,
-    players: "2-12",
-    duration: "15-30 min",
-    difficulty: "Medium" as const,
-    color: "#FF4500",
   },
 ];
 

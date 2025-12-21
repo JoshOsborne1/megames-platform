@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Users, Play, RotateCcw, SkipForward, Check, Mic2, Star, Menu, X, Home, LayoutGrid, AlertCircle } from "lucide-react";
-import { SNATCH_WORDS } from "@/lib/games/snatch-the-mic/data";
+import { LYRIC_WORDS } from "@/lib/games/lyric-legends/data";
 import confetti from "canvas-confetti";
 import { useRouter } from "next/navigation";
 
@@ -15,7 +15,7 @@ interface Player {
   score: number;
 }
 
-export default function SnatchTheMicGame() {
+export default function LyricLegendsGame() {
   const router = useRouter();
   const [gameState, setGameState] = useState<GameState>("setup");
   const [players, setPlayers] = useState<Player[]>([]);
@@ -46,10 +46,10 @@ export default function SnatchTheMicGame() {
   };
 
   const getNewWord = () => {
-    let availableWords = SNATCH_WORDS.filter(w => !usedWords.has(w));
+    let availableWords = LYRIC_WORDS.filter(w => !usedWords.has(w));
     if (availableWords.length === 0) {
       setUsedWords(new Set());
-      availableWords = SNATCH_WORDS;
+      availableWords = LYRIC_WORDS;
     }
     const word = availableWords[Math.floor(Math.random() * availableWords.length)];
     setUsedWords(prev => new Set(prev).add(word));
@@ -173,67 +173,67 @@ export default function SnatchTheMicGame() {
                   <Mic2 className="w-5 h-5 text-[#00f5ff]" />
                   <span className="font-black text-xs uppercase tracking-widest text-white/40">Active Game</span>
                 </div>
-                <p className="font-bold text-sm">Snatch The Mic</p>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+                  <p className="font-bold text-sm">Lyric Legends</p>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
 
-      {/* Navigation Confirmation Modal */}
-      <AnimatePresence>
-        {navConfirmTarget && (
-          <div className="fixed inset-0 flex items-center justify-center p-4 z-[100]">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setNavConfirmTarget(null)}
-              className="absolute inset-0 bg-black/80 backdrop-blur-md"
-            />
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="relative bg-[#1a142e] border-2 border-white/10 p-8 rounded-3xl max-w-sm w-full shadow-[0_0_50px_rgba(0,0,0,0.5)]"
+        {/* Navigation Confirmation Modal */}
+        <AnimatePresence>
+          {navConfirmTarget && (
+            <div className="fixed inset-0 flex items-center justify-center p-4 z-[100]">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setNavConfirmTarget(null)}
+                className="absolute inset-0 bg-black/80 backdrop-blur-md"
+              />
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="relative bg-[#1a142e] border-2 border-white/10 p-8 rounded-3xl max-w-sm w-full shadow-[0_0_50px_rgba(0,0,0,0.5)]"
+              >
+                <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <AlertCircle className="w-10 h-10 text-red-500" />
+                </div>
+                <h2 className="text-2xl font-black mb-4 text-center">END GAME?</h2>
+                <p className="text-white/60 text-center mb-8 font-medium">
+                  Leaving now will end the current session and all scores will be lost!
+                </p>
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => setNavConfirmTarget(null)}
+                    className="flex-1 py-4 bg-white/5 hover:bg-white/10 rounded-xl font-bold transition-colors"
+                  >
+                    Go Back
+                  </button>
+                  <button
+                    onClick={confirmNavigation}
+                    className="flex-1 py-4 bg-red-500 hover:bg-red-600 rounded-xl font-bold transition-colors"
+                  >
+                    Quit Game
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence mode="wait">
+          {gameState === "setup" && (
+            <motion.div 
+              key="setup"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 1.1 }}
+              className="flex-1 flex flex-col items-center justify-center max-w-md mx-auto w-full"
             >
-              <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <AlertCircle className="w-10 h-10 text-red-500" />
-              </div>
-              <h2 className="text-2xl font-black mb-4 text-center">END GAME?</h2>
-              <p className="text-white/60 text-center mb-8 font-medium">
-                Leaving now will end the current session and all scores will be lost!
-              </p>
-              <div className="flex gap-4">
-                <button
-                  onClick={() => setNavConfirmTarget(null)}
-                  className="flex-1 py-4 bg-white/5 hover:bg-white/10 rounded-xl font-bold transition-colors"
-                >
-                  Go Back
-                </button>
-                <button
-                  onClick={confirmNavigation}
-                  className="flex-1 py-4 bg-red-500 hover:bg-red-600 rounded-xl font-bold transition-colors"
-                >
-                  Quit Game
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence mode="wait">
-        {gameState === "setup" && (
-          <motion.div 
-            key="setup"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.1 }}
-            className="flex-1 flex flex-col items-center justify-center max-w-md mx-auto w-full"
-          >
-            <Mic2 className="w-16 h-16 text-[#00f5ff] mb-6 animate-pulse" />
-            <h1 className="text-4xl font-black mb-8 text-center text-gradient-neon">SNATCH THE MIC</h1>
+              <Mic2 className="w-16 h-16 text-[#00f5ff] mb-6 animate-pulse" />
+              <h1 className="text-4xl font-black mb-8 text-center text-gradient-neon uppercase">Lyric Legends</h1>
             <div className="bg-white/5 border border-white/10 p-6 rounded-2xl w-full mb-6">
               <label className="block text-sm font-bold mb-2 text-white/60">ADD PLAYERS (2-10)</label>
               <div className="flex gap-2 mb-4">
