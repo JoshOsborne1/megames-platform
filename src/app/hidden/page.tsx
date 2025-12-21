@@ -1,8 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, ChevronRight, CheckCircle2, Trophy, ArrowRight, SkipForward } from "lucide-react";
+import { Lock, ChevronRight, CheckCircle2, Trophy, ArrowRight, SkipForward, Home } from "lucide-react";
 import { ChallengeOne } from "@/components/challenges/ChallengeOne";
 import { ChallengeTwo } from "@/components/challenges/ChallengeTwo";
 import { ChallengeThree } from "@/components/challenges/ChallengeThree";
@@ -204,9 +205,17 @@ export default function HiddenPage() {
                   "No shortcuts, here&apos;s the real code!"
                 </p>
                 <p className="text-gray-400 mb-8 text-center px-4">Here is your special security code:</p>
-                <div className="text-6xl font-pixel tracking-wider text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] px-8 py-4 rounded-2xl bg-white/5 border-2 border-white/20 relative">
+                <div className="text-6xl font-pixel tracking-wider text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] px-8 py-4 rounded-2xl bg-white/5 border-2 border-white/20 relative mb-12">
                   <div className="relative z-10">2437</div>
                 </div>
+
+                <Link 
+                  href="/"
+                  className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold flex items-center gap-3 transition-all border border-white/10 hover:border-white/30 backdrop-blur-sm group"
+                >
+                  <Home className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
+                  Back to Main Site
+                </Link>
               </motion.div>
             ) : (
             <motion.div
