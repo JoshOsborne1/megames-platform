@@ -20,6 +20,7 @@ export default function ShadeSignalsGame() {
   const [mode, setMode] = useState<GameMode>("select");
   const [phase, setPhase] = useState<GamePhase>("setup");
   const [playerCount, setPlayerCount] = useState(2);
+  const [playerNames, setPlayerNames] = useState<string[]>(["", "", "", "", "", "", "", "", "", ""]);
   const [players, setPlayers] = useState<{ name: string; score: number; markers: ColorWithPosition[] }[]>([]);
   const [currentRound, setCurrentRound] = useState(1);
   const [totalRounds, setTotalRounds] = useState(4);
@@ -41,12 +42,11 @@ export default function ShadeSignalsGame() {
 
   const startGame = () => {
     const newPlayers = Array.from({ length: playerCount }, (_, i) => ({
-      name: `Player ${i + 1}`,
+      name: playerNames[i]?.trim() || `Player ${i + 1}`,
       score: 0,
       markers: [],
     }));
     setPlayers(newPlayers);
-    // Remove the automatic override of totalRounds
     setCurrentRound(1);
     setSignalGiverIndex(0);
     startRound();
@@ -221,20 +221,20 @@ export default function ShadeSignalsGame() {
               <h2 className="font-display text-3xl font-bold text-white mb-6">Game Setup</h2>
               
               <div className="space-y-6">
-                <div>
-                  <label className="block text-white mb-2 font-semibold">Number of Players (2-10)</label>
-                  <Input
-                    type="number"
-                    min={2}
-                    max={10}
-                    value={playerCount}
-                    onChange={(e) => setPlayerCount(Math.min(10, Math.max(2, parseInt(e.target.value) || 2)))}
-                    className="bg-white/5 border-white/10 text-white text-lg"
-                  />
-                </div>
-
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-white mb-2 font-semibold">Number of Rounds (1-10)</label>
+                    <label className="block text-white mb-2 font-semibold text-sm opacity-70">Players (2-10)</label>
+                    <Input
+                      type="number"
+                      min={2}
+                      max={10}
+                      value={playerCount}
+                      onChange={(e) => setPlayerCount(Math.min(10, Math.max(2, parseInt(e.target.value) || 2)))}
+                      className="bg-white/5 border-white/10 text-white text-lg"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-white mb-2 font-semibold text-sm opacity-70">Rounds (1-10)</label>
                     <Input
                       type="number"
                       min={1}
@@ -251,10 +251,32 @@ export default function ShadeSignalsGame() {
                       className="bg-white/5 border-white/10 text-white text-lg"
                     />
                   </div>
+                </div>
+
+                <div className="space-y-3">
+                  <label className="block text-white font-semibold">Player Names</label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                    {Array.from({ length: playerCount }).map((_, i) => (
+                      <div key={i} className="relative">
+                        <Input
+                          placeholder={`Player ${i + 1}`}
+                          value={playerNames[i]}
+                          onChange={(e) => {
+                            const newNames = [...playerNames];
+                            newNames[i] = e.target.value;
+                            setPlayerNames(newNames);
+                          }}
+                          className="bg-white/5 border-white/10 text-white pl-10"
+                        />
+                        <Users className="w-4 h-4 text-white/30 absolute left-3 top-1/2 -translate-y-1/2" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
 
                 <Button
                   onClick={startGame}
-                  className="w-full py-6 text-xl font-bold bg-gradient-to-r from-[#00f5ff] to-[#ff006e] hover:opacity-90"
+                  className="w-full py-6 text-xl font-bold bg-gradient-to-r from-[#00f5ff] to-[#ff006e] hover:opacity-90 mt-4 shadow-[0_0_20px_rgba(0,245,255,0.2)]"
                 >
                   <Play className="w-6 h-6 mr-2" />
                   Start Game!
@@ -304,9 +326,9 @@ export default function ShadeSignalsGame() {
                       whileHover={{ scale: 1.1 }}
                       onClick={() => setTargetColor(color)}
                       className={`w-32 h-32 rounded-2xl cursor-pointer border-4 transition-all ${
-                        targetColor?.hex === color.hex ? 'border-[#00f5ff] scale-110 shadow-[0_0_40px_rgba(0,245,255,0.5)]' : 'border-white/20 hover:border-[#39ff14]'
+                        targetColor?.hex === color.hex ? 'border-[#00f5ff] scale-110' : 'border-white/20'
                       }`}
-                      style={{ backgroundColor: color.hex, boxShadow: targetColor?.hex === color.hex ? `0 0 30px ${color.hex}` : undefined }}
+                      style={{ backgroundColor: color.hex }}
                     />
                   ))}
                 </div>
@@ -330,7 +352,7 @@ export default function ShadeSignalsGame() {
                 <span className="text-white/70 font-semibold">Your Color:</span>
                 <div 
                   className="w-16 h-16 rounded-lg border-2 border-white/30"
-                  style={{ backgroundColor: targetColor.hex, boxShadow: `0 0 20px ${targetColor.hex}` }}
+                  style={{ backgroundColor: targetColor.hex }}
                 />
               </div>
             </motion.div>
@@ -405,7 +427,7 @@ export default function ShadeSignalsGame() {
                     <h3 className="text-white font-bold text-center">Secret Target</h3>
                     <div 
                       className="w-32 h-32 rounded-3xl mx-auto border-4 border-white shadow-2xl"
-                      style={{ backgroundColor: targetColor?.hex, boxShadow: `0 0 40px ${targetColor?.hex}` }}
+                      style={{ backgroundColor: targetColor?.hex }}
                     />
                   </div>
                   <div className="space-y-4">

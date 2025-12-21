@@ -24,7 +24,7 @@ export function ColorSpectrum({
 }: ColorSpectrumProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [canvasSize, setCanvasSize] = useState({ width: 600, height: 600 });
+  const [canvasSize, setCanvasSize] = useState({ width: 500, height: 500 });
   const [brightness, setBrightness] = useState(0.8);
   const [hoverColor, setHoverColor] = useState<ColorWithPosition | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -34,13 +34,35 @@ export function ColorSpectrum({
 
   useEffect(() => {
     const updateSize = () => {
-      const size = Math.min(window.innerWidth - 40, 600);
+      const size = Math.min(window.innerWidth - 40, 500);
       setCanvasSize({ width: size, height: size });
     };
     updateSize();
     window.addEventListener("resize", updateSize);
     return () => window.removeEventListener("resize", updateSize);
   }, []);
+
+  const getColorFromPosition = (x: number, y: number): ColorWithPosition => {
+    const hsv = positionToHSV(x, y, canvasSize.width, canvasSize.height);
+    hsv.v = brightness;
+    const rgb = hsvToRgb(hsv.h, hsv.s, hsv.v);
+    const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+    return { hsv, rgb, hex, x, y };
+  };
+
+  // Sync selection with brightness
+  useEffect(() => {
+    if (pendingColor) {
+      const updatedColor = getColorFromPosition(pendingColor.x, pendingColor.y);
+      setPendingColor(updatedColor);
+    }
+  }, [brightness, canvasSize]);
+
+  useEffect(() => {
+    setPendingColor(null);
+    setHoverColor(null);
+    setPreviewColor(null);
+  }, [disabled]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -74,14 +96,6 @@ export function ColorSpectrum({
     }
   }, [canvasSize, brightness]);
 
-  const getColorFromPosition = (x: number, y: number): ColorWithPosition => {
-    const hsv = positionToHSV(x, y, canvasSize.width, canvasSize.height);
-    hsv.v = brightness;
-    const rgb = hsvToRgb(hsv.h, hsv.s, hsv.v);
-    const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
-    return { hsv, rgb, hex, x, y };
-  };
-
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (disabled) return;
     setIsDragging(true);
@@ -102,6 +116,7 @@ export function ColorSpectrum({
       setHoverColor(color);
       if (isDragging) {
         setPreviewColor(color);
+        setDragPreviewPosition({ x, y });
       }
     }
   };
@@ -198,20 +213,53 @@ export function ColorSpectrum({
   };
 
   return (
-    <div className="relative flex flex-col items-center justify-center gap-6">
-      <div className="flex items-center gap-4 bg-[#16162a] border border-white/10 rounded-2xl px-6 py-3">
-        <Lightbulb className="w-5 h-5 text-[#39ff14]" />
-        <span className="text-white/70 font-semibold min-w-[80px]">Brightness:</span>
-        <input
-          type="range"
-          min="0.3"
-          max="1"
-          step="0.05"
-          value={brightness}
-          onChange={(e) => setBrightness(parseFloat(e.target.value))}
-          className="w-48 h-2 bg-white/10 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#39ff14] [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#39ff14] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
-        />
-        <span className="text-white font-mono text-sm">{Math.round(brightness * 100)}%</span>
+    <div className="relative flex flex-col items-center justify-center gap-8">
+      {/* Selection Preview & Brightness Controls at the top together */}
+      <div className="flex flex-col md:flex-row items-center gap-6 bg-[#16162a]/80 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl w-full max-w-2xl">
+        {/* Current Selection */}
+        <div className="flex items-center gap-4 flex-1">
+          <div 
+            className="w-20 h-20 rounded-2xl border-2 border-white/20 transition-colors duration-200"
+            style={{ 
+              backgroundColor: pendingColor?.hex || previewColor?.hex || "#111",
+            }}
+          />
+          <div className="flex flex-col">
+            <span className="text-white/50 text-xs font-bold uppercase tracking-wider">Current Selection</span>
+            <span className="text-white font-mono text-2xl font-black">
+              {(pendingColor?.hex || previewColor?.hex || "#------").toUpperCase()}
+            </span>
+            {pendingColor && (
+              <Button
+                onClick={handleConfirmPick}
+                size="sm"
+                className="mt-2 bg-[#39ff14] hover:bg-[#39ff14]/80 text-black font-black"
+              >
+                <Check className="w-4 h-4 mr-2" />
+                CONFIRM
+              </Button>
+            )}
+          </div>
+        </div>
+
+        <div className="h-px md:h-12 w-full md:w-px bg-white/10" />
+
+        {/* Brightness Control */}
+        <div className="flex flex-col items-center gap-2">
+           <div className="flex items-center gap-2 text-white/50 text-xs font-bold uppercase tracking-wider">
+            <Lightbulb className="w-3 h-3 text-[#39ff14]" />
+            Brightness: {Math.round(brightness * 100)}%
+          </div>
+          <input
+            type="range"
+            min="0.3"
+            max="1"
+            step="0.05"
+            value={brightness}
+            onChange={(e) => setBrightness(parseFloat(e.target.value))}
+            className="w-48 h-2 bg-white/10 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#39ff14] [&::-webkit-slider-thumb]:cursor-pointer [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#39ff14] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:cursor-pointer"
+          />
+        </div>
       </div>
 
       <div className="relative">
@@ -228,11 +276,9 @@ export function ColorSpectrum({
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           className={`rounded-full ${disabled ? "cursor-not-allowed opacity-50" : "cursor-crosshair"} shadow-2xl border-4 border-white/10 touch-none`}
-          style={{
-            filter: "drop-shadow(0 0 40px rgba(0, 245, 255, 0.3))",
-          }}
         />
 
+        {/* Touch/Mouse dragging preview - no glow */}
         {isDragging && previewColor && dragPreviewPosition && (
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
@@ -248,19 +294,15 @@ export function ColorSpectrum({
               className="w-16 h-16 rounded-xl border-4 border-white shadow-2xl"
               style={{
                 backgroundColor: previewColor.hex,
-                boxShadow: `0 0 30px ${previewColor.hex}, 0 0 60px ${previewColor.hex}50`,
               }}
             />
             <div className="mt-2 bg-black/80 px-3 py-1 rounded-lg">
               <span className="text-white font-mono text-sm">{previewColor.hex.toUpperCase()}</span>
             </div>
-            <div
-              className="w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent"
-              style={{ borderTopColor: 'rgba(0,0,0,0.8)' }}
-            />
           </motion.div>
         )}
 
+        {/* Player markers - no glow */}
         {markers.map((marker, index) => {
           const pos = hsvToPosition(marker.hsv, canvasSize.width, canvasSize.height);
           return (
@@ -273,7 +315,6 @@ export function ColorSpectrum({
                 left: pos.x - 16,
                 top: pos.y - 16,
                 backgroundColor: marker.hex,
-                boxShadow: `0 0 20px ${marker.hex}`,
               }}
             >
               <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-sm drop-shadow-lg">
@@ -283,101 +324,60 @@ export function ColorSpectrum({
           );
         })}
 
+        {/* Target marker - minimal glow for visibility but not deceiving */}
         {showTarget && targetColor && (
           <motion.div
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: [1, 1.2, 1], opacity: 1 }}
             transition={{ duration: 0.8, times: [0, 0.5, 1] }}
-            className="absolute w-12 h-12 rounded-full border-8 border-[#39ff14] pointer-events-none"
+            className="absolute w-12 h-12 rounded-full border-8 border-[#39ff14] pointer-events-none flex items-center justify-center"
             style={{
               left: hsvToPosition(targetColor.hsv, canvasSize.width, canvasSize.height).x - 24,
               top: hsvToPosition(targetColor.hsv, canvasSize.width, canvasSize.height).y - 24,
               backgroundColor: targetColor.hex,
-              boxShadow: `0 0 40px ${targetColor.hex}, 0 0 60px #39ff14`,
             }}
           >
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-0 flex items-center justify-center text-white font-black text-lg drop-shadow-2xl"
+              className="text-white font-black text-lg drop-shadow-2xl"
             >
               ★
             </motion.div>
           </motion.div>
         )}
 
-        {(previewColor && isDragging) || pendingColor ? (
+        {/* Pending selection marker - no glow */}
+        {pendingColor ? (
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className="absolute w-10 h-10 rounded-full border-4 border-[#00f5ff] pointer-events-none"
             style={{
-              left: (pendingColor?.x || previewColor?.x || 0) - 20,
-              top: (pendingColor?.y || previewColor?.y || 0) - 20,
-              backgroundColor: pendingColor?.hex || previewColor?.hex,
-              boxShadow: `0 0 30px ${pendingColor?.hex || previewColor?.hex}, 0 0 40px #00f5ff`,
+              left: pendingColor.x - 20,
+              top: pendingColor.y - 20,
+              backgroundColor: pendingColor.hex,
             }}
           />
         ) : null}
       </div>
 
+      {/* Hover info - simple */}
       <AnimatePresence>
         {hoverColor && !disabled && !pendingColor && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="flex items-center gap-4 bg-[#16162a] border-2 border-white/20 rounded-2xl px-6 py-4 shadow-xl"
-            style={{
-              boxShadow: `0 0 30px ${hoverColor.hex}40`,
-            }}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20 pointer-events-none"
           >
-            <div 
-              className="w-16 h-16 rounded-lg border-2 border-white/30"
-              style={{ 
-                backgroundColor: hoverColor.hex,
-                boxShadow: `0 0 20px ${hoverColor.hex}`
-              }}
-            />
-            <div className="text-white">
-              <div className="font-bold text-lg">{isDragging ? "Preview" : "Hover"}</div>
-              <div className="font-mono text-sm text-white/70">{hoverColor.hex.toUpperCase()}</div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {pendingColor && !disabled && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            className="flex flex-col items-center gap-4 bg-gradient-to-br from-[#00f5ff]/20 to-[#1a0f2e] border-2 border-[#00f5ff] rounded-3xl p-6 shadow-2xl"
-            style={{
-              boxShadow: `0 0 60px ${pendingColor.hex}80, 0 0 40px rgba(0, 245, 255, 0.4)`,
-            }}
-          >
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <div 
-                className="w-20 h-20 rounded-xl border-4 border-white/40"
-                style={{ 
-                  backgroundColor: pendingColor.hex,
-                  boxShadow: `0 0 30px ${pendingColor.hex}`
-                }}
+                className="w-6 h-6 rounded border border-white/40"
+                style={{ backgroundColor: hoverColor.hex }}
               />
-              <div className="text-white">
-                <div className="font-bold text-xl">Selected Color</div>
-                <div className="font-mono text-lg text-[#00f5ff]">{pendingColor.hex.toUpperCase()}</div>
-              </div>
+              <span className="text-white font-mono text-sm tracking-widest">{hoverColor.hex.toUpperCase()}</span>
             </div>
-            <Button
-              onClick={handleConfirmPick}
-              className="w-full bg-gradient-to-r from-[#00f5ff] to-[#39ff14] hover:opacity-90 text-black font-bold py-4 text-lg"
-            >
-              <Check className="w-5 h-5 mr-2" />
-              Confirm Pick
-            </Button>
           </motion.div>
         )}
       </AnimatePresence>
