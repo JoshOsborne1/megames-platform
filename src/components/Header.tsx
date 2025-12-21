@@ -34,8 +34,8 @@ export function Header() {
       }`}
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 md:h-20">
-          <Link href="/" className="flex items-center gap-3 group">
+        <div className="relative flex items-center justify-between h-16 md:h-20">
+          <Link href="/" className="flex items-center gap-3 group z-10">
             <motion.div
               whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
               transition={{ duration: 0.5 }}
@@ -53,7 +53,7 @@ export function Header() {
               </span>
           </Link>
 
-          <div className="hidden lg:flex items-center gap-1">
+          <div className="hidden lg:flex items-center gap-1 absolute left-1/2 -translate-x-1/2 transform">
             {navLinks.map((link) => {
               const Icon = link.icon;
               return (
@@ -77,7 +77,7 @@ export function Header() {
             })}
           </div>
 
-            <div className="flex items-center gap-2 md:gap-3">
+            <div className="flex items-center gap-2 md:gap-3 z-10">
               <AnimatePresence>
               {searchOpen && (
                 <motion.div
