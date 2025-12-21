@@ -66,11 +66,11 @@ export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
       setTiles(newTiles);
       setMoves(m => m + 1);
 
-      const solved = newTiles.every((tile, i) => tile === i + 1);
-      if (solved) {
-        setIsSolved(true);
-        setTimeout(() => onComplete(4), 1500);
-      }
+        const solved = newTiles.every((tile, i) => tile === i + 1);
+        if (solved) {
+          setIsSolved(true);
+          setTimeout(() => onComplete(9), 1500);
+        }
     }
   };
 

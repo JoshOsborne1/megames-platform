@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, ChevronRight, CheckCircle2, Trophy, ArrowRight } from "lucide-react";
+import { Lock, ChevronRight, CheckCircle2, Trophy, ArrowRight, SkipForward } from "lucide-react";
 import { ChallengeOne } from "@/components/challenges/ChallengeOne";
 import { ChallengeTwo } from "@/components/challenges/ChallengeTwo";
 import { ChallengeThree } from "@/components/challenges/ChallengeThree";
@@ -17,6 +17,8 @@ export default function HiddenPage() {
   const [completedChallenges, setCompletedChallenges] = useState<boolean[]>([false, false, false, false]);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [lastUnlockedNumber, setLastUnlockedNumber] = useState<ChallengeAnswer | null>(null);
+  const [showSkipPrompt, setShowSkipPrompt] = useState(false);
+  const [skipPassword, setSkipPassword] = useState("");
 
   const handleChallengeComplete = useCallback((answer: ChallengeAnswer) => {
     const newAnswers = [...answers, answer];
@@ -37,7 +39,7 @@ export default function HiddenPage() {
       if (e.key === sequence[currentIndex]) {
         currentIndex++;
         if (currentIndex === sequence.length) {
-          const correctAnswers: ChallengeAnswer[] = [2, 4, 3, 7];
+          const correctAnswers: ChallengeAnswer[] = [1, 9, 4, 8];
           handleChallengeComplete(correctAnswers[currentChallenge]);
           currentIndex = 0;
         }
@@ -54,6 +56,18 @@ export default function HiddenPage() {
     setShowSuccessModal(false);
     if (currentChallenge < 3) {
       setCurrentChallenge(currentChallenge + 1);
+    }
+  };
+
+  const handleSkip = () => {
+    if (skipPassword === "6332") {
+      const correctAnswers: ChallengeAnswer[] = [1, 9, 4, 8];
+      handleChallengeComplete(correctAnswers[currentChallenge]);
+      setShowSkipPrompt(false);
+      setSkipPassword("");
+    } else {
+      setSkipPassword("");
+      setShowSkipPrompt(false);
     }
   };
 

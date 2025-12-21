@@ -263,10 +263,10 @@ export function ChallengeThree({ onComplete }: ChallengeThreeProps) {
                       <h3 className="text-xl font-display font-bold text-white mb-2">Winter Gift Unlocked!</h3>
                       <p className="text-gray-400 text-sm mb-6">You've found the third digit:</p>
                       <div className="text-5xl font-pixel text-red-500 mb-6 drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">
-                        3
+                        4
                       </div>
                       <button
-                        onClick={() => onComplete(3)}
+                        onClick={() => onComplete(4)}
                         className="w-full py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-colors"
                       >
                         Retrieve Digit

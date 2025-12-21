@@ -174,7 +174,7 @@ export function ChallengeFour({ onComplete }: ChallengeFourProps) {
 
   useEffect(() => {
     if (foundWords.length === WORDS.length) {
-      setTimeout(() => onComplete(7), 1000);
+      setTimeout(() => onComplete(8), 1000);
     }
   }, [foundWords, onComplete]);
 
