@@ -7,6 +7,7 @@ import { ChallengeOne } from "@/components/challenges/ChallengeOne";
 import { ChallengeTwo } from "@/components/challenges/ChallengeTwo";
 import { ChallengeThree } from "@/components/challenges/ChallengeThree";
 import { ChallengeFour } from "@/components/challenges/ChallengeFour";
+import { Snowfall } from "@/components/christmas/Snowfall";
 
 type ChallengeAnswer = string | number;
 
@@ -70,6 +71,7 @@ export default function HiddenPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0015] flex flex-col overflow-hidden relative">
+      <Snowfall />
       <div className="flex-1 flex flex-col max-w-md mx-auto w-full px-4 py-6 safe-area-inset relative z-20">
         
         <motion.div 

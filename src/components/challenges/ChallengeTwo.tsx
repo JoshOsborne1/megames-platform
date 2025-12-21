@@ -88,10 +88,11 @@ export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
           <div className="text-white/60 font-pixel text-sm">
             Moves: {moves}
           </div>
-        </div>
-        
-        <div className="grid grid-cols-4 gap-2 aspect-square w-full bg-black/40 p-3 rounded-2xl border border-white/10">
-          {tiles.map((tile, index) => {
+          </div>
+          
+          <div className="grid grid-cols-4 gap-2 aspect-square w-full bg-black/40 p-3 rounded-2xl border border-white/10 touch-none">
+            {tiles.map((tile, index) => {
+
             const isEmpty = tile === TILE_COUNT;
             const correctPos = tile - 1;
             const bgX = (correctPos % GRID_SIZE) * 33.33;

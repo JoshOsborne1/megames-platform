@@ -32,6 +32,7 @@ export function ChallengeFour({ onComplete }: ChallengeFourProps) {
   const [foundWords, setFoundWords] = useState<string[]>([]);
   const [selecting, setSelecting] = useState<{ start: Cell, current: Cell } | null>(null);
   const [foundCells, setFoundCells] = useState<Set<string>>(new Set());
+  const gridRef = useRef<HTMLDivElement>(null);
 
   const generateGrid = useCallback(() => {
     const newGrid: string[][] = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(""));
@@ -129,9 +130,19 @@ export function ChallengeFour({ onComplete }: ChallengeFourProps) {
     setSelecting({ start: cell, current: cell });
   };
 
-  const handlePointerEnter = (cell: Cell) => {
-    if (selecting) {
-      setSelecting({ ...selecting, current: cell });
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!selecting) return;
+    
+    const element = document.elementFromPoint(e.clientX, e.clientY);
+    if (element) {
+      const row = element.getAttribute('data-row');
+      const col = element.getAttribute('data-col');
+      if (row !== null && col !== null) {
+        const cell = grid[parseInt(row)][parseInt(col)];
+        if (cell && (cell.row !== selecting.current.row || cell.col !== selecting.current.col)) {
+          setSelecting({ ...selecting, current: cell });
+        }
+      }
     }
   };
 
@@ -163,11 +174,19 @@ export function ChallengeFour({ onComplete }: ChallengeFourProps) {
     }
   }, [foundWords, onComplete]);
 
+  useEffect(() => {
+    window.addEventListener("pointerup", handlePointerUp);
+    return () => window.removeEventListener("pointerup", handlePointerUp);
+  }, [handlePointerUp]);
+
   const selectedCells = selecting ? getSelectedCells(selecting.start, selecting.current) : [];
   const selectedKeys = new Set(selectedCells.map(c => `${c.row}-${c.col}`));
 
   return (
-    <div className="w-full max-w-2xl mx-auto flex flex-col items-center gap-6" onPointerUp={handlePointerUp}>
+    <div 
+      className="w-full max-w-2xl mx-auto flex flex-col items-center gap-6" 
+      onPointerMove={selecting ? handlePointerMove : undefined}
+    >
       <div className="text-center">
         <h3 className="text-2xl font-display font-bold text-white mb-2">Christmas Wordsearch</h3>
         <p className="text-gray-400 text-sm">Find all the festive words!</p>
@@ -202,23 +221,25 @@ export function ChallengeFour({ onComplete }: ChallengeFourProps) {
           const isSelected = selectedKeys.has(key);
           const isFound = foundCells.has(key);
           
-          return (
-            <motion.div
-              key={key}
-              onPointerDown={() => handlePointerDown(cell)}
-              onPointerEnter={() => handlePointerEnter(cell)}
-              className={`
-                w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-sm font-bold rounded-md cursor-pointer transition-colors
-                ${isSelected ? 'bg-red-600 text-white' : ''}
-                ${isFound && !isSelected ? 'bg-green-600/60 text-white shadow-[0_0_10px_rgba(34,197,94,0.3)]' : ''}
-                ${!isSelected && !isFound ? 'text-white/60 hover:bg-white/10' : ''}
-              `}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              {cell.char}
-            </motion.div>
-          );
+            return (
+              <motion.div
+                key={key}
+                data-row={r}
+                data-col={c}
+                onPointerDown={() => handlePointerDown(cell)}
+                className={`
+                  w-[26px] h-[26px] sm:w-8 sm:h-8 flex items-center justify-center text-[10px] sm:text-sm font-bold rounded-md cursor-pointer transition-colors relative z-10
+                  ${isSelected ? 'bg-red-600 text-white' : ''}
+                  ${isFound && !isSelected ? 'bg-green-600/60 text-white shadow-[0_0_10px_rgba(34,197,94,0.3)]' : ''}
+                  ${!isSelected && !isFound ? 'text-white/60 hover:bg-white/10' : ''}
+                `}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                {cell.char}
+              </motion.div>
+            );
+
         }))}
       </div>
 

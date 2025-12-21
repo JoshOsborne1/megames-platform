@@ -116,13 +116,16 @@ export function ChallengeOne({ onComplete, completedAnswers }: ChallengeOneProps
                 animate={showError ? { x: [-10, 10, -10, 10, 0] } : {}}
                 transition={{ duration: 0.4 }}
               >
-                <div className="space-y-4">
-                  <input
-                    type="text"
-                    value={vowelAnswer}
-                    onChange={(e) => setVowelAnswer(e.target.value)}
-                    placeholder="Enter number..."
-                    className={`w-full px-4 py-3 bg-black/40 border-2 rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all ${
+                  <div className="space-y-4">
+                    <input
+                      type="text"
+                      value={vowelAnswer}
+                      onChange={(e) => setVowelAnswer(e.target.value.replace(/[^0-9]/g, ''))}
+                      inputMode="numeric"
+                      placeholder="Enter number..."
+                      autoFocus
+                      className={`w-full px-4 py-3 bg-black/40 border-2 rounded-xl text-white placeholder-gray-500 focus:outline-none transition-all ${
+
                       showError 
                         ? 'border-red-500 shake' 
                         : 'border-[#ff006e]/40 focus:border-[#ff006e]'

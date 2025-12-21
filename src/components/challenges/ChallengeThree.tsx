@@ -197,11 +197,12 @@ export function ChallengeThree({ onComplete }: ChallengeThreeProps) {
           <div className="flex flex-col items-end">
             <span className="text-[10px] text-gray-500 uppercase tracking-wider font-bold">Time</span>
             <span className="text-lg font-pixel text-red-500">{formatTime(time)}</span>
+            </div>
           </div>
-        </div>
+  
+          <div className="grid grid-cols-4 gap-2 relative touch-none">
+            {cards.map((card, index) => (
 
-        <div className="grid grid-cols-4 gap-2 relative">
-          {cards.map((card, index) => (
             <motion.div
               key={card.id}
               whileHover={gameState === "playing" && !card.isFlipped ? { scale: 1.05 } : {}}
