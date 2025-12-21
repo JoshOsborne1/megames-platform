@@ -144,10 +144,6 @@ export default function ShadeSignalsGame() {
 
       return { ...player, score: player.score + roundScore };
     }));
-
-    setTimeout(() => {
-      changePhase("leaderboard");
-    }, 5000);
   };
 
   const handleContinueToNextRound = () => {
@@ -417,40 +413,11 @@ export default function ShadeSignalsGame() {
             >
               <div className="bg-gradient-to-br from-[#1a0f2e] to-[#0a0a14] border-2 border-[#00f5ff]/40 rounded-3xl p-8 shadow-2xl mb-8" style={{ boxShadow: "0 0 60px rgba(0, 245, 255, 0.3)" }}>
                 <div className="text-center mb-8">
-                  <Trophy className="w-16 h-16 text-[#39ff14] mx-auto mb-4" />
-                  <h2 className="font-display text-4xl font-black text-white mb-2">Round {currentRound} Complete!</h2>
-                  <p className="text-white/70 text-lg">Compare Your Signals</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                  <div className="space-y-4">
-                    <h3 className="text-white font-bold text-center">Secret Target</h3>
-                    <div 
-                      className="w-32 h-32 rounded-3xl mx-auto border-4 border-white shadow-2xl"
-                      style={{ backgroundColor: targetColor?.hex }}
-                    />
+                  <div className="w-20 h-20 bg-[#39ff14]/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border-2 border-[#39ff14]">
+                    <Trophy className="w-10 h-10 text-[#39ff14]" />
                   </div>
-                  <div className="space-y-4">
-                    <h3 className="text-white font-bold text-center">Players' Signals</h3>
-                    <div className="flex flex-wrap justify-center gap-4">
-                      {players.map((p, i) => (
-                        i !== signalGiverIndex && p.markers.length > 0 && (
-                          <div key={i} className="flex flex-col items-center gap-2">
-                            <div className="flex gap-1">
-                              {p.markers.map((m, mi) => (
-                                <div 
-                                  key={mi}
-                                  className="w-12 h-12 rounded-xl border-2 border-white/50"
-                                  style={{ backgroundColor: m.hex }}
-                                />
-                              ))}
-                            </div>
-                            <span className="text-white/70 text-xs font-bold">{p.name}</span>
-                          </div>
-                        )
-                      ) as any)}
-                    </div>
-                  </div>
+                  <h2 className="font-display text-4xl font-black text-white mb-2">Current Standings</h2>
+                  <p className="text-white/50">After Round {currentRound} of {totalRounds}</p>
                 </div>
 
                 <div className="space-y-3 mb-8">
@@ -475,9 +442,6 @@ export default function ShadeSignalsGame() {
                           </span>
                           <div>
                             <span className="text-white font-bold text-xl">{p.name}</span>
-                            {p.originalIndex === signalGiverIndex && (
-                              <span className="ml-2 text-xs bg-[#00f5ff]/20 text-[#00f5ff] px-2 py-1 rounded">Signal-Giver</span>
-                            )}
                           </div>
                         </div>
                         <span className="text-[#00f5ff] font-black text-2xl">{p.score} pts</span>
@@ -485,12 +449,21 @@ export default function ShadeSignalsGame() {
                     ))}
                 </div>
 
-                {currentRound < totalRounds && (
+                {currentRound < totalRounds ? (
                   <div className="bg-[#16162a] border border-white/10 rounded-2xl p-6 mb-6">
-                    <h3 className="text-white font-bold text-lg mb-2">Next Round:</h3>
-                    <p className="text-white/70">
-                      <span className="text-[#ff006e] font-bold">{nextSignalGiver?.name}</span> will be the Signal-Giver
-                    </p>
+                    <h3 className="text-white/50 font-bold text-sm uppercase tracking-widest mb-2">Up Next:</h3>
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-[#ff006e]/20 rounded-full flex items-center justify-center">
+                        <Users className="w-6 h-6 text-[#ff006e]" />
+                      </div>
+                      <p className="text-white text-xl">
+                        <span className="font-black text-[#ff006e]">{nextSignalGiver?.name}</span> will be the Signal-Giver
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-[#39ff14]/10 border border-[#39ff14]/30 rounded-2xl p-6 mb-6 text-center">
+                    <p className="text-[#39ff14] font-black text-xl italic">The game has concluded!</p>
                   </div>
                 )}
 
@@ -499,17 +472,17 @@ export default function ShadeSignalsGame() {
                     setNextAction(() => handleContinueToNextRound);
                     setShowPassPhone(true);
                   }}
-                  className="w-full bg-gradient-to-r from-[#00f5ff] to-[#ff006e] hover:opacity-90 text-white font-bold py-6 text-xl"
+                  className="w-full bg-gradient-to-r from-[#00f5ff] to-[#ff006e] hover:opacity-90 text-white font-black py-8 text-2xl rounded-2xl"
                 >
                   {currentRound < totalRounds ? (
                     <>
-                      <ArrowRight className="w-6 h-6 mr-2" />
-                      Continue to Round {currentRound + 1}
+                      READY FOR ROUND {currentRound + 1}
+                      <ArrowRight className="w-6 h-6 ml-2" />
                     </>
                   ) : (
                     <>
-                      <Trophy className="w-6 h-6 mr-2" />
-                      View Final Results
+                      SEE GRAND CHAMPION
+                      <Trophy className="w-6 h-6 ml-2" />
                     </>
                   )}
                 </Button>
@@ -517,7 +490,111 @@ export default function ShadeSignalsGame() {
             </motion.div>
           )}
 
-          {(phase.includes("guess") || phase === "reveal") && (
+          {phase === "reveal" && targetColor && (
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="max-w-5xl mx-auto">
+              <div className="bg-[#16162a] border border-white/10 rounded-[3rem] p-8 md:p-12 shadow-[0_0_100px_rgba(57,255,20,0.1)]">
+                <div className="text-center mb-12">
+                  <motion.div
+                    initial={{ y: -20 }}
+                    animate={{ y: 0 }}
+                    className="inline-block px-6 py-2 rounded-full bg-[#39ff14]/10 border border-[#39ff14]/30 text-[#39ff14] text-sm font-black uppercase tracking-widest mb-4"
+                  >
+                    Round {currentRound} Results
+                  </motion.div>
+                  <h2 className="font-display text-5xl md:text-7xl font-black text-white tracking-tighter mb-4">
+                    THE <span className="text-[#39ff14]">REVEAL</span>
+                  </h2>
+                  <div className="flex items-center justify-center gap-4 text-white/50 text-xl">
+                    <span className="font-bold text-[#00f5ff]">{firstClue}</span>
+                    <span className="opacity-20">•</span>
+                    <span className="font-bold text-[#ff006e]">{secondClue}</span>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-12 items-start mb-16">
+                  {/* Left Side: The Target */}
+                  <div className="flex flex-col items-center gap-6">
+                    <div className="relative group">
+                      <div className="absolute -inset-4 bg-white/20 blur-2xl rounded-full group-hover:bg-[#39ff14]/20 transition-all duration-500" />
+                      <div 
+                        className="relative w-48 h-48 md:w-64 md:h-64 rounded-[3rem] border-8 border-white shadow-2xl transition-transform duration-500 hover:scale-105"
+                        style={{ backgroundColor: targetColor.hex }}
+                      />
+                      <div className="absolute -bottom-4 -right-4 w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-xl border-4 border-[#0a0a14]">
+                        <Sparkles className="w-8 h-8 text-[#0a0a14]" />
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-white/50 font-bold uppercase tracking-widest text-sm mb-1">Target Color</p>
+                      <p className="text-white font-mono text-3xl font-black">{targetColor.hex.toUpperCase()}</p>
+                    </div>
+                  </div>
+
+                  {/* Right Side: Guesses Comparison */}
+                  <div className="space-y-6">
+                    {players.map((p, i) => (
+                      i !== signalGiverIndex && (
+                        <motion.div 
+                          key={i}
+                          initial={{ x: 20, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          transition={{ delay: i * 0.1 }}
+                          className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col gap-4"
+                        >
+                          <div className="flex justify-between items-center">
+                            <span className="text-white font-black text-xl">{p.name}</span>
+                            <div className="flex gap-2">
+                              {p.markers.map((m, mi) => (
+                                <div key={mi} className="flex flex-col items-center gap-1">
+                                  <div 
+                                    className="w-12 h-12 rounded-xl border-2 border-white/30"
+                                    style={{ backgroundColor: m.hex }}
+                                  />
+                                  <span className="text-[10px] text-white/40 font-mono">
+                                    {Math.round((1 - calculateHSVDistance(m.hsv, targetColor.hsv)) * 100)}%
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
+                            <motion.div 
+                              initial={{ width: 0 }}
+                              animate={{ width: `${Math.max(...p.markers.map(m => (1 - calculateHSVDistance(m.hsv, targetColor.hsv)) * 100))}%` }}
+                              className="h-full bg-gradient-to-r from-[#00f5ff] to-[#39ff14]"
+                            />
+                          </div>
+                        </motion.div>
+                      )
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex flex-col md:flex-row gap-4">
+                  <Button
+                    onClick={() => changePhase("leaderboard")}
+                    className="flex-1 py-10 text-2xl font-black bg-white text-[#0a0a14] hover:bg-white/90 rounded-[2rem] shadow-2xl transition-all hover:scale-[1.02] active:scale-95 group"
+                  >
+                    CONTINUE TO STANDINGS
+                    <ArrowRight className="w-8 h-8 ml-4 group-hover:translate-x-2 transition-transform" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Mini Spectrum for Spatial Reference */}
+              <div className="mt-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
+                <ColorSpectrum
+                  onColorSelect={() => {}}
+                  markers={players.flatMap(p => p.markers)}
+                  targetColor={targetColor}
+                  showTarget={true}
+                  disabled={true}
+                />
+              </div>
+            </motion.div>
+          )}
+
+          {phase.includes("guess") && (
             <ColorSpectrum
               onColorSelect={handleGuess}
               markers={players.flatMap(p => p.markers)}
@@ -528,20 +605,79 @@ export default function ShadeSignalsGame() {
           )}
 
           {phase === "finished" && (
-            <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="text-center mt-12">
-              <h2 className="font-display text-5xl font-black text-white mb-8 glitch">GAME OVER!</h2>
-              <div className="bg-[#16162a] border border-white/10 rounded-3xl p-8 max-w-2xl mx-auto">
-                <h3 className="text-2xl font-bold text-[#39ff14] mb-6">Final Scores:</h3>
-                {players.sort((a, b) => b.score - a.score).map((p, i) => (
-                  <div key={i} className={`flex justify-between items-center py-4 px-6 rounded-lg mb-2 ${i === 0 ? 'bg-[#39ff14]/20 border-2 border-[#39ff14]' : 'bg-white/5'}`}>
-                    <span className="text-white font-bold text-xl">{i + 1}. {p.name}</span>
-                    <span className="text-[#00f5ff] font-black text-2xl">{p.score} pts</span>
-                  </div>
-                ))}
+            <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} className="text-center mt-12 max-w-4xl mx-auto">
+              <div className="relative mb-12">
+                <motion.div
+                  animate={{ 
+                    scale: [1, 1.1, 1],
+                    rotate: [0, 5, -5, 0]
+                  }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                  className="inline-block"
+                >
+                  <Trophy className="w-32 h-32 text-[#39ff14] drop-shadow-[0_0_30px_rgba(57,255,20,0.5)]" />
+                </motion.div>
+                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center -z-10">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    className="w-64 h-64 border-4 border-dashed border-[#00f5ff]/20 rounded-full"
+                  />
+                </div>
               </div>
-              <Button onClick={() => { setMode("select"); setPhase("setup"); }} className="mt-8 bg-gradient-to-r from-[#00f5ff] to-[#ff006e] text-white font-bold px-12 py-6 text-xl">
-                Play Again!
-              </Button>
+
+              <h2 className="font-display text-7xl md:text-9xl font-black text-white mb-4 tracking-tighter italic">
+                VICTORY!
+              </h2>
+              
+              <div className="bg-[#16162a]/80 backdrop-blur-xl border-2 border-white/10 rounded-[3rem] p-12 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#00f5ff] via-[#ff006e] to-[#39ff14]" />
+                
+                <h3 className="text-3xl font-bold text-white/50 mb-10 uppercase tracking-widest">Final Leaderboard</h3>
+                
+                <div className="space-y-4 mb-12">
+                  {players.sort((a, b) => b.score - a.score).map((p, i) => (
+                    <motion.div 
+                      key={i}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: i * 0.15 }}
+                      className={`flex justify-between items-center py-6 px-10 rounded-2xl ${
+                        i === 0 
+                          ? 'bg-gradient-to-r from-[#39ff14]/30 to-[#39ff14]/10 border-2 border-[#39ff14] scale-105 shadow-[0_0_40px_rgba(57,255,20,0.2)]' 
+                          : 'bg-white/5 border border-white/10'
+                      }`}
+                    >
+                      <div className="flex items-center gap-6">
+                        <span className={`font-display text-4xl font-black ${i === 0 ? 'text-[#39ff14]' : 'text-white/40'}`}>
+                          #{i + 1}
+                        </span>
+                        <span className="text-white font-black text-3xl">{p.name}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-[#00f5ff] font-black text-4xl block">{p.score}</span>
+                        <span className="text-white/30 text-xs font-bold uppercase tracking-widest">Points</span>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <Button 
+                    onClick={() => { setMode("select"); setPhase("setup"); }} 
+                    className="bg-white text-[#0a0a14] hover:bg-white/90 font-black px-12 py-10 text-2xl rounded-[2rem] transition-all hover:scale-105 active:scale-95"
+                  >
+                    PLAY AGAIN
+                  </Button>
+                  <Link href="/games" className="w-full">
+                    <Button 
+                      className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 font-black px-12 py-10 text-2xl rounded-[2rem] transition-all hover:scale-105 active:scale-95"
+                    >
+                      HOME
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             </motion.div>
           )}
         </div>
