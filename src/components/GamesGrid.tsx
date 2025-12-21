@@ -2,9 +2,19 @@
 
 import { motion } from "framer-motion";
 import { GameCard } from "./GameCard";
-import { Sparkles, Droplet, MessageCircle, ShieldAlert } from "lucide-react";
+import { Sparkles, Droplet, MessageCircle, ShieldAlert, Mic2 } from "lucide-react";
 
 const games = [
+  {
+    id: "snatch-the-mic",
+    name: "SNATCH THE MIC",
+    description: "The ultimate karaoke race! Be the fastest to sing a lyric containing the prompt word. 3-10 players – pure musical chaos.",
+    icon: <Mic2 className="w-full h-full" />,
+    players: "3-10",
+    duration: "10-20 min",
+    difficulty: "Medium" as const,
+    color: "#8338ec",
+  },
   {
     id: "forbidden-flash",
     name: "FORBIDDEN FLASH",
