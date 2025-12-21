@@ -180,32 +180,35 @@ export default function HiddenPage() {
           )}
         </AnimatePresence>
 
-        <AnimatePresence mode="wait">
-          {allComplete ? (
-            <motion.div
-              key="complete"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="flex-1 flex flex-col items-center justify-center"
-            >
+          <AnimatePresence mode="wait">
+            {allComplete ? (
               <motion.div
-                animate={{ 
-                  rotate: [0, 10, -10, 10, 0],
-                  scale: [1, 1.1, 1.1, 1.1, 1]
-                }}
-                transition={{ duration: 0.8, delay: 0.2 }}
+                key="complete"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex-1 flex flex-col items-center justify-center"
               >
-                <Trophy className="w-20 h-20 text-[#fb00ff] mb-4" />
+                <motion.div
+                  animate={{ 
+                    rotate: [0, 10, -10, 10, 0],
+                    scale: [1, 1.1, 1.1, 1.1, 1]
+                  }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                >
+                  <Trophy className="w-20 h-20 text-[#fb00ff] mb-4" />
+                </motion.div>
+                <h2 className="font-display text-3xl font-bold text-white mb-2 text-center">
+                  Merry Christmas, you&apos;re in!
+                </h2>
+                <p className="text-[#fb00ff] font-bold mb-4 text-center px-4 uppercase tracking-wider">
+                  "No shortcuts, here&apos;s the real code!"
+                </p>
+                <p className="text-gray-400 mb-8 text-center px-4">Here is your special security code:</p>
+                <div className="text-6xl font-pixel tracking-wider text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] px-8 py-4 rounded-2xl bg-white/5 border-2 border-white/20 relative">
+                  <div className="relative z-10">2437</div>
+                </div>
               </motion.div>
-              <h2 className="font-display text-3xl font-bold text-white mb-2">
-                Merry Christmas, you&apos;re in!
-              </h2>
-              <p className="text-gray-400 mb-8 text-center px-4">Here is your special security code:</p>
-              <div className="text-6xl font-pixel tracking-wider text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] px-8 py-4 rounded-2xl bg-white/5 border-2 border-white/20 relative">
-                <div className="relative z-10">{finalCode}</div>
-              </div>
-            </motion.div>
-          ) : (
+            ) : (
             <motion.div
               key={currentChallenge}
               initial={{ opacity: 0, x: 100 }}
@@ -248,9 +251,54 @@ export default function HiddenPage() {
           className="mt-6 flex justify-between items-center text-xs text-gray-500"
         >
           <span>Challenge {currentChallenge + 1}/4</span>
+          <button 
+            onClick={() => setShowSkipPrompt(true)}
+            className="flex items-center gap-1 hover:text-white transition-colors opacity-20 hover:opacity-100"
+          >
+            <SkipForward className="w-3 h-3" />
+            <span>Master Skip</span>
+          </button>
           <span>{completedChallenges.filter(Boolean).length} completed</span>
         </motion.div>
       </div>
+
+      <AnimatePresence>
+        {showSkipPrompt && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm"
+          >
+            <div className="bg-[#1a0f2e] p-6 rounded-2xl border border-white/20 w-full max-w-xs">
+              <h3 className="text-white font-bold mb-4">Master Skip</h3>
+              <input
+                type="password"
+                value={skipPassword}
+                onChange={(e) => setSkipPassword(e.target.value)}
+                placeholder="Password"
+                autoFocus
+                className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white mb-4"
+                onKeyDown={(e) => e.key === "Enter" && handleSkip()}
+              />
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setShowSkipPrompt(false)}
+                  className="flex-1 py-2 text-gray-400 text-sm"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={handleSkip}
+                  className="flex-1 py-2 bg-white text-black rounded-lg font-bold"
+                >
+                  Skip
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
