@@ -17,7 +17,7 @@ type GameMode = "select" | "local" | "online";
 type GamePhase = "setup" | "signal-pick" | "clue-1" | "guess-1" | "clue-2" | "guess-2" | "reveal" | "leaderboard" | "finished";
 
 export default function ShadeSignalsGame() {
-  const [mode, setMode] = useState<GameMode>("select");
+  const [mode, setMode] = useState<GameMode>("local");
   const [phase, setPhase] = useState<GamePhase>("setup");
   const [playerCount, setPlayerCount] = useState(2);
   const [playerNames, setPlayerNames] = useState<string[]>(["", "", "", "", "", "", "", "", "", ""]);
@@ -156,63 +156,17 @@ export default function ShadeSignalsGame() {
     }
   };
 
-  if (mode === "select") {
-    return (
-      <div className="min-h-screen flex flex-col bg-[#0a0a14]">
-        <Header />
-        <main className="flex-1 pt-24 pb-16 px-4">
-          <div className="max-w-4xl mx-auto">
-            <Link href="/games" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Games
-            </Link>
-
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
-              <h1 className="font-display text-5xl md:text-7xl font-black text-white mb-4 glitch">
-                SHADE SIGNALS
-              </h1>
-              <p className="text-white/70 text-xl max-w-2xl mx-auto">
-                Guess the shade with clever signals! Choose your play mode:
-              </p>
-            </motion.div>
-
-            <div className="grid md:grid-cols-2 gap-6">
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                whileHover={{ scale: 1.05, y: -5 }}
-                onClick={() => setMode("local")}
-                className="bg-gradient-to-br from-[#00f5ff]/20 to-[#00f5ff]/5 border-2 border-[#00f5ff]/40 rounded-3xl p-8 cursor-pointer hover:border-[#00f5ff] transition-all"
-              >
-                <WifiOff className="w-16 h-16 text-[#00f5ff] mb-4" />
-                <h2 className="font-display text-3xl font-bold text-white mb-3">Local Swap & Play</h2>
-                <p className="text-white/70">Pass one device around. Perfect for in-person fun!</p>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                whileHover={{ scale: 1.05, y: -5 }}
-                className="bg-gradient-to-br from-[#9370DB]/20 to-[#9370DB]/5 border-2 border-[#9370DB]/40 rounded-3xl p-8 cursor-not-allowed opacity-50"
-              >
-                <Wifi className="w-16 h-16 text-[#9370DB] mb-4" />
-                <h2 className="font-display text-3xl font-bold text-white mb-3">Online Multiplayer</h2>
-                <p className="text-white/70">Coming soon! Play with friends remotely.</p>
-              </motion.div>
-            </div>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
-
   if (phase === "setup") {
     return (
       <div className="min-h-screen flex flex-col bg-[#0a0a14]">
         <Header />
         <main className="flex-1 pt-24 pb-16 px-4">
           <div className="max-w-2xl mx-auto">
+            <Link href="/games" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Games
+            </Link>
+
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-[#16162a] border border-white/10 rounded-3xl p-8">
               <h2 className="font-display text-3xl font-bold text-white mb-6">Game Setup</h2>
               
@@ -664,7 +618,7 @@ export default function ShadeSignalsGame() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <Button 
-                    onClick={() => { setMode("select"); setPhase("setup"); }} 
+                    onClick={() => { setMode("local"); setPhase("setup"); }} 
                     className="bg-white text-[#0a0a14] hover:bg-white/90 font-black px-12 py-10 text-2xl rounded-[2rem] transition-all hover:scale-105 active:scale-95"
                   >
                     PLAY AGAIN
