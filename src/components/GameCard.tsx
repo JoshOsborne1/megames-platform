@@ -92,23 +92,28 @@ export function GameCard({
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >
       <motion.div
-        className="relative w-full h-full"
-        style={{
-          rotateX: isFlipped ? 0 : rotateX,
-          rotateY: isFlipped ? 180 : rotateY,
-          transformStyle: "preserve-3d",
-        }}
-        animate={{ rotateY: isFlipped ? 180 : 0 }}
-        transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
-      >
-        <div
-          className="absolute inset-0 rounded-3xl holographic-card holographic-shine overflow-hidden"
+          className="relative w-full h-full"
           style={{
-            backfaceVisibility: "hidden",
-            background: `linear-gradient(135deg, ${color}15 0%, ${color}05 100%)`,
-            border: `3px solid ${color}40`,
+            rotateX: isFlipped ? 0 : rotateX,
+            rotateY: isFlipped ? 180 : rotateY,
+            transformStyle: "preserve-3d",
+            WebkitTransformStyle: "preserve-3d",
           }}
+          animate={{ 
+            rotateY: isFlipped ? 180 : 0,
+            rotateX: isFlipped ? 0 : undefined
+          }}
+          transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
         >
+          <div
+            className="absolute inset-0 rounded-3xl holographic-card holographic-shine overflow-hidden"
+            style={{
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
+              background: `linear-gradient(135deg, ${color}15 0%, ${color}05 100%)`,
+              border: `3px solid ${color}40`,
+            }}
+          >
           {comingSoon && (
             <motion.div
               initial={{ x: -100, opacity: 0 }}
@@ -180,15 +185,16 @@ export function GameCard({
         </div>
 
         <div
-          className="absolute inset-0 rounded-3xl overflow-hidden"
-          style={{
-            backfaceVisibility: "hidden",
-            transform: "rotateY(180deg)",
-            background: `linear-gradient(135deg, ${color}25 0%, ${color}10 100%)`,
-            border: `3px solid ${color}60`,
-            boxShadow: `0 20px 60px ${color}40`,
-          }}
-        >
+            className="absolute inset-0 rounded-3xl overflow-hidden"
+            style={{
+              backfaceVisibility: "hidden",
+              WebkitBackfaceVisibility: "hidden",
+              transform: "rotateY(180deg)",
+              background: `linear-gradient(135deg, ${color}25 0%, ${color}10 100%)`,
+              border: `3px solid ${color}60`,
+              boxShadow: `0 20px 60px ${color}40`,
+            }}
+          >
           <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r opacity-90" style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }} />
 
           <div className="relative z-10 h-full flex flex-col p-8">

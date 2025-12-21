@@ -136,7 +136,7 @@ export function ColorSpectrum({
   };
 
   const handleClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (disabled || isDragging || pendingColor) return;
+    if (disabled || isDragging) return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -161,7 +161,7 @@ export function ColorSpectrum({
   }, []);
 
   const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
-    if (disabled || pendingColor) return;
+    if (disabled) return;
     e.preventDefault();
     
     const pos = getTouchPosition(e);

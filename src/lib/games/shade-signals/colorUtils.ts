@@ -39,7 +39,8 @@ export function rgbToHex(r: number, g: number, b: number): string {
 export function generateVibrantColor(): ColorWithPosition {
   const h = Math.random() * 360;
   const s = 0.3 + Math.random() * 0.7;
-  const v = 0.3 + Math.random() * 0.7;
+  // Make v compatible with the 0.05 step slider
+  const v = Math.round((0.4 + Math.random() * 0.6) / 0.05) * 0.05;
 
   const hsv: HSVColor = { h, s, v };
   const rgb = hsvToRgb(h, s, v);
