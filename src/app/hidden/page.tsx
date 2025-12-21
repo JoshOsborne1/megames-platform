@@ -182,9 +182,9 @@ export default function HiddenPage() {
                 <Trophy className="w-20 h-20 text-[#fb00ff] mb-4" />
               </motion.div>
               <h2 className="font-display text-3xl font-bold text-white mb-2">
-                Complete!
+                Merry Christmas, you&apos;re in!
               </h2>
-              <p className="text-gray-400 mb-8">Your 4-digit code is:</p>
+              <p className="text-gray-400 mb-8 text-center px-4">Here is your special security code:</p>
               <div className="text-6xl font-pixel tracking-wider text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] px-8 py-4 rounded-2xl bg-white/5 border-2 border-white/20 relative">
                 <div className="relative z-10">{finalCode}</div>
               </div>
