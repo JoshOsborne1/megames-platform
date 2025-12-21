@@ -12,7 +12,6 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [xp, setXp] = useState(3750);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -20,10 +19,6 @@ export function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const level = Math.floor(xp / 1000);
-  const currentLevelXP = xp % 1000;
-  const xpProgress = (currentLevelXP / 1000) * 100;
 
   const navLinks = [
     { href: "/", label: "Home", icon: Star },
@@ -83,34 +78,8 @@ export function Header() {
             })}
           </div>
 
-          <div className="flex items-center gap-2 md:gap-3">
-            <div className="hidden md:flex items-center gap-4 mr-4">
-              <motion.div
-                className="relative flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#1a0f2e] to-[#2d1b4e] border border-[#ff006e]/30"
-                whileHover={{ scale: 1.05 }}
-              >
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#ff006e] to-[#8338ec] flex items-center justify-center font-display font-black text-white text-sm neon-glow-pink">
-                    {level}
-                  </div>
-                  <div className="flex flex-col">
-                    <div className="w-24 h-2 bg-[#0a0015] rounded-full overflow-hidden border border-[#8338ec]/30">
-                      <motion.div
-                        className="h-full bg-gradient-to-r from-[#ff006e] via-[#8338ec] to-[#00f5ff]"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${xpProgress}%` }}
-                        transition={{ duration: 0.5 }}
-                      />
-                    </div>
-                    <span className="text-[10px] font-display text-[#00f5ff] mt-0.5">
-                      {currentLevelXP}/1000 XP
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-
-            <AnimatePresence>
+            <div className="flex items-center gap-2 md:gap-3">
+              <AnimatePresence>
               {searchOpen && (
                 <motion.div
                   initial={{ width: 0, opacity: 0 }}
