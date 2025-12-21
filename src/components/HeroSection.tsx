@@ -258,26 +258,26 @@ export function HeroSection() {
                     PLAY NOW
                     <Zap className="w-5 h-5 md:w-6 md:h-6" />
                   </span>
-                </Button>
-              </motion.div>
-            </Link>
-            <Link href="/lobbies/create" className="w-full sm:w-auto">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-full"
-              >
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="w-full sm:w-auto border-3 border-[#00f5ff] text-[#00f5ff] hover:bg-[#00f5ff]/20 font-display font-black text-lg md:text-xl px-8 md:px-10 py-6 md:py-8 rounded-2xl neon-glow-cyan touch-manipulation"
+                  </Button>
+                </motion.div>
+              </Link>
+              {/* <Link href="/lobbies/create" className="w-full sm:w-auto">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-full"
                 >
-                  <Users className="w-5 h-5 md:w-6 md:h-6 mr-2 md:mr-3" />
-                  CREATE LOBBY
-                </Button>
-              </motion.div>
-            </Link>
-          </motion.div>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="w-full sm:w-auto border-3 border-[#00f5ff] text-[#00f5ff] hover:bg-[#00f5ff]/20 font-display font-black text-lg md:text-xl px-8 md:px-10 py-6 md:py-8 rounded-2xl neon-glow-cyan touch-manipulation"
+                  >
+                    <Users className="w-5 h-5 md:w-6 md:h-6 mr-2 md:mr-3" />
+                    CREATE LOBBY
+                  </Button>
+                </motion.div>
+              </Link> */}
+            </motion.div>
         </motion.div>
       </div>
 

@@ -14,7 +14,7 @@ export default function HomePage() {
       <main className="flex-1 pt-16">
         <HeroSection />
         <GamesGrid />
-        <FeaturesSection />
+        {/* <FeaturesSection /> */}
         <CTASection />
       </main>
       <Footer />

@@ -194,29 +194,32 @@ export default function GameDetailPage() {
               transition={{ delay: 0.2 }}
               className="space-y-6"
             >
-              <div className="bg-[#16162a] border border-white/10 rounded-2xl p-6">
-                <h3 className="font-display text-lg font-bold text-white mb-4">Play Now</h3>
-                <div className="space-y-3">
-                  <Link href={`/lobbies/create?game=${gameId}`}>
-                    <Button
-                      className="w-full py-5 font-semibold"
-                      style={{ backgroundColor: game.color, color: "#000" }}
-                    >
-                      <Plus className="w-5 h-5 mr-2" />
-                      Create Lobby
-                    </Button>
-                  </Link>
-                  <Link href="/lobbies">
-                    <Button
-                      variant="outline"
-                      className="w-full py-5 border-white/10 text-white hover:bg-white/5"
-                    >
-                      <Users className="w-5 h-5 mr-2" />
-                      Join Lobby
-                    </Button>
-                  </Link>
+                <div className="bg-[#16162a] border border-white/10 rounded-2xl p-6">
+                  <h3 className="font-display text-lg font-bold text-white mb-4">Play Now</h3>
+                  <div className="space-y-3">
+                    {/* <Link href={`/lobbies/create?game=${gameId}`}>
+                      <Button
+                        className="w-full py-5 font-semibold"
+                        style={{ backgroundColor: game.color, color: "#000" }}
+                      >
+                        <Plus className="w-5 h-5 mr-2" />
+                        Create Lobby
+                      </Button>
+                    </Link>
+                    <Link href="/lobbies">
+                      <Button
+                        variant="outline"
+                        className="w-full py-5 border-white/10 text-white hover:bg-white/5"
+                      >
+                        <Users className="w-5 h-5 mr-2" />
+                        Join Lobby
+                      </Button>
+                    </Link> */}
+                    <div className="text-gray-400 text-sm italic text-center py-4">
+                      Online multiplayer coming soon.<br/>Local play available!
+                    </div>
+                  </div>
                 </div>
-              </div>
 
               <div className="bg-[#16162a] border border-white/10 rounded-2xl p-6">
                 <h3 className="font-display text-lg font-bold text-white mb-4">Game Stats</h3>
@@ -236,25 +239,25 @@ export default function GameDetailPage() {
                 </div>
               </div>
 
-              <div
-                className="rounded-2xl p-6 border"
-                style={{
-                  background: `linear-gradient(135deg, ${game.color}22 0%, ${game.color}11 100%)`,
-                  borderColor: `${game.color}44`,
-                }}
-              >
-                <h3 className="font-display text-lg font-bold text-white mb-2">Quick Match</h3>
-                <p className="text-gray-400 text-sm mb-4">
-                  Jump into a game instantly with players at your skill level
-                </p>
-                <Button
-                  className="w-full font-semibold"
-                  style={{ backgroundColor: game.color, color: "#000" }}
+                {/* <div
+                  className="rounded-2xl p-6 border"
+                  style={{
+                    background: `linear-gradient(135deg, ${game.color}22 0%, ${game.color}11 100%)`,
+                    borderColor: `${game.color}44`,
+                  }}
                 >
-                  <Play className="w-5 h-5 mr-2" />
-                  Find Match
-                </Button>
-              </div>
+                  <h3 className="font-display text-lg font-bold text-white mb-2">Quick Match</h3>
+                  <p className="text-gray-400 text-sm mb-4">
+                    Jump into a game instantly with players at your skill level
+                  </p>
+                  <Button
+                    className="w-full font-semibold"
+                    style={{ backgroundColor: game.color, color: "#000" }}
+                  >
+                    <Play className="w-5 h-5 mr-2" />
+                    Find Match
+                  </Button>
+                </div> */}
             </motion.div>
           </div>
         </div>

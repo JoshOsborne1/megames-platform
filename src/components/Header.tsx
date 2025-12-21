@@ -19,11 +19,11 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navLinks = [
-    { href: "/", label: "Home", icon: Star },
-    { href: "/games", label: "Games", icon: Trophy },
-    { href: "/lobbies", label: "Lobbies", icon: Zap },
-  ];
+    const navLinks = [
+      { href: "/", label: "Home", icon: Star },
+      { href: "/games", label: "Games", icon: Trophy },
+      // { href: "/lobbies", label: "Lobbies", icon: Zap },
+    ];
 
   return (
     <header
@@ -103,35 +103,35 @@ export function Header() {
               >
                 <Search className="w-5 h-5" />
                 </Button>
-              </motion.div>
-
-              <Link href="/login" className="hidden sm:block">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  variant="outline"
-                  className="border-[#8338ec] text-white hover:bg-[#8338ec]/20 hover:border-[#ff006e] font-display font-semibold text-sm md:text-base px-3 md:px-4 py-2 touch-manipulation"
+                </motion.div>
+  
+                {/* <Link href="/login" className="hidden sm:block">
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    variant="outline"
+                    className="border-[#8338ec] text-white hover:bg-[#8338ec]/20 hover:border-[#ff006e] font-display font-semibold text-sm md:text-base px-3 md:px-4 py-2 touch-manipulation"
+                  >
+                    Login
+                  </Button>
+                </motion.div>
+              </Link>
+  
+              <Link href="/signup" className="hidden sm:block">
+                <motion.div
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
                 >
-                  Login
-                </Button>
-              </motion.div>
-            </Link>
-
-            <Link href="/signup" className="hidden sm:block">
-              <motion.div
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button className="relative font-display font-bold text-sm md:text-base px-3 md:px-4 py-2 bg-gradient-to-r from-[#ff006e] via-[#8338ec] to-[#00f5ff] text-white overflow-hidden group touch-manipulation">
-                  <span className="absolute inset-0 bg-gradient-to-r from-[#00f5ff] via-[#fb00ff] to-[#ff006e] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <span className="relative flex items-center gap-2">
-                    <Zap className="w-4 h-4" />
-                    Sign Up
-                  </span>
-                </Button>
-              </motion.div>
-            </Link>
-
-            <Button
+                  <Button className="relative font-display font-bold text-sm md:text-base px-3 md:px-4 py-2 bg-gradient-to-r from-[#ff006e] via-[#8338ec] to-[#00f5ff] text-white overflow-hidden group touch-manipulation">
+                    <span className="absolute inset-0 bg-gradient-to-r from-[#00f5ff] via-[#fb00ff] to-[#ff006e] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <span className="relative flex items-center gap-2">
+                      <Zap className="w-4 h-4" />
+                      Sign Up
+                    </span>
+                  </Button>
+                </motion.div>
+              </Link> */}
+  
+              <Button
               variant="ghost"
               size="icon"
               className="lg:hidden text-white/70 hover:text-[#ff006e] rounded-full touch-manipulation min-w-[44px] min-h-[44px]"
@@ -165,21 +165,21 @@ export function Header() {
                     </Link>
                   );
                 })}
-                <div className="flex gap-3 pt-4 px-4 border-t border-[#8338ec]/30">
-                  <Link href="/login" className="flex-1">
-                    <Button
-                      variant="outline"
-                      className="w-full border-[#8338ec] text-white font-display py-4 touch-manipulation min-h-[44px]"
-                    >
-                      Login
-                    </Button>
-                  </Link>
-                  <Link href="/signup" className="flex-1">
-                    <Button className="w-full bg-gradient-to-r from-[#ff006e] to-[#8338ec] text-white font-display font-bold py-4 touch-manipulation min-h-[44px]">
-                      Sign Up
-                    </Button>
-                  </Link>
-                </div>
+                  {/* <div className="flex gap-3 pt-4 px-4 border-t border-[#8338ec]/30">
+                    <Link href="/login" className="flex-1">
+                      <Button
+                        variant="outline"
+                        className="w-full border-[#8338ec] text-white font-display py-4 touch-manipulation min-h-[44px]"
+                      >
+                        Login
+                      </Button>
+                    </Link>
+                    <Link href="/signup" className="flex-1">
+                      <Button className="w-full bg-gradient-to-r from-[#ff006e] to-[#8338ec] text-white font-display font-bold py-4 touch-manipulation min-h-[44px]">
+                        Sign Up
+                      </Button>
+                    </Link>
+                  </div> */}
               </div>
             </motion.div>
           )}

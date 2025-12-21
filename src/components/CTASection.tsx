@@ -47,46 +47,46 @@ export function CTASection() {
             <span className="block text-gradient-neon">DOMINATE?</span>
           </motion.h2>
 
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
-            className="text-lg md:text-xl lg:text-2xl xl:text-3xl text-white/80 mb-8 md:mb-12 max-w-3xl mx-auto font-space font-medium leading-relaxed px-4"
-          >
-            Create your free account in{" "}
-            <span className="text-[#39ff14] font-bold drop-shadow-[0_0_10px_rgba(57,255,20,0.8)]">
-              seconds
-            </span>{" "}
-            and start playing your favorite games with friends online.
-          </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4 }}
+              className="text-lg md:text-xl lg:text-2xl xl:text-3xl text-white/80 mb-8 md:mb-12 max-w-3xl mx-auto font-space font-medium leading-relaxed px-4"
+            >
+              Start playing your favorite games with friends online{" "}
+              <span className="text-[#39ff14] font-bold drop-shadow-[0_0_10px_rgba(57,255,20,0.8)]">
+                instantly
+              </span>{" "}
+              — no setup required.
+            </motion.p>
 
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.6 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 px-4"
-          >
-            <Link href="/signup" className="w-full sm:w-auto">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-full"
-              >
-                <Button
-                  size="lg"
-                  className="w-full sm:w-auto relative font-display font-black text-lg md:text-xl px-10 md:px-12 py-6 md:py-8 rounded-2xl bg-gradient-to-r from-[#ff006e] via-[#8338ec] to-[#00f5ff] text-white overflow-hidden group pulse-glow touch-manipulation"
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6 }}
+              className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 px-4"
+            >
+              {/* <Link href="/signup" className="w-full sm:w-auto">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-full"
                 >
-                  <span className="absolute inset-0 bg-gradient-to-r from-[#00f5ff] via-[#fb00ff] to-[#ff006e] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <span className="relative flex items-center gap-2 md:gap-3 justify-center">
-                    <Play className="w-5 h-5 md:w-6 md:h-6 fill-white" />
-                    SIGN UP FREE
-                    <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
-                  </span>
-                </Button>
-              </motion.div>
-            </Link>
+                  <Button
+                    size="lg"
+                    className="w-full sm:w-auto relative font-display font-black text-lg md:text-xl px-10 md:px-12 py-6 md:py-8 rounded-2xl bg-gradient-to-r from-[#ff006e] via-[#8338ec] to-[#00f5ff] text-white overflow-hidden group pulse-glow touch-manipulation"
+                  >
+                    <span className="absolute inset-0 bg-gradient-to-r from-[#00f5ff] via-[#fb00ff] to-[#ff006e] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <span className="relative flex items-center gap-2 md:gap-3 justify-center">
+                      <Play className="w-5 h-5 md:w-6 md:h-6 fill-white" />
+                      SIGN UP FREE
+                      <ArrowRight className="w-5 h-5 md:w-6 md:h-6" />
+                    </span>
+                  </Button>
+                </motion.div>
+              </Link> */}
 
             <Link href="/games" className="w-full sm:w-auto">
               <motion.div
