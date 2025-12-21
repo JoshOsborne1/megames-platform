@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GameState, Difficulty } from "@/lib/games/forbidden-flash/types";
 import { 
@@ -8,17 +8,19 @@ import {
   drawNextCard, 
   handleCorrect, 
   handlePass,
-  startNextTurn 
+  startNextTurn,
+  MAX_SKIPS
 } from "@/lib/games/forbidden-flash/gameLogic";
 import { ForbiddenCard } from "./ForbiddenCard";
 import { GameSetup } from "./GameSetup";
-import { Timer, Trophy, ArrowRight, Check, X, Info } from "lucide-react";
+import { Timer, Trophy, ArrowRight, Check, X, Info, Zap } from "lucide-react";
 
 export function ForbiddenFlashHub() {
   const [gameState, setGameState] = useState<GameState | null>(null);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("medium");
 
-  const startNewGame = (players: string[], difficulty: Difficulty) => {
-    const initialState = createInitialState(players, difficulty);
+  const startNewGame = (players: string[]) => {
+    const initialState = createInitialState(players, "medium");
     setGameState({ ...initialState, phase: "instructions" });
   };
 
@@ -26,8 +28,12 @@ export function ForbiddenFlashHub() {
     if (!gameState) return;
     const stateWithCard = drawNextCard({
        ...gameState,
+       difficulty: selectedDifficulty,
        phase: "playing",
-       timer: 60
+       timer: 60,
+       skipsUsed: 0,
+       roundScore: 0,
+       cardsInRound: 0
     });
     setGameState(stateWithCard);
   };
@@ -89,16 +95,38 @@ export function ForbiddenFlashHub() {
               UP NEXT
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
-              <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10 text-left">
+              <div className="space-y-4 p-6 bg-white/5 rounded-2xl border border-white/10">
                 <span className="text-[10px] font-pixel text-white/30 uppercase tracking-[0.2em] block">Clue Giver</span>
-                <div className="text-4xl font-display font-black text-[#ff006e] uppercase tracking-wider">{clueGiver.name}</div>
-                <p className="text-white/60 font-space text-sm px-4">Pass the phone to {clueGiver.name}. You see the word and the forbidden words!</p>
+                <div className="text-3xl font-display font-black text-[#ff006e] uppercase tracking-wider">{clueGiver.name}</div>
+                <p className="text-white/60 font-space text-sm">Pass the phone to {clueGiver.name}. You see the word and the forbidden words!</p>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-4 p-6 bg-white/5 rounded-2xl border border-white/10">
                 <span className="text-[10px] font-pixel text-white/30 uppercase tracking-[0.2em] block">Guesser</span>
-                <div className="text-4xl font-display font-black text-[#00f5ff] uppercase tracking-wider">{guesser.name}</div>
-                <p className="text-white/60 font-space text-sm px-4">{guesser.name}, your job is to guess the secret word as fast as possible!</p>
+                <div className="text-3xl font-display font-black text-[#00f5ff] uppercase tracking-wider">{guesser.name}</div>
+                <p className="text-white/60 font-space text-sm">{guesser.name}, your job is to guess the secret word as fast as possible!</p>
+              </div>
+            </div>
+
+            <div className="space-y-6 mb-10">
+              <div className="flex items-center justify-center gap-2 text-[#00f5ff]">
+                <Zap className="w-5 h-5" />
+                <h3 className="font-display font-bold text-xl uppercase tracking-wider">Select Difficulty</h3>
+              </div>
+              <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
+                {(["easy", "medium", "hard"] as Difficulty[]).map((d) => (
+                  <button
+                    key={d}
+                    onClick={() => setSelectedDifficulty(d)}
+                    className={`py-3 rounded-xl font-display font-black text-xs uppercase transition-all border-2 ${
+                      selectedDifficulty === d
+                        ? "bg-[#00f5ff] text-[#1a0f2e] border-[#00f5ff] shadow-[0_0_20px_rgba(0,245,255,0.4)]"
+                        : "bg-white/5 text-white/40 border-white/10 hover:border-white/20"
+                    }`}
+                  >
+                    {d}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -121,23 +149,35 @@ export function ForbiddenFlashHub() {
             className="flex flex-col items-center"
           >
             {/* HUD */}
-            <div className="w-full flex justify-between items-center mb-10 px-4">
+            <div className="w-full grid grid-cols-3 items-center mb-10 px-4">
               <div className="flex flex-col">
                 <span className="text-[10px] font-pixel text-white/30 uppercase tracking-widest">Team Score</span>
                 <span className="text-3xl font-display font-black text-[#ff006e]">{gameState.roundScore}</span>
               </div>
               
-              <div className="relative">
-                <div className={`w-20 h-20 rounded-full border-4 flex items-center justify-center font-display font-black text-2xl transition-colors ${gameState.timer <= 10 ? 'border-red-500 text-red-500 animate-pulse' : 'border-[#00f5ff] text-[#00f5ff]'}`}>
-                  {gameState.timer}
+              <div className="flex justify-center">
+                <div className="relative">
+                  <div className={`w-20 h-20 rounded-full border-4 flex items-center justify-center font-display font-black text-2xl transition-colors ${gameState.timer <= 10 ? 'border-red-500 text-red-500 animate-pulse' : 'border-[#00f5ff] text-[#00f5ff]'}`}>
+                    {gameState.timer}
+                  </div>
+                  <Timer className={`absolute -bottom-1 -right-1 w-6 h-6 p-1 rounded-full bg-black border-2 transition-colors ${gameState.timer <= 10 ? 'border-red-500 text-red-500' : 'border-[#00f5ff] text-[#00f5ff]'}`} />
                 </div>
-                <Timer className={`absolute -bottom-1 -right-1 w-6 h-6 p-1 rounded-full bg-black border-2 transition-colors ${gameState.timer <= 10 ? 'border-red-500 text-red-500' : 'border-[#00f5ff] text-[#00f5ff]'}`} />
               </div>
 
               <div className="flex flex-col items-end">
-                <span className="text-[10px] font-pixel text-white/30 uppercase tracking-widest">Cards</span>
-                <span className="text-3xl font-display font-black text-[#8338ec]">{gameState.cardsInRound + 1}/{gameState.maxCardsInRound}</span>
+                <span className="text-[10px] font-pixel text-white/30 uppercase tracking-widest">Cards Left</span>
+                <span className="text-3xl font-display font-black text-[#8338ec]">{gameState.maxCardsInRound - gameState.cardsInRound}</span>
               </div>
+            </div>
+
+            <div className="mb-6 flex gap-4">
+              {Array.from({ length: MAX_SKIPS }).map((_, i) => (
+                <div 
+                  key={i}
+                  className={`w-12 h-2 rounded-full transition-colors ${i < gameState.skipsUsed ? 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]' : 'bg-white/10'}`}
+                />
+              ))}
+              <span className="text-[10px] font-pixel text-white/40 uppercase self-center ml-2">Skips Used</span>
             </div>
 
             <ForbiddenCard card={gameState.currentCard} difficulty={gameState.difficulty} />
@@ -148,7 +188,8 @@ export function ForbiddenFlashHub() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onPass}
-                className="group py-5 bg-white/5 border-2 border-white/10 hover:border-white/20 rounded-2xl flex flex-col items-center gap-2 transition-colors"
+                disabled={gameState.skipsUsed >= MAX_SKIPS}
+                className="group py-5 bg-white/5 border-2 border-white/10 hover:border-white/20 rounded-2xl flex flex-col items-center gap-2 transition-colors disabled:opacity-30"
               >
                 <X className="w-6 h-6 text-white/40 group-hover:text-white" />
                 <span className="font-display font-bold text-white/60 group-hover:text-white uppercase tracking-wider">Pass</span>

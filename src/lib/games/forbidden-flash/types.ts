@@ -28,6 +28,7 @@ export interface GameState {
   usedCardIds: string[];
   currentCard: Card | null;
   roundScore: number;
+  skipsUsed: number;
   cardsInRound: number;
   maxCardsInRound: number;
 }

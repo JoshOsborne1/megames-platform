@@ -4,9 +4,19 @@ import { motion } from "framer-motion";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { GameCard } from "@/components/GameCard";
-import { Droplet, MessageCircle } from "lucide-react";
+import { Droplet, MessageCircle, ShieldAlert } from "lucide-react";
 
 const games = [
+  {
+    id: "forbidden-flash",
+    name: "Forbidden Flash",
+    description: "The ultimate word race! Describe the target without saying the forbidden words. 2-10 players – local swap & play chaos.",
+    icon: <ShieldAlert className="w-full h-full" />,
+    players: "2-10",
+    duration: "5-15 min",
+    difficulty: "Hard" as const,
+    color: "#ff006e",
+  },
   {
     id: "shade-signals",
     name: "Shade Signals",

@@ -3,6 +3,7 @@ import { GameState, Player, Difficulty, Card } from "./types";
 
 export const INITIAL_TIMER = 60;
 export const CARDS_PER_ROUND = 5;
+export const MAX_SKIPS = 3;
 
 export function createInitialState(players: string[], difficulty: Difficulty): GameState {
   const playerObjects: Player[] = players.map((name, index) => ({
@@ -25,6 +26,7 @@ export function createInitialState(players: string[], difficulty: Difficulty): G
     usedCardIds: [],
     currentCard: null,
     roundScore: 0,
+    skipsUsed: 0,
     cardsInRound: 0,
     maxCardsInRound: CARDS_PER_ROUND,
   };
@@ -76,12 +78,15 @@ export function handleCorrect(state: GameState): GameState {
 }
 
 export function handlePass(state: GameState): GameState {
+  const updatedSkips = state.skipsUsed + 1;
+  
   const nextState = {
     ...state,
+    skipsUsed: updatedSkips,
     cardsInRound: state.cardsInRound + 1,
   };
 
-  if (nextState.cardsInRound >= nextState.maxCardsInRound) {
+  if (updatedSkips >= MAX_SKIPS || nextState.cardsInRound >= nextState.maxCardsInRound) {
     return {
       ...nextState,
       phase: "round-summary",
@@ -114,6 +119,7 @@ export function startNextTurn(state: GameState): GameState {
     timer: INITIAL_TIMER,
     phase: "instructions",
     roundScore: 0,
+    skipsUsed: 0,
     cardsInRound: 0,
   };
 }
