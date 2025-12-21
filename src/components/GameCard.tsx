@@ -79,7 +79,7 @@ export function GameCard({
   return (
     <motion.div
       ref={cardRef}
-      className="relative w-full h-[420px] cursor-pointer"
+      className="relative w-full h-[380px] md:h-[420px] cursor-pointer"
       style={{
         perspective: "1000px",
       }}

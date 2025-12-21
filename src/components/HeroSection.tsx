@@ -129,7 +129,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section ref={ref} className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden px-4">
+    <section ref={ref} className="relative min-h-[80dvh] md:min-h-[100dvh] flex items-center justify-center overflow-hidden px-4 py-12 md:py-0">
       <div className="absolute inset-0 scanline" />
       
       <motion.div style={{ y, opacity }} className="absolute inset-0">
@@ -140,7 +140,7 @@ export function HeroSection() {
               opacity: [0.3, 0.5, 0.3],
             }}
             transition={{ duration: 8, repeat: Infinity }}
-            className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-[#ff006e] rounded-full filter blur-[180px]"
+            className="absolute top-1/4 left-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-[#ff006e] rounded-full filter blur-[100px] md:blur-[180px]"
           />
           <motion.div
             animate={{
@@ -148,7 +148,7 @@ export function HeroSection() {
               opacity: [0.4, 0.6, 0.4],
             }}
             transition={{ duration: 10, repeat: Infinity }}
-            className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-[#8338ec] rounded-full filter blur-[200px]"
+            className="absolute bottom-1/4 right-1/4 w-[350px] md:w-[600px] h-[350px] md:h-[600px] bg-[#8338ec] rounded-full filter blur-[120px] md:blur-[200px]"
           />
           <motion.div
             animate={{
@@ -156,7 +156,7 @@ export function HeroSection() {
               opacity: [0.3, 0.5, 0.3],
             }}
             transition={{ duration: 12, repeat: Infinity }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-[#00f5ff] rounded-full filter blur-[190px]"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[550px] h-[300px] md:h-[550px] bg-[#00f5ff] rounded-full filter blur-[110px] md:blur-[190px]"
           />
         </div>
       </motion.div>
@@ -172,7 +172,7 @@ export function HeroSection() {
         ))}
       </div>
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 text-center py-20 md:py-0">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 text-center">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -182,26 +182,26 @@ export function HeroSection() {
             initial={{ scale: 0, rotateZ: -180 }}
             animate={{ scale: 1, rotateZ: 0 }}
             transition={{ delay: 0.3, type: "spring", stiffness: 150, bounce: 0.6 }}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#1a0f2e] to-[#2d1b4e] border-2 border-[#ff006e]/40 rounded-full px-6 py-3 mb-8 neon-glow-pink"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#1a0f2e] to-[#2d1b4e] border-2 border-[#ff006e]/40 rounded-full px-5 md:px-6 py-2 md:py-3 mb-6 md:mb-8 neon-glow-pink"
           >
             <motion.div
               animate={{ rotate: [0, 360] }}
               transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
             >
-              <Sparkles className="w-5 h-5 text-[#39ff14]" />
+              <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-[#39ff14]" />
             </motion.div>
-            <span className="text-sm font-display font-bold text-white">5 EPIC GAMES LIVE NOW</span>
-            <Gamepad2 className="w-5 h-5 text-[#00f5ff]" />
+            <span className="text-[10px] md:text-sm font-display font-bold text-white tracking-wider">5 EPIC GAMES LIVE NOW</span>
+            <Gamepad2 className="w-4 h-4 md:w-5 md:h-5 text-[#00f5ff]" />
           </motion.div>
 
           <motion.h1
-            className="font-display text-3xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-6 md:mb-8 leading-tight px-2"
+            className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-4 md:mb-8 leading-[1.1] md:leading-tight px-2"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.5, duration: 0.8 }}
           >
             <motion.span
-              className="block text-white mb-2"
+              className="block text-white"
               initial={{ x: -50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.6 }}
@@ -209,7 +209,7 @@ export function HeroSection() {
               ALL YOUR
             </motion.span>
             <motion.span
-              className="block text-gradient-neon mb-2 glitch tracking-wider"
+              className="block text-gradient-neon glitch tracking-wider py-1 md:py-2"
               initial={{ x: 50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.8 }}
@@ -230,7 +230,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2 }}
-            className="text-lg md:text-xl lg:text-2xl xl:text-3xl text-white/70 mb-8 md:mb-12 max-w-3xl mx-auto font-space font-medium px-4"
+            className="text-base md:text-xl lg:text-2xl xl:text-3xl text-white/70 mb-8 md:mb-12 max-w-3xl mx-auto font-space font-medium px-4"
           >
             No cards. No setup. No limits.{" "}
             <span className="text-gradient-neon font-bold">Just pure multiplayer chaos.</span>
@@ -250,7 +250,7 @@ export function HeroSection() {
               >
                 <Button
                   size="lg"
-                  className="w-full sm:w-auto relative font-display font-black text-lg md:text-xl px-8 md:px-10 py-6 md:py-8 rounded-2xl bg-gradient-to-r from-[#ff006e] via-[#8338ec] to-[#00f5ff] text-white overflow-hidden group pulse-glow touch-manipulation"
+                  className="w-full sm:w-auto relative font-display font-black text-lg md:text-xl px-8 md:px-10 py-6 md:py-8 rounded-2xl bg-gradient-to-r from-[#ff006e] via-[#8338ec] to-[#00f5ff] text-white overflow-hidden group pulse-glow touch-manipulation min-h-[64px] md:min-h-[80px]"
                 >
                   <span className="absolute inset-0 bg-gradient-to-r from-[#00f5ff] via-[#fb00ff] to-[#ff006e] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <span className="relative flex items-center gap-2 md:gap-3 justify-center">
@@ -261,22 +261,6 @@ export function HeroSection() {
                   </Button>
                 </motion.div>
               </Link>
-              {/* <Link href="/lobbies/create" className="w-full sm:w-auto">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-full"
-                >
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="w-full sm:w-auto border-3 border-[#00f5ff] text-[#00f5ff] hover:bg-[#00f5ff]/20 font-display font-black text-lg md:text-xl px-8 md:px-10 py-6 md:py-8 rounded-2xl neon-glow-cyan touch-manipulation"
-                  >
-                    <Users className="w-5 h-5 md:w-6 md:h-6 mr-2 md:mr-3" />
-                    CREATE LOBBY
-                  </Button>
-                </motion.div>
-              </Link> */}
             </motion.div>
         </motion.div>
       </div>
@@ -285,19 +269,19 @@ export function HeroSection() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2 }}
-        className="absolute bottom-8 md:bottom-12 left-1/2 -translate-x-1/2"
+        className="absolute bottom-6 md:bottom-12 left-1/2 -translate-x-1/2"
       >
         <motion.div
-          animate={{ y: [0, 15, 0] }}
+          animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-          className="text-[#00f5ff] flex flex-col items-center gap-3 cursor-pointer group"
+          className="text-[#00f5ff] flex flex-col items-center gap-2 cursor-pointer group"
         >
-          <span className="text-sm font-display font-bold tracking-wider neon-text-cyan">EXPLORE GAMES</span>
-          <div className="w-8 h-12 border-3 border-[#00f5ff] rounded-full flex items-start justify-center p-2 group-hover:border-[#ff006e] transition-colors neon-glow-cyan">
+          <span className="text-[10px] md:text-sm font-display font-bold tracking-wider neon-text-cyan">EXPLORE GAMES</span>
+          <div className="w-6 h-10 md:w-8 md:h-12 border-2 md:border-3 border-[#00f5ff] rounded-full flex items-start justify-center p-1 md:p-2 group-hover:border-[#ff006e] transition-colors neon-glow-cyan">
             <motion.div
-              animate={{ y: [0, 20, 0] }}
+              animate={{ y: [0, 15, 0] }}
               transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-              className="w-2 h-2 bg-[#00f5ff] rounded-full group-hover:bg-[#ff006e] transition-colors"
+              className="w-1.5 h-1.5 md:w-2 md:h-2 bg-[#00f5ff] rounded-full group-hover:bg-[#ff006e] transition-colors"
             />
           </div>
         </motion.div>

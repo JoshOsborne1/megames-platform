@@ -53,25 +53,25 @@ export function Footer() {
         />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-          <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center gap-3 mb-6 group">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 mb-10 md:mb-12">
+          <div className="col-span-2 lg:col-span-1">
+            <Link href="/" className="flex items-center gap-2 md:gap-3 mb-4 md:group">
               <motion.div whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}>
                 <Image
                   src="/logo-icon.svg"
                   alt="Megames"
-                  width={48}
-                  height={48}
-                  className="w-12 h-12 drop-shadow-[0_0_15px_rgba(255,0,110,0.6)]"
+                  width={40}
+                  height={40}
+                  className="w-10 h-10 md:w-12 md:h-12 drop-shadow-[0_0_15px_rgba(255,0,110,0.6)]"
                 />
               </motion.div>
-              <span className="font-display text-2xl font-black text-gradient-neon">MEGAMES</span>
+              <span className="font-display text-xl md:text-2xl font-black text-gradient-neon uppercase tracking-tight">Megames</span>
             </Link>
-            <p className="text-white/60 text-sm font-space mb-6 leading-relaxed">
+            <p className="text-white/60 text-xs md:text-sm font-space mb-6 leading-relaxed max-w-sm">
               All your favorite board games in one digital deck. Play with friends, no cards needed!
             </p>
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               {socialLinks.map((social) => (
                 <motion.a
                   key={social.label}
@@ -80,30 +80,30 @@ export function Footer() {
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.15, y: -3, rotate: [0, -5, 5, 0] }}
                   whileTap={{ scale: 0.95 }}
-                  className="w-12 h-12 rounded-xl flex items-center justify-center text-white transition-all holographic-card"
+                  className="w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center text-white transition-all holographic-card"
                   style={{
                     background: `linear-gradient(135deg, ${social.color}20, ${social.color}10)`,
-                    border: `2px solid ${social.color}40`,
+                    border: `1.5px solid ${social.color}40`,
                     boxShadow: `0 0 20px ${social.color}30`,
                   }}
                 >
-                  <social.icon className="w-5 h-5" />
+                  <social.icon className="w-4 h-4 md:w-5 md:h-5" />
                 </motion.a>
               ))}
             </div>
           </div>
 
-          <div>
-            <h3 className="font-display text-sm font-black text-[#ff006e] mb-6 tracking-wider neon-text-pink flex items-center gap-2">
-              <Zap className="w-4 h-4" />
+          <div className="col-span-1">
+            <h3 className="font-display text-[10px] md:text-sm font-black text-[#ff006e] mb-4 md:mb-6 tracking-widest neon-text-pink flex items-center gap-2">
+              <Zap className="w-3 h-3 md:w-4 md:h-4" />
               GAMES
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-2 md:space-y-3">
               {footerLinks.games.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-white/60 hover:text-[#ff006e] transition-all text-sm font-display font-semibold hover:translate-x-2 inline-block"
+                    className="text-white/60 hover:text-[#ff006e] transition-all text-[11px] md:text-sm font-display font-semibold hover:translate-x-1 inline-block"
                   >
                     {link.label}
                   </Link>
@@ -112,36 +112,17 @@ export function Footer() {
             </ul>
           </div>
 
-          <div>
-            <h3 className="font-display text-sm font-black text-[#8338ec] mb-6 tracking-wider neon-text-cyan flex items-center gap-2">
-              <Heart className="w-4 h-4" />
+          <div className="col-span-1">
+            <h3 className="font-display text-[10px] md:text-sm font-black text-[#8338ec] mb-4 md:mb-6 tracking-widest neon-text-cyan flex items-center gap-2">
+              <Heart className="w-3 h-3 md:w-4 md:h-4" />
               SUPPORT
             </h3>
-            <ul className="space-y-3">
+            <ul className="space-y-2 md:space-y-3">
               {footerLinks.support.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-white/60 hover:text-[#8338ec] transition-all text-sm font-display font-semibold hover:translate-x-2 inline-block"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-display text-sm font-black text-[#00f5ff] mb-6 tracking-wider neon-text-cyan flex items-center gap-2">
-              <Sparkles className="w-4 h-4" />
-              LEGAL
-            </h3>
-            <ul className="space-y-3">
-              {footerLinks.legal.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="text-white/60 hover:text-[#00f5ff] transition-all text-sm font-display font-semibold hover:translate-x-2 inline-block"
+                    className="text-white/60 hover:text-[#8338ec] transition-all text-[11px] md:text-sm font-display font-semibold hover:translate-x-1 inline-block"
                   >
                     {link.label}
                   </Link>
@@ -155,14 +136,14 @@ export function Footer() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="pt-8 border-t-2 border-[#8338ec]/20 flex flex-col md:flex-row items-center justify-between gap-6"
+          className="pt-6 md:pt-8 border-t border-[#8338ec]/20 flex flex-col md:flex-row items-center justify-between gap-4"
         >
-          <p className="text-white/50 text-sm font-display font-semibold">
+          <p className="text-white/40 text-[10px] md:text-sm font-display font-bold uppercase tracking-widest">
             © {new Date().getFullYear()} MEGAMES. ALL RIGHTS RESERVED.
           </p>
           <motion.p
             whileHover={{ scale: 1.05 }}
-            className="text-white/50 text-sm font-display font-semibold flex items-center gap-2"
+            className="text-white/40 text-[10px] md:text-sm font-display font-bold flex items-center gap-2 uppercase tracking-widest"
           >
             MADE WITH{" "}
             <motion.span
@@ -171,7 +152,7 @@ export function Footer() {
               }}
               transition={{ duration: 1.5, repeat: Infinity }}
             >
-              <Heart className="w-4 h-4 text-[#ff006e] fill-current drop-shadow-[0_0_10px_rgba(255,0,110,0.8)]" />
+              <Heart className="w-3 h-3 md:w-4 md:h-4 text-[#ff006e] fill-current drop-shadow-[0_0_10px_rgba(255,0,110,0.8)]" />
             </motion.span>{" "}
             FOR GAME LOVERS
           </motion.p>
