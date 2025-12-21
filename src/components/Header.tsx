@@ -4,14 +4,16 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Search, Trophy, Zap, Star } from "lucide-react";
+import { Menu, X, Search, Trophy, Zap, Star, Maximize2, Minimize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useFullscreen } from "@/hooks/use-fullscreen";
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { isFullscreen, toggleFullscreen } = useFullscreen();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -95,15 +97,32 @@ export function Header() {
             </AnimatePresence>
 
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setSearchOpen(!searchOpen)}
-                className="text-white/70 hover:text-[#00f5ff] hover:bg-[#00f5ff]/10 rounded-full"
-              >
-                <Search className="w-5 h-5" />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSearchOpen(!searchOpen)}
+                  className="text-white/70 hover:text-[#00f5ff] hover:bg-[#00f5ff]/10 rounded-full"
+                >
+                  <Search className="w-5 h-5" />
                 </Button>
-                </motion.div>
+              </motion.div>
+
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={toggleFullscreen}
+                  className="text-white/70 hover:text-[#00f5ff] hover:bg-[#00f5ff]/10 rounded-full"
+                  title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+                >
+                  {isFullscreen ? (
+                    <Minimize2 className="w-5 h-5" />
+                  ) : (
+                    <Maximize2 className="w-5 h-5" />
+                  )}
+                </Button>
+              </motion.div>
+
   
                 {/* <Link href="/login" className="hidden sm:block">
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

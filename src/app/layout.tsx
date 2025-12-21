@@ -1,13 +1,29 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { VisualEditsMessenger } from "orchids-visual-edits";
+
+export const viewport: Viewport = {
+  themeColor: "#0a0015",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   title: "Megames - All Your Favorite Board Games in One Digital Deck",
   description: "Play classic board games online with friends. No cards needed - just fun!",
   icons: {
     icon: "/logo-icon.svg",
+    apple: "/logo-icon.svg",
+  },
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Megames",
   },
 };
 
