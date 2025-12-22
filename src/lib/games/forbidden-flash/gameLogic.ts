@@ -1,9 +1,8 @@
 import { FORBIDDEN_CARDS } from "./data";
 import { GameState, Player, Difficulty, Card } from "./types";
 
-export const INITIAL_TIMER = 60;
-export const CARDS_PER_ROUND = 5;
-export const MAX_SKIPS = 3;
+export const INITIAL_TIMER = 15;
+export const CARDS_PER_ROUND = 10;
 
 export function createInitialState(players: string[], difficulty: Difficulty): GameState {
   const playerObjects: Player[] = players.map((name, index) => ({
@@ -81,29 +80,35 @@ export function handlePass(state: GameState): GameState {
 }
 
 export function startNextTurn(state: GameState): GameState {
-  const nextGuesser = (state.currentPlayerIndex + 1) % state.players.length;
+  const totalPlayers = state.players.length;
+  
+  // Calculate who goes next
+  const nextGuesser = (state.currentPlayerIndex + 1) % totalPlayers;
   const nextClueGiver = state.currentPlayerIndex;
 
-  const isNewRound = nextGuesser === 1; // back to the first sequence? or just check rounds
-  
-  const updatedRound = isNewRound ? state.currentRound + 1 : state.currentRound;
+  // A round is complete when the clueGiver returns to the very first person (index 0)
+  const isRoundComplete = nextClueGiver === totalPlayers - 1;
+  const nextRoundNumber = isRoundComplete ? state.currentRound + 1 : state.currentRound;
 
-  if (updatedRound > state.maxRounds) {
-      return {
-          ...state,
-          phase: "game-over"
-      };
+  // Check if we have exceeded the max rounds
+  if (isRoundComplete && state.currentRound >= state.maxRounds) {
+    return {
+      ...state,
+      phase: "game-over",
+      currentCard: null,
+    };
   }
 
   return {
     ...state,
     currentPlayerIndex: nextGuesser,
     clueGiverIndex: nextClueGiver,
-    currentRound: updatedRound,
+    currentRound: nextRoundNumber,
     timer: INITIAL_TIMER,
-    phase: "instructions",
+    phase: "instructions", // Show who is next before starting
     roundScore: 0,
     skipsUsed: 0,
     cardsInRound: 0,
+    currentCard: null,
   };
 }
