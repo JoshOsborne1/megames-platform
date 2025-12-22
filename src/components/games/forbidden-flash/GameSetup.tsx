@@ -9,7 +9,7 @@ interface GameSetupProps {
 }
 
 export function GameSetup({ onStart }: GameSetupProps) {
-  const [players, setPlayers] = useState<Player[]>(createInitialPlayers(2));
+  const [players, setPlayers] = useState<Player[]>(createInitialPlayers());
   const [rounds, setRounds] = useState(3);
 
   const handleStart = () => {
@@ -24,7 +24,7 @@ export function GameSetup({ onStart }: GameSetupProps) {
       icon={<Zap className="w-12 h-12" />}
       onStart={handleStart}
       startButtonText="Start Game"
-      startDisabled={players.length < 2}
+      startDisabled={players.length < 2 || players.some(p => !p.name.trim())}
       backUrl="/games"
       accentColor="#ff006e"
     >

@@ -6,8 +6,8 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { ColorSpectrum } from "@/components/games/shade-signals/ColorSpectrum";
-import { GameLobby, PlayerManager, GameSettings, createInitialPlayers, type Player } from "@/components/games/shared";
-import { Sparkles, X, Trophy, ArrowRight, Palette, Users } from "lucide-react";
+import { GameLobby, PlayerManager, GameSettings, createInitialPlayers, InGameNav, type Player } from "@/components/games/shared";
+import { Sparkles, X, Trophy, ArrowRight, Palette, Users, Droplet } from "lucide-react";
 import Link from "next/link";
 import type { ColorWithPosition } from "@/lib/games/shade-signals/types";
 import { generateColorOptions, calculateHSVDistance, calculateScore } from "@/lib/games/shade-signals/colorUtils";
@@ -23,7 +23,7 @@ interface GamePlayer {
 
 export default function ShadeSignalsGame() {
   const [phase, setPhase] = useState<GamePhase>("setup");
-  const [sharedPlayers, setSharedPlayers] = useState<Player[]>(createInitialPlayers(2));
+  const [sharedPlayers, setSharedPlayers] = useState<Player[]>(createInitialPlayers());
   const [players, setPlayers] = useState<GamePlayer[]>([]);
   const [currentRound, setCurrentRound] = useState(1);
   const [totalRounds, setTotalRounds] = useState(4);
@@ -170,7 +170,7 @@ export default function ShadeSignalsGame() {
             icon={<Palette className="w-12 h-12" />}
             onStart={startGame}
             startButtonText="Start Game"
-            startDisabled={sharedPlayers.length < 2}
+            startDisabled={sharedPlayers.length < 2 || sharedPlayers.some(p => !p.name.trim())}
             backUrl="/games"
             accentColor="#00f5ff"
           >
@@ -202,8 +202,16 @@ export default function ShadeSignalsGame() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a14]">
-      <Header />
-      <main className="flex-1 pt-24 pb-16 px-4">
+      {/* In-Game Navigation - replaces Header during gameplay */}
+      <InGameNav
+        gameName="Shade Signals"
+        accentColor="#00f5ff"
+        gameIcon={<Droplet className="w-full h-full" />}
+        showConfirmation={phase !== "finished"}
+        onConfirmLeave={() => { setSharedPlayers(createInitialPlayers()); setPhase("setup"); }}
+      />
+
+      <main className="flex-1 pt-8 pb-16 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <div className="text-white">
@@ -573,7 +581,7 @@ export default function ShadeSignalsGame() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <Button
-                    onClick={() => { setSharedPlayers(createInitialPlayers(2)); setPhase("setup"); }}
+                    onClick={() => { setSharedPlayers(createInitialPlayers()); setPhase("setup"); }}
                     className="bg-white text-[#0a0a14] hover:bg-white/90 font-black px-12 py-10 text-2xl rounded-[2rem] transition-all hover:scale-105 active:scale-95"
                   >
                     PLAY AGAIN

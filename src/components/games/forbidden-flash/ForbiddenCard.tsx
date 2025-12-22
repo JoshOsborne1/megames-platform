@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Card, Difficulty } from "@/lib/games/forbidden-flash/types";
-import { AlertCircle } from "lucide-react";
+import { Ban, Target } from "lucide-react";
 
 interface ForbiddenCardProps {
   card: Card;
@@ -13,15 +13,44 @@ export function ForbiddenCard({ card, difficulty }: ForbiddenCardProps) {
   const forbiddenCount = difficulty === "easy" ? 2 : difficulty === "medium" ? 3 : 4;
   const activeForbidden = card.forbidden.slice(0, forbiddenCount);
 
-  const getColorClass = (color: string) => {
-    switch (color) {
-      case "yellow": return "border-yellow-400 text-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.3)]";
-      case "blue": return "border-blue-400 text-blue-400 shadow-[0_0_20px_rgba(96,165,250,0.3)]";
-      case "green": return "border-green-400 text-green-400 shadow-[0_0_20px_rgba(74,222,128,0.3)]";
-      case "red": return "border-red-400 text-red-400 shadow-[0_0_20px_rgba(248,113,113,0.3)]";
-      default: return "border-[#00f5ff] text-[#00f5ff]";
+  // Determine card difficulty based on points: 20=Easy, 30=Medium, 50=Hard
+  const getCardDifficulty = (points: number): "easy" | "medium" | "hard" => {
+    if (points <= 20) return "easy";
+    if (points <= 30) return "medium";
+    return "hard";
+  };
+
+  const cardDifficulty = getCardDifficulty(card.points);
+
+  // Color theming based on card's point value
+  const difficultyColors = {
+    easy: {
+      primary: "#39ff14",
+      gradient: "from-[#39ff14]/20 to-[#00f5ff]/20",
+      border: "border-[#39ff14]/40",
+      shadow: "shadow-[0_0_30px_rgba(57,255,20,0.15)]",
+      glow: "0 0 30px rgba(57,255,20,0.5), 0 0 60px rgba(57,255,20,0.3)",
+      label: "Easy"
+    },
+    medium: {
+      primary: "#ffaa00",
+      gradient: "from-[#ffaa00]/20 to-[#ff6600]/20",
+      border: "border-[#ffaa00]/40",
+      shadow: "shadow-[0_0_30px_rgba(255,170,0,0.15)]",
+      glow: "0 0 30px rgba(255,170,0,0.5), 0 0 60px rgba(255,170,0,0.3)",
+      label: "Medium"
+    },
+    hard: {
+      primary: "#ff006e",
+      gradient: "from-[#ff006e]/20 to-[#ff0000]/20",
+      border: "border-[#ff006e]/40",
+      shadow: "shadow-[0_0_30px_rgba(255,0,110,0.15)]",
+      glow: "0 0 30px rgba(255,0,110,0.5), 0 0 60px rgba(255,0,110,0.3)",
+      label: "Hard"
     }
   };
+
+  const colors = difficultyColors[cardDifficulty];
 
   return (
     <motion.div
@@ -29,51 +58,68 @@ export function ForbiddenCard({ card, difficulty }: ForbiddenCardProps) {
       animate={{ rotateY: 0, opacity: 1 }}
       exit={{ rotateY: -90, opacity: 0 }}
       transition={{ type: "spring", stiffness: 100, damping: 15 }}
-      className={`relative w-80 h-[450px] bg-[#1a0f2e] border-4 rounded-3xl p-8 flex flex-col items-center justify-between text-center overflow-hidden ${getColorClass(card.color)}`}
+      className="relative w-full max-w-sm"
     >
-      <div className="absolute top-4 right-4 font-display font-black text-xl opacity-50">
-        {card.points}pts
-      </div>
-
-      <div className="mt-8 px-4 w-full">
-        <span className="text-xs font-pixel tracking-widest opacity-50 block mb-2">GUESS THIS WORD</span>
-        <h3 className={`font-display font-black uppercase tracking-tighter leading-tight mb-4 break-words ${
-          card.word.length > 14 ? 'text-2xl' : card.word.length > 8 ? 'text-3xl' : 'text-4xl'
-        }`}>
-          {card.word}
-        </h3>
-      </div>
-
-      <div className="w-full space-y-4">
-        <div className="flex items-center justify-center gap-2 text-red-500 mb-2">
-          <AlertCircle className="w-4 h-4" />
-          <span className="font-pixel text-[10px] tracking-wider uppercase">Forbidden Words</span>
+      {/* Main Target Word Card */}
+      <div className={`bg-gradient-to-br ${colors.gradient} border-2 ${colors.border} rounded-2xl p-6 mb-4 ${colors.shadow}`}>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2" style={{ color: colors.primary }}>
+            <Target className="w-4 h-4" />
+            <span className="text-[10px] font-pixel tracking-widest uppercase">Target Word</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span
+              className="text-[10px] font-pixel tracking-wider uppercase px-2 py-0.5 rounded"
+              style={{ backgroundColor: `${colors.primary}20`, color: colors.primary }}
+            >
+              {colors.label}
+            </span>
+            <span className="font-display font-black text-lg" style={{ color: colors.primary }}>
+              {card.points}pts
+            </span>
+          </div>
         </div>
-        
-        <div className="grid gap-2">
+
+        <motion.h2
+          initial={{ scale: 0.9 }}
+          animate={{ scale: 1 }}
+          className={`font-display font-black text-white text-center py-4 ${card.word.length > 12 ? 'text-2xl' : card.word.length > 8 ? 'text-3xl' : 'text-4xl'
+            }`}
+          style={{
+            wordBreak: 'break-word',
+            textShadow: colors.glow
+          }}
+        >
+          {card.word.toUpperCase()}
+        </motion.h2>
+      </div>
+
+      {/* Forbidden Words Section */}
+      <div className="bg-[#1a0f2e]/90 border-2 border-[#ff006e]/30 rounded-2xl p-5">
+        <div className="flex items-center gap-2 text-[#ff006e] mb-4">
+          <Ban className="w-4 h-4" />
+          <span className="text-[10px] font-pixel tracking-widest uppercase">Don't Say</span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
           {activeForbidden.map((word, i) => (
             <motion.div
               key={i}
-              initial={{ x: -20, opacity: 0 }}
+              initial={{ x: -10, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.1 * i }}
-              className="py-2 bg-white/5 border border-white/10 rounded-xl font-space font-bold text-white/90 text-lg uppercase"
+              transition={{ delay: 0.05 * i }}
+              className="py-2 px-3 bg-[#ff006e]/10 border border-[#ff006e]/20 rounded-lg font-space font-bold text-[#ff006e]/90 text-sm uppercase text-center"
             >
               {word}
             </motion.div>
           ))}
-          {card.forbidden.length > activeForbidden.length && (
-             <div className="text-[10px] font-space text-white/30 italic">
-               +{card.forbidden.length - activeForbidden.length} more in harder modes
-             </div>
-          )}
         </div>
-      </div>
 
-      <div className="mb-4">
-        <div className="text-[10px] font-pixel text-[#ff006e] animate-pulse">
-           DO NOT USE THESE WORDS!
-        </div>
+        {card.forbidden.length > activeForbidden.length && (
+          <p className="text-[10px] font-space text-white/30 text-center mt-3 italic">
+            +{card.forbidden.length - activeForbidden.length} more in harder modes
+          </p>
+        )}
       </div>
     </motion.div>
   );

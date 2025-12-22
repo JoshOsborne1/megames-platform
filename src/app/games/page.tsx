@@ -13,8 +13,7 @@ const games = [
     description: "The ultimate karaoke race! Be the fastest to sing a lyric containing the prompt word. 3-10 players – pure musical chaos.",
     icon: <Mic2 className="w-full h-full" />,
     players: "3-10",
-    duration: "10-20 min",
-    difficulty: "Medium" as const,
+    rules: "Race to sing lyrics! Get a word prompt, be first to sing a real lyric containing it. Fastest singer scores the point.",
     color: "#8338ec",
   },
   {
@@ -23,8 +22,7 @@ const games = [
     description: "The ultimate word race! Describe the target without saying the forbidden words. 2-10 players – local swap & play chaos.",
     icon: <ShieldAlert className="w-full h-full" />,
     players: "2-10",
-    duration: "5-15 min",
-    difficulty: "Hard" as const,
+    rules: "Describe the target word without using forbidden words. 60 seconds per turn. Pass the device and take turns as clue-giver!",
     color: "#ff006e",
   },
   {
@@ -33,8 +31,7 @@ const games = [
     description: "Guess the shade with clever signals! 2-10 players – endless rainbow chaos, perfect for online duels, big parties, or local swap & play.",
     icon: <Droplet className="w-full h-full" />,
     players: "2-10",
-    duration: "10-20 min",
-    difficulty: "Easy" as const,
+    rules: "Signal-giver picks a color, gives 1-word clue. Guessers place markers. Give 2-3 word clue to refine. Closest guess wins!",
     color: "#00f5ff",
   },
 ];

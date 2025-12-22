@@ -12,7 +12,7 @@ const gamesData: Record<string, {
   name: string;
   description: string;
   longDescription: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>;
   players: string;
   duration: string;
   difficulty: string;
@@ -35,57 +35,6 @@ const gamesData: Record<string, {
       "Give a 2-3 word clarifying clue",
       "Guessers place their second marker to refine their guess",
       "Score based on radial HSV distance with bonuses for accuracy",
-    ],
-  },
-  "card-clash": {
-    name: "Card Clash",
-    description: "The ultimate card-shedding showdown!",
-    longDescription: "Race to empty your hand by matching colors or numbers. Use special action cards like Skip, Reverse, and Draw Two to outmaneuver your opponents. The first player to get rid of all their cards wins! But watch out - if you forget to call out when you're down to your last card, you'll have to draw more!",
-    icon: Layers,
-    players: "2-8",
-    duration: "15-30 min",
-    difficulty: "Easy",
-    color: "#00BFFF",
-    rules: [
-      "Each player starts with 7 cards",
-      "Match the top card by color or number",
-      "Special cards: Skip, Reverse, Draw Two, Wild, Wild Draw Four",
-      "Say 'Clash!' when you have one card left",
-      "First player to empty their hand wins",
-    ],
-  },
-  "trivia-royale": {
-    name: "Trivia Royale",
-    description: "Test your knowledge!",
-    longDescription: "Battle through rounds of trivia across dozens of categories including History, Science, Pop Culture, Sports, and more. Earn points for correct answers and speed. Challenge friends or compete against players worldwide in real-time knowledge showdowns!",
-    icon: Brain,
-    players: "2-12",
-    duration: "20-45 min",
-    difficulty: "Medium",
-    color: "#FF4500",
-    rules: [
-      "Answer multiple choice questions",
-      "Faster correct answers earn more points",
-      "Categories rotate each round",
-      "Power-ups available: 50/50, Skip, Double Points",
-      "Highest score at the end wins",
-    ],
-  },
-  "kingdom-quest": {
-    name: "Kingdom Quest",
-    description: "Build your empire!",
-    longDescription: "Expand your kingdom through strategic resource management, diplomacy, and warfare. Build armies, forge alliances, trade resources, and conquer territories. Every decision shapes your path to victory in this epic strategy game.",
-    icon: Swords,
-    players: "2-6",
-    duration: "45-90 min",
-    difficulty: "Hard",
-    color: "#32CD32",
-    rules: [
-      "Start with a small territory and basic resources",
-      "Collect gold, wood, stone, and food each turn",
-      "Build structures to improve production",
-      "Train armies to defend and attack",
-      "Control the most territory to win",
     ],
   },
 };
@@ -150,11 +99,11 @@ export default function GameDetailPage() {
                         <Users className="w-4 h-4" />
                         {game.players} players
                       </span>
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-4 h-4" />
-                          {game.duration}
-                        </span>
-                      </div>
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        {game.duration}
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -194,10 +143,10 @@ export default function GameDetailPage() {
               transition={{ delay: 0.2 }}
               className="space-y-6"
             >
-                <div className="bg-[#16162a] border border-white/10 rounded-2xl p-6">
-                  <h3 className="font-display text-lg font-bold text-white mb-4">Play Now</h3>
-                  <div className="space-y-3">
-                    {/* <Link href={`/lobbies/create?game=${gameId}`}>
+              <div className="bg-[#16162a] border border-white/10 rounded-2xl p-6">
+                <h3 className="font-display text-lg font-bold text-white mb-4">Play Now</h3>
+                <div className="space-y-3">
+                  {/* <Link href={`/lobbies/create?game=${gameId}`}>
                       <Button
                         className="w-full py-5 font-semibold"
                         style={{ backgroundColor: game.color, color: "#000" }}
@@ -215,11 +164,11 @@ export default function GameDetailPage() {
                         Join Lobby
                       </Button>
                     </Link> */}
-                    <div className="text-gray-400 text-sm italic text-center py-4">
-                      Online multiplayer coming soon.<br/>Local play available!
-                    </div>
+                  <div className="text-gray-400 text-sm italic text-center py-4">
+                    Online multiplayer coming soon.<br />Local play available!
                   </div>
                 </div>
+              </div>
 
               <div className="bg-[#16162a] border border-white/10 rounded-2xl p-6">
                 <h3 className="font-display text-lg font-bold text-white mb-4">Game Stats</h3>
@@ -239,7 +188,7 @@ export default function GameDetailPage() {
                 </div>
               </div>
 
-                {/* <div
+              {/* <div
                   className="rounded-2xl p-6 border"
                   style={{
                     background: `linear-gradient(135deg, ${game.color}22 0%, ${game.color}11 100%)`,

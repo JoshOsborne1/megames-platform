@@ -88,7 +88,7 @@ export default function LobbyPage() {
 
   const startGame = () => {
     toast.success("Starting game...");
-    router.push(`/games/card-clash/play?lobby=${code}`);
+    router.push(`/games`);
   };
 
   const leaveLobby = () => {
@@ -113,7 +113,7 @@ export default function LobbyPage() {
                 </div>
                 <div>
                   <h1 className="font-display text-2xl md:text-3xl font-bold text-white">
-                    Card Clash Lobby
+                    Game Lobby
                   </h1>
                   <div className="flex items-center gap-2 mt-1">
                     <span className="text-gray-400 text-sm">Code:</span>
@@ -154,11 +154,10 @@ export default function LobbyPage() {
                   {!isHost && (
                     <Button
                       onClick={toggleReady}
-                      className={`${
-                        isReady
+                      className={`${isReady
                           ? "bg-[#32CD32] hover:bg-[#32CD32]/90"
                           : "bg-white/10 hover:bg-white/20"
-                      } text-white font-semibold`}
+                        } text-white font-semibold`}
                     >
                       {isReady ? (
                         <>
@@ -182,11 +181,10 @@ export default function LobbyPage() {
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: index * 0.1 }}
-                      className={`relative p-4 rounded-xl border-2 transition-all ${
-                        player.isReady || player.isHost
+                      className={`relative p-4 rounded-xl border-2 transition-all ${player.isReady || player.isHost
                           ? "border-[#32CD32]/50 bg-[#32CD32]/10"
                           : "border-white/10 bg-white/5"
-                      }`}
+                        }`}
                     >
                       {player.isHost && (
                         <div className="absolute -top-2 -right-2 w-6 h-6 bg-[#FFD700] rounded-full flex items-center justify-center">
@@ -201,9 +199,8 @@ export default function LobbyPage() {
                         {player.name}
                       </p>
                       <p
-                        className={`text-center text-xs mt-1 ${
-                          player.isReady || player.isHost ? "text-[#32CD32]" : "text-gray-500"
-                        }`}
+                        className={`text-center text-xs mt-1 ${player.isReady || player.isHost ? "text-[#32CD32]" : "text-gray-500"
+                          }`}
                       >
                         {player.isHost ? "Host" : player.isReady ? "Ready" : "Not Ready"}
                       </p>
@@ -254,19 +251,17 @@ export default function LobbyPage() {
                 {messages.map((msg) => (
                   <div
                     key={msg.id}
-                    className={`${
-                      msg.player === "You"
+                    className={`${msg.player === "You"
                         ? "text-right"
                         : "text-left"
-                    }`}
+                      }`}
                   >
                     <span className="text-xs text-gray-500">{msg.player}</span>
                     <div
-                      className={`inline-block px-3 py-2 rounded-lg mt-1 max-w-[80%] ${
-                        msg.player === "You"
+                      className={`inline-block px-3 py-2 rounded-lg mt-1 max-w-[80%] ${msg.player === "You"
                           ? "bg-[#00BFFF] text-black"
                           : "bg-white/10 text-white"
-                      }`}
+                        }`}
                     >
                       {msg.message}
                     </div>

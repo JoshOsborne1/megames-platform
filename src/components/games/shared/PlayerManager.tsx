@@ -59,8 +59,7 @@ export function PlayerManager({
     };
 
     const removePlayer = (id: string) => {
-        if (players.length <= minPlayers) return;
-
+        // Allow removal but don't go below 0
         const updated = players.filter((p) => p.id !== id);
         // Reassign teams if needed
         if (assignTeams) {
@@ -187,12 +186,13 @@ export function PlayerManager({
 }
 
 /**
- * Helper to create initial player list with default names
+ * Helper to create initial player list - starts empty by default
  */
-export function createInitialPlayers(count: number = 2, assignTeams: boolean = false, teamCount: number = 2): Player[] {
+export function createInitialPlayers(count: number = 0, assignTeams: boolean = false, teamCount: number = 2): Player[] {
+    if (count === 0) return [];
     return Array.from({ length: count }, (_, i) => ({
         id: `player-init-${i}`,
-        name: `Player ${i + 1}`,
+        name: "",
         teamId: assignTeams ? i % teamCount : undefined,
     }));
 }

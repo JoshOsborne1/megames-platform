@@ -21,19 +21,18 @@ export function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-    const navLinks = [
-      { href: "/", label: "Home", icon: Star },
-      { href: "/games", label: "Games", icon: Trophy },
-      // { href: "/lobbies", label: "Lobbies", icon: Zap },
-    ];
+  const navLinks = [
+    { href: "/", label: "Home", icon: Star },
+    { href: "/games", label: "Games", icon: Trophy },
+    // { href: "/lobbies", label: "Lobbies", icon: Zap },
+  ];
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
           ? "bg-[#0a0015]/95 backdrop-blur-xl border-b-2 border-[#ff006e]/30 shadow-[0_0_30px_rgba(255,0,110,0.2)]"
           : "bg-[#0a0015]/70 backdrop-blur-md border-b border-[#8338ec]/20"
-      }`}
+        }`}
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative flex items-center justify-between h-16 md:h-20">
@@ -50,9 +49,9 @@ export function Header() {
                 className="w-12 h-12 drop-shadow-[0_0_15px_rgba(255,0,110,0.6)]"
               />
             </motion.div>
-              <span className="font-display text-2xl font-black text-gradient-neon hidden min-[450px]:block tracking-wider">
-                MEGAMES
-              </span>
+            <span className="font-display text-2xl font-black text-gradient-neon hidden min-[450px]:block tracking-wider">
+              MEGAMES
+            </span>
           </Link>
 
           <div className="hidden lg:flex items-center gap-1 absolute left-1/2 -translate-x-1/2 transform">
@@ -79,8 +78,8 @@ export function Header() {
             })}
           </div>
 
-            <div className="flex items-center gap-2 md:gap-3 z-10">
-              <AnimatePresence>
+          <div className="flex items-center gap-2 md:gap-3 z-10">
+            <AnimatePresence>
               {searchOpen && (
                 <motion.div
                   initial={{ width: 0, opacity: 0 }}
@@ -97,34 +96,34 @@ export function Header() {
             </AnimatePresence>
 
             <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setSearchOpen(!searchOpen)}
-                  className="text-white/70 hover:text-[#00f5ff] hover:bg-[#00f5ff]/10 rounded-full"
-                >
-                  <Search className="w-5 h-5" />
-                </Button>
-              </motion.div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSearchOpen(!searchOpen)}
+                className="text-white/70 hover:text-[#00f5ff] hover:bg-[#00f5ff]/10 rounded-full"
+              >
+                <Search className="w-5 h-5" />
+              </Button>
+            </motion.div>
 
-              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={toggleFullscreen}
-                  className="text-white/70 hover:text-[#00f5ff] hover:bg-[#00f5ff]/10 rounded-full"
-                  title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-                >
-                  {isFullscreen ? (
-                    <Minimize2 className="w-5 h-5" />
-                  ) : (
-                    <Maximize2 className="w-5 h-5" />
-                  )}
-                </Button>
-              </motion.div>
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleFullscreen}
+                className="text-white/70 hover:text-[#00f5ff] hover:bg-[#00f5ff]/10 rounded-full"
+                title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+              >
+                {isFullscreen ? (
+                  <Minimize2 className="w-5 h-5" />
+                ) : (
+                  <Maximize2 className="w-5 h-5" />
+                )}
+              </Button>
+            </motion.div>
 
-  
-                {/* <Link href="/login" className="hidden sm:block">
+
+            {/* <Link href="/login" className="hidden sm:block">
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                   <Button
                     variant="outline"
@@ -149,11 +148,11 @@ export function Header() {
                   </Button>
                 </motion.div>
               </Link> */}
-  
-              <Button
+
+            <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden text-white/70 hover:text-[#ff006e] rounded-full touch-manipulation min-w-[44px] min-h-[44px]"
+              className="text-white/70 hover:text-[#ff006e] rounded-full touch-manipulation min-w-[44px] min-h-[44px]"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -167,7 +166,7 @@ export function Header() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="lg:hidden overflow-hidden"
+              className="overflow-hidden"
             >
               <div className="py-6 space-y-3 pb-safe">
                 {navLinks.map((link) => {
@@ -184,7 +183,7 @@ export function Header() {
                     </Link>
                   );
                 })}
-                  {/* <div className="flex gap-3 pt-4 px-4 border-t border-[#8338ec]/30">
+                {/* <div className="flex gap-3 pt-4 px-4 border-t border-[#8338ec]/30">
                     <Link href="/login" className="flex-1">
                       <Button
                         variant="outline"

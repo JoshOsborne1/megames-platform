@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { DiceRoller } from "@/components/games/rhyme-rebels/DiceRoller";
 import { GameTimer } from "@/components/games/rhyme-rebels/GameTimer";
@@ -19,15 +18,14 @@ import {
   nextTurn,
   checkWinCondition,
 } from "@/lib/games/rhyme-rebels/gameLogic";
-import { GameLobby, PlayerManager, createInitialPlayers, type Player as SharedPlayer } from "@/components/games/shared";
-import { Trophy, Users, MessageCircle, Zap, ArrowRight, Play, Home, ArrowLeft, CheckCircle, Mic2 } from "lucide-react";
-import Link from "next/link";
+import { GameLobby, PlayerManager, createInitialPlayers, InGameNav, type Player as SharedPlayer } from "@/components/games/shared";
+import { Trophy, Users, Zap, ArrowRight, Play, CheckCircle, Mic2 } from "lucide-react";
 
 export default function RhymeRebelsPage() {
   const router = useRouter();
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [phase, setPhase] = useState<"lobby" | "playing">("lobby");
-  const [sharedPlayers, setSharedPlayers] = useState<SharedPlayer[]>(createInitialPlayers(4, true, 2));
+  const [sharedPlayers, setSharedPlayers] = useState<SharedPlayer[]>(createInitialPlayers());
   const [guessInput, setGuessInput] = useState("");
   const [isRolling, setIsRolling] = useState(false);
   const [showPairs, setShowPairs] = useState(false);
@@ -123,7 +121,7 @@ export default function RhymeRebelsPage() {
           icon={<Mic2 className="w-12 h-12" />}
           onStart={startGameWithPlayers}
           startButtonText="Start Game"
-          startDisabled={sharedPlayers.length < 2}
+          startDisabled={sharedPlayers.length < 2 || sharedPlayers.some(p => !p.name.trim())}
           backUrl="/games"
           accentColor="#FF4500"
         >
@@ -148,8 +146,16 @@ export default function RhymeRebelsPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a14] flex flex-col">
-      <Header />
-      <main className="flex-1 pt-24 pb-16 px-4">
+      {/* In-Game Navigation */}
+      <InGameNav
+        gameName="Rhyme Rebels"
+        accentColor="#FF4500"
+        gameIcon={<Mic2 className="w-full h-full" />}
+        showConfirmation={gameState.phase !== "end"}
+        onConfirmLeave={() => { setGameState(null); setPhase("lobby"); }}
+      />
+
+      <main className="flex-1 pt-8 pb-16 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
@@ -256,8 +262,8 @@ export default function RhymeRebelsPage() {
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           className={`px-4 py-2 rounded-lg ${guess.isCorrect
-                              ? "bg-[#39ff14]/20 border border-[#39ff14]/50"
-                              : "bg-[#ff006e]/20 border border-[#ff006e]/50"
+                            ? "bg-[#39ff14]/20 border border-[#39ff14]/50"
+                            : "bg-[#ff006e]/20 border border-[#ff006e]/50"
                             }`}
                         >
                           <span className="text-white font-space">

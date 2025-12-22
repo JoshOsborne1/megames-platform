@@ -9,9 +9,9 @@ export function Footer() {
   const footerLinks = {
     games: [
       { href: "/games", label: "ALL GAMES" },
-      { href: "/games/card-clash", label: "CARD CLASH" },
-      { href: "/games/trivia-royale", label: "TRIVIA ROYALE" },
-      { href: "/games/kingdom-quest", label: "KINGDOM QUEST" },
+      { href: "/games/lyric-legends", label: "LYRIC LEGENDS" },
+      { href: "/games/forbidden-flash", label: "FORBIDDEN FLASH" },
+      { href: "/games/shade-signals", label: "SHADE SIGNALS" },
     ],
     support: [
       { href: "/help", label: "HELP CENTER" },

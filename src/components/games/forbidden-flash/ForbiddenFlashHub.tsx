@@ -14,7 +14,8 @@ import {
 
 import { ForbiddenCard } from "./ForbiddenCard";
 import { GameSetup } from "./GameSetup";
-import { Timer, Trophy, ArrowRight, Check, X, Info, Zap } from "lucide-react";
+import { InGameNav } from "../shared";
+import { Timer, Trophy, ArrowRight, Check, X, Info, Zap, ShieldAlert } from "lucide-react";
 
 export function ForbiddenFlashHub() {
   const [gameState, setGameState] = useState<GameState | null>(null);
@@ -109,6 +110,15 @@ export function ForbiddenFlashHub() {
 
   return (
     <div className="w-full max-w-4xl mx-auto px-4">
+      {/* In-Game Navigation */}
+      <InGameNav
+        gameName="Forbidden Flash"
+        accentColor="#ff006e"
+        gameIcon={<ShieldAlert className="w-full h-full" />}
+        showConfirmation={gameState.phase !== "game-over"}
+        onConfirmLeave={() => setGameState(null)}
+      />
+
       <AnimatePresence mode="wait">
         {gameState.phase === "instructions" && (
           <motion.div
@@ -253,36 +263,82 @@ export function ForbiddenFlashHub() {
         {gameState.phase === "round-summary" && (
           <motion.div
             key="summary"
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-[#1a0f2e]/80 backdrop-blur-xl border-2 border-white/10 rounded-3xl p-10 text-center shadow-2xl overflow-hidden relative"
+            className="w-full max-w-md mx-auto"
           >
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#ff006e] via-[#8338ec] to-[#00f5ff]" />
+            {/* Round Result Header - Compact */}
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#39ff14]/10 border border-[#39ff14]/30 rounded-full mb-3">
+                <Check className="w-4 h-4 text-[#39ff14]" />
+                <span className="text-[#39ff14] font-display font-bold text-sm">Round Complete</span>
+              </div>
+              <h3 className="font-display font-black text-2xl text-white">
+                {guesser.name} scored <span className="text-[#ff006e]">+{gameState.roundScore}</span>
+              </h3>
+              <p className="text-white/40 text-sm font-space mt-1">
+                {gameState.cardsInRound} cards completed
+              </p>
+            </div>
 
-            <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-6" />
-            <h2 className="font-display font-black text-5xl text-white mb-2 uppercase tracking-tighter">Round Results</h2>
-            <p className="text-white/40 font-space text-sm mb-10 uppercase tracking-[0.3em]">Performance Summary</p>
+            {/* Leaderboard */}
+            <div className="bg-[#1a0f2e]/80 border border-white/10 rounded-2xl p-4 mb-6">
+              <div className="flex items-center gap-2 text-white/40 mb-3">
+                <Trophy className="w-4 h-4" />
+                <span className="text-[10px] font-pixel uppercase tracking-widest">Leaderboard</span>
+              </div>
 
-            <div className="bg-white/5 rounded-2xl p-6 mb-10 border border-white/5">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-left">
-                  <span className="text-[10px] font-pixel text-white/30 uppercase block mb-1">Guesser</span>
-                  <div className="text-2xl font-display font-black text-[#00f5ff]">{guesser.name}</div>
-                </div>
-                <div className="text-right">
-                  <span className="text-[10px] font-pixel text-white/30 uppercase block mb-1">Earned</span>
-                  <div className="text-2xl font-display font-black text-[#ff006e]">+{gameState.roundScore} PTS</div>
-                </div>
+              <div className="space-y-2">
+                {[...gameState.players].sort((a, b) => b.score - a.score).map((player, i) => {
+                  const justScored = player.id === guesser.id;
+                  return (
+                    <motion.div
+                      key={player.id}
+                      initial={{ x: -20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: i * 0.05 }}
+                      className={`flex items-center justify-between p-3 rounded-xl transition-all ${i === 0
+                          ? 'bg-yellow-500/10 border border-yellow-500/30'
+                          : justScored
+                            ? 'bg-[#ff006e]/10 border border-[#ff006e]/30'
+                            : 'bg-white/5'
+                        }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-display font-bold ${i === 0 ? 'bg-yellow-500 text-black' : 'bg-white/10 text-white'
+                          }`}>
+                          {i + 1}
+                        </span>
+                        <span className="font-display font-bold text-white">{player.name}</span>
+                        {justScored && (
+                          <span className="text-[10px] font-pixel text-[#ff006e] bg-[#ff006e]/10 px-2 py-0.5 rounded">
+                            +{gameState.roundScore}
+                          </span>
+                        )}
+                      </div>
+                      <span className={`font-display font-black ${i === 0 ? 'text-yellow-500' : 'text-[#00f5ff]'}`}>
+                        {player.score}
+                      </span>
+                    </motion.div>
+                  );
+                })}
               </div>
             </div>
 
+            {/* Round Progress */}
+            <div className="flex items-center justify-between text-sm text-white/40 mb-6 px-2">
+              <span className="font-space">Round {gameState.currentRound}/{gameState.maxRounds}</span>
+              <span className="font-space">Next: {gameState.players[(gameState.currentPlayerIndex + 1) % gameState.players.length]?.name}</span>
+            </div>
+
+            {/* Continue Button */}
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={nextTurnHandler}
-              className="w-full py-5 bg-white text-[#1a0f2e] rounded-2xl font-display font-black text-xl uppercase tracking-widest flex items-center justify-center gap-3"
+              className="w-full py-4 bg-gradient-to-r from-[#ff006e] to-[#8338ec] text-white rounded-xl font-display font-bold text-lg flex items-center justify-center gap-2 shadow-lg"
             >
-              Continue <ArrowRight className="w-6 h-6" />
+              Continue <ArrowRight className="w-5 h-5" />
             </motion.button>
           </motion.div>
         )}

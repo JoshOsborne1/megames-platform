@@ -49,7 +49,7 @@ function FloatingCard({
           repeat: Infinity,
           ease: "easeInOut",
         }}
-          whileHover={{ scale: 1.2 }}
+        whileHover={{ scale: 1.2 }}
         className="w-20 h-32 md:w-24 md:h-36 rounded-2xl flex items-center justify-center text-3xl md:text-4xl shadow-2xl cursor-pointer card-3d holographic-shine"
         style={{
           background: `linear-gradient(135deg, ${gradientFrom} 0%, ${gradientTo} 100%)`,
@@ -131,7 +131,7 @@ export function HeroSection() {
   return (
     <section ref={ref} className="relative min-h-[80dvh] md:min-h-[100dvh] flex items-center justify-center overflow-hidden px-4 py-12 md:py-0">
       <div className="absolute inset-0 scanline" />
-      
+
       <motion.div style={{ y, opacity }} className="absolute inset-0">
         <div className="absolute inset-0 opacity-40">
           <motion.div
@@ -178,21 +178,7 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
         >
-          <motion.div
-            initial={{ scale: 0, rotateZ: -180 }}
-            animate={{ scale: 1, rotateZ: 0 }}
-            transition={{ delay: 0.3, type: "spring", stiffness: 150, bounce: 0.6 }}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-[#1a0f2e] to-[#2d1b4e] border-2 border-[#ff006e]/40 rounded-full px-5 md:px-6 py-2 md:py-3 mb-6 md:mb-8 neon-glow-pink"
-          >
-            <motion.div
-              animate={{ rotate: [0, 360] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            >
-              <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-[#39ff14]" />
-            </motion.div>
-            <span className="text-[10px] md:text-sm font-display font-bold text-white tracking-wider">5 EPIC GAMES LIVE NOW</span>
-            <Gamepad2 className="w-4 h-4 md:w-5 md:h-5 text-[#00f5ff]" />
-          </motion.div>
+
 
           <motion.h1
             className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-4 md:mb-8 leading-[1.1] md:leading-tight px-2"
@@ -258,34 +244,14 @@ export function HeroSection() {
                     PLAY NOW
                     <Zap className="w-5 h-5 md:w-6 md:h-6" />
                   </span>
-                  </Button>
-                </motion.div>
-              </Link>
-            </motion.div>
+                </Button>
+              </motion.div>
+            </Link>
+          </motion.div>
         </motion.div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2 }}
-        className="absolute bottom-6 md:bottom-12 left-1/2 -translate-x-1/2"
-      >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-          className="text-[#00f5ff] flex flex-col items-center gap-2 cursor-pointer group"
-        >
-          <span className="text-[10px] md:text-sm font-display font-bold tracking-wider neon-text-cyan">EXPLORE GAMES</span>
-          <div className="w-6 h-10 md:w-8 md:h-12 border-2 md:border-3 border-[#00f5ff] rounded-full flex items-start justify-center p-1 md:p-2 group-hover:border-[#ff006e] transition-colors neon-glow-cyan">
-            <motion.div
-              animate={{ y: [0, 15, 0] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-              className="w-1.5 h-1.5 md:w-2 md:h-2 bg-[#00f5ff] rounded-full group-hover:bg-[#ff006e] transition-colors"
-            />
-          </div>
-        </motion.div>
-      </motion.div>
+
     </section>
   );
 }

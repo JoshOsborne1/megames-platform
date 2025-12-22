@@ -37,16 +37,16 @@ const mockStats = {
 };
 
 const mockGameStats = [
-  { game: "Card Clash", played: 45, wins: 28, color: "#00BFFF" },
-  { game: "Trivia Royale", played: 52, wins: 25, color: "#FF4500" },
-  { game: "Kingdom Quest", played: 30, wins: 15, color: "#32CD32" },
+  { game: "Lyric Legends", played: 45, wins: 28, color: "#8338ec" },
+  { game: "Forbidden Flash", played: 52, wins: 25, color: "#ff006e" },
+  { game: "Shade Signals", played: 30, wins: 15, color: "#00f5ff" },
 ];
 
 const mockAchievements = [
   { id: 1, name: "First Win", description: "Win your first game", icon: Trophy, unlocked: true },
   { id: 2, name: "Streak Master", description: "Win 10 games in a row", icon: TrendingUp, unlocked: true },
-  { id: 3, name: "Card Collector", description: "Play 50 Card Clash games", icon: Target, unlocked: false },
-  { id: 4, name: "Trivia King", description: "Win 25 Trivia Royale games", icon: Crown, unlocked: false },
+  { id: 3, name: "Lyric Legend", description: "Play 50 Lyric Legends games", icon: Target, unlocked: false },
+  { id: 4, name: "Flash Master", description: "Win 25 Forbidden Flash games", icon: Crown, unlocked: false },
 ];
 
 const rankColors: Record<string, string> = {
@@ -177,16 +177,14 @@ export default function ProfilePage() {
                 {mockAchievements.map((achievement) => (
                   <div
                     key={achievement.id}
-                    className={`p-4 rounded-xl border ${
-                      achievement.unlocked
+                    className={`p-4 rounded-xl border ${achievement.unlocked
                         ? "border-[#FFD700]/30 bg-[#FFD700]/10"
                         : "border-white/10 bg-white/5 opacity-50"
-                    }`}
+                      }`}
                   >
                     <achievement.icon
-                      className={`w-6 h-6 mb-2 ${
-                        achievement.unlocked ? "text-[#FFD700]" : "text-gray-500"
-                      }`}
+                      className={`w-6 h-6 mb-2 ${achievement.unlocked ? "text-[#FFD700]" : "text-gray-500"
+                        }`}
                     />
                     <p className="font-display font-bold text-white text-sm">{achievement.name}</p>
                     <p className="text-gray-400 text-xs mt-1">{achievement.description}</p>
