@@ -19,45 +19,32 @@ import {
   nextTurn,
   checkWinCondition,
 } from "@/lib/games/rhyme-rebels/gameLogic";
-import { Trophy, Users, MessageCircle, Zap, ArrowRight, Play, Home, ArrowLeft, CheckCircle } from "lucide-react";
+import { GameLobby, PlayerManager, createInitialPlayers, type Player as SharedPlayer } from "@/components/games/shared";
+import { Trophy, Users, MessageCircle, Zap, ArrowRight, Play, Home, ArrowLeft, CheckCircle, Mic2 } from "lucide-react";
 import Link from "next/link";
 
 export default function RhymeRebelsPage() {
   const router = useRouter();
   const [gameState, setGameState] = useState<GameState | null>(null);
-  const [phase, setPhase] = useState<"mode-select" | "lobby" | "playing">("mode-select");
-  const [gameMode, setGameMode] = useState<"online" | "local" | null>(null);
-  const [playerName, setPlayerName] = useState("");
-  const [players, setPlayers] = useState<Player[]>([]);
+  const [phase, setPhase] = useState<"lobby" | "playing">("lobby");
+  const [sharedPlayers, setSharedPlayers] = useState<SharedPlayer[]>(createInitialPlayers(4, true, 2));
   const [guessInput, setGuessInput] = useState("");
   const [isRolling, setIsRolling] = useState(false);
   const [showPairs, setShowPairs] = useState(false);
 
-  const startGame = (mode: "online" | "local") => {
-    setGameMode(mode);
-    setPhase("lobby");
-  };
-
-  const addPlayer = () => {
-    if (!playerName.trim() || players.length >= 12) return;
-
-    const newPlayer: Player = {
-      id: `player-${Date.now()}`,
-      name: playerName.trim(),
-      teamId: players.length % 2,
-    };
-
-    setPlayers([...players, newPlayer]);
-    setPlayerName("");
-  };
-
   const startGameWithPlayers = () => {
-    if (players.length < 2) {
-      alert("Need at least 2 players to start!");
+    if (sharedPlayers.length < 2) {
       return;
     }
 
-    const initialState = createInitialState(players, gameMode || "local", `game-${Date.now()}`);
+    // Convert shared players to game players
+    const gamePlayers: Player[] = sharedPlayers.map((p, i) => ({
+      id: p.id,
+      name: p.name,
+      teamId: p.teamId ?? i % 2,
+    }));
+
+    const initialState = createInitialState(gamePlayers, "local", `game-${Date.now()}`);
     setGameState(initialState);
     setPhase("playing");
   };
@@ -81,12 +68,12 @@ export default function RhymeRebelsPage() {
   const handleGuessSubmit = () => {
     if (!gameState || !guessInput.trim()) return;
 
-    const currentPlayer = players[0];
+    const currentPlayer = sharedPlayers[0];
     const { state: newState, isCorrect } = submitGuess(
       gameState,
       currentPlayer.id,
       currentPlayer.name,
-      currentPlayer.teamId,
+      currentPlayer.teamId ?? 0,
       guessInput
     );
 
@@ -127,158 +114,29 @@ export default function RhymeRebelsPage() {
     setGameState({ ...gameState, phase: 'reveal' });
   };
 
-  if (phase === "mode-select") {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-[#1a0f2e] via-[#2d1555] to-[#1a0f2e] flex items-center justify-center p-4">
-        <div className="max-w-4xl w-full">
-          <motion.div
-            initial={{ opacity: 0, y: -50 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-12"
-          >
-            <motion.h1
-              className="font-display font-black text-7xl md:text-9xl text-white mb-4"
-              animate={{
-                textShadow: [
-                  "0 0 20px #FF4500",
-                  "0 0 40px #FF4500",
-                  "0 0 20px #FF4500",
-                ],
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              RHYME REBELS
-            </motion.h1>
-            <p className="text-white/70 font-space text-xl">
-              Chaotic rhyming charades party game
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 gap-6">
-            <motion.button
-              onClick={() => startGame("online")}
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="group relative overflow-hidden rounded-3xl p-8 bg-gradient-to-br from-[#00BFFF] to-[#32CD32] shadow-2xl"
-            >
-              <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-              <div className="relative z-10">
-                <Users className="w-16 h-16 text-white mb-4 mx-auto" />
-                <h3 className="font-display font-black text-3xl text-white mb-2">
-                  ONLINE MULTIPLAYER
-                </h3>
-                <p className="text-white/80 font-space">
-                  Play with voice/chat - remote party mode!
-                </p>
-              </div>
-            </motion.button>
-
-            <motion.button
-              onClick={() => startGame("local")}
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="group relative overflow-hidden rounded-3xl p-8 bg-gradient-to-br from-[#FF4500] to-[#9370DB] shadow-2xl"
-            >
-              <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-              <div className="relative z-10">
-                <MessageCircle className="w-16 h-16 text-white mb-4 mx-auto" />
-                <h3 className="font-display font-black text-3xl text-white mb-2">
-                  SWAP & PLAY
-                </h3>
-                <p className="text-white/80 font-space">
-                  Local hotseat - pass device for clues!
-                </p>
-              </div>
-            </motion.button>
-          </div>
-
-          <motion.button
-            onClick={() => router.push("/")}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="mt-8 mx-auto flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 rounded-full text-white font-space transition-colors"
-          >
-            <Home className="w-5 h-5" />
-            Back to Games
-          </motion.button>
-        </div>
-      </div>
-    );
-  }
-
   if (phase === "lobby") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#1a0f2e] via-[#2d1555] to-[#1a0f2e] flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="max-w-2xl w-full bg-white/5 backdrop-blur-xl rounded-3xl p-8 border-2 border-white/10"
+        <GameLobby
+          title="Rhyme Rebels"
+          subtitle="Chaotic rhyming charades party game"
+          icon={<Mic2 className="w-12 h-12" />}
+          onStart={startGameWithPlayers}
+          startButtonText="Start Game"
+          startDisabled={sharedPlayers.length < 2}
+          backUrl="/games"
+          accentColor="#FF4500"
         >
-          <h2 className="font-display font-black text-5xl text-white mb-6 text-center">
-            GAME LOBBY
-          </h2>
-
-          <div className="mb-6">
-            <div className="flex gap-3 mb-4">
-              <input
-                type="text"
-                value={playerName}
-                onChange={(e) => setPlayerName(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && addPlayer()}
-                placeholder="Enter player name..."
-                className="flex-1 px-4 py-3 bg-white/10 border-2 border-white/20 rounded-xl text-white font-space placeholder-white/40 focus:outline-none focus:border-[#FF4500]"
-                maxLength={20}
-              />
-              <motion.button
-                onClick={addPlayer}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 bg-gradient-to-r from-[#FF4500] to-[#FF6347] rounded-xl font-display font-black text-white"
-              >
-                ADD
-              </motion.button>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3 mb-6">
-              {players.map((player, index) => (
-                <motion.div
-                  key={player.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="px-4 py-2 bg-gradient-to-r from-purple-600/30 to-pink-600/30 rounded-lg border border-white/10"
-                >
-                  <span className="text-white font-space font-bold">
-                    {player.name}
-                  </span>
-                  <span className="ml-2 text-white/50 text-sm">
-                    Team {player.teamId + 1}
-                  </span>
-                </motion.div>
-              ))}
-            </div>
-
-            <div className="text-center text-white/60 font-space text-sm mb-4">
-              {players.length} / 12 players (min 2 to start)
-            </div>
-
-            <motion.button
-              onClick={startGameWithPlayers}
-              disabled={players.length < 2}
-              whileHover={players.length >= 2 ? { scale: 1.05 } : {}}
-              whileTap={players.length >= 2 ? { scale: 0.95 } : {}}
-              className="w-full py-4 bg-gradient-to-r from-[#32CD32] to-[#00BFFF] rounded-xl font-display font-black text-white text-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
-            >
-              <Play className="w-6 h-6" />
-              START GAME
-            </motion.button>
-          </div>
-        </motion.div>
+          <PlayerManager
+            players={sharedPlayers}
+            onPlayersChange={setSharedPlayers}
+            minPlayers={2}
+            maxPlayers={12}
+            assignTeams={true}
+            teamCount={2}
+            accentColor="#FF4500"
+          />
+        </GameLobby>
       </div>
     );
   }
@@ -286,7 +144,7 @@ export default function RhymeRebelsPage() {
   if (!gameState) return null;
 
   const currentTeam = gameState.teams[gameState.currentTeamIndex];
-  const isClueGiver = players[0]?.id === gameState.currentClueGiverId;
+  const isClueGiver = sharedPlayers[0]?.id === gameState.currentClueGiverId;
 
   return (
     <div className="min-h-screen bg-[#0a0a14] flex flex-col">
@@ -307,9 +165,8 @@ export default function RhymeRebelsPage() {
               {gameState.teams.map((team) => (
                 <motion.div
                   key={team.id}
-                  className={`px-6 py-3 rounded-xl ${
-                    team.id === currentTeam.id ? "ring-4 ring-white" : ""
-                  }`}
+                  className={`px-6 py-3 rounded-xl ${team.id === currentTeam.id ? "ring-4 ring-white" : ""
+                    }`}
                   style={{
                     background: `linear-gradient(135deg, ${team.color} 0%, ${team.color}88 100%)`,
                   }}
@@ -398,11 +255,10 @@ export default function RhymeRebelsPage() {
                           key={index}
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
-                          className={`px-4 py-2 rounded-lg ${
-                            guess.isCorrect
+                          className={`px-4 py-2 rounded-lg ${guess.isCorrect
                               ? "bg-[#39ff14]/20 border border-[#39ff14]/50"
                               : "bg-[#ff006e]/20 border border-[#ff006e]/50"
-                          }`}
+                            }`}
                         >
                           <span className="text-white font-space">
                             {guess.playerName}: {guess.guess}

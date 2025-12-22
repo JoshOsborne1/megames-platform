@@ -1,10 +1,10 @@
 import { FORBIDDEN_CARDS } from "./data";
 import { GameState, Player, Difficulty, Card } from "./types";
 
-export const INITIAL_TIMER = 15;
+export const INITIAL_TIMER = 60;
 export const CARDS_PER_ROUND = 10;
 
-export function createInitialState(players: string[], difficulty: Difficulty): GameState {
+export function createInitialState(players: string[], difficulty: Difficulty, maxRounds: number = 3): GameState {
   const playerObjects: Player[] = players.map((name, index) => ({
     id: `p${index}`,
     name,
@@ -17,7 +17,7 @@ export function createInitialState(players: string[], difficulty: Difficulty): G
     clueGiverIndex: 0,    // The player before guessing player
     difficulty,
     currentRound: 1,
-    maxRounds: playerObjects.length,
+    maxRounds,
     score: 0,
     timer: INITIAL_TIMER,
     phase: "setup",
@@ -44,7 +44,7 @@ export function drawNextCard(state: GameState): GameState {
     };
   }
 
-  const nextCard = availableCards[0];
+  const nextCard = availableCards[availableCards.length > 1 ? Math.floor(Math.random() * availableCards.length) : 0];
   return {
     ...state,
     usedCardIds: [...state.usedCardIds, nextCard.id],
@@ -81,7 +81,7 @@ export function handlePass(state: GameState): GameState {
 
 export function startNextTurn(state: GameState): GameState {
   const totalPlayers = state.players.length;
-  
+
   // Calculate who goes next
   const nextGuesser = (state.currentPlayerIndex + 1) % totalPlayers;
   const nextClueGiver = state.currentPlayerIndex;
@@ -110,5 +110,16 @@ export function startNextTurn(state: GameState): GameState {
     skipsUsed: 0,
     cardsInRound: 0,
     currentCard: null,
+  };
+}
+
+/**
+ * Transition from playing to turn-ended when timer hits 0.
+ */
+export function endTurn(state: GameState): GameState {
+  return {
+    ...state,
+    phase: "round-summary",
+    currentCard: null, // Stop showing the card so they can't guess after time
   };
 }

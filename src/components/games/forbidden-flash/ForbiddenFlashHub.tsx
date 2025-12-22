@@ -3,13 +3,15 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GameState, Difficulty } from "@/lib/games/forbidden-flash/types";
-import { 
-  createInitialState, 
-  drawNextCard, 
-  handleCorrect, 
+import {
+  createInitialState,
+  drawNextCard,
+  handleCorrect,
   handlePass,
-  startNextTurn
+  startNextTurn,
+  endTurn
 } from "@/lib/games/forbidden-flash/gameLogic";
+
 import { ForbiddenCard } from "./ForbiddenCard";
 import { GameSetup } from "./GameSetup";
 import { Timer, Trophy, ArrowRight, Check, X, Info, Zap } from "lucide-react";
@@ -18,21 +20,21 @@ export function ForbiddenFlashHub() {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("medium");
 
-  const startNewGame = (players: string[]) => {
-    const initialState = createInitialState(players, "medium");
+  const startNewGame = (players: string[], rounds: number) => {
+    const initialState = createInitialState(players, "medium", rounds);
     setGameState({ ...initialState, phase: "instructions" });
   };
 
   const beginRound = () => {
     if (!gameState) return;
     const stateWithCard = drawNextCard({
-       ...gameState,
-       difficulty: selectedDifficulty,
-       phase: "playing",
-       timer: 60,
-       skipsUsed: 0,
-       roundScore: 0,
-       cardsInRound: 0
+      ...gameState,
+      difficulty: selectedDifficulty,
+      phase: "playing",
+      timer: 60,
+      skipsUsed: 0,
+      roundScore: 0,
+      cardsInRound: 0
     });
     setGameState(stateWithCard);
   };
@@ -48,32 +50,55 @@ export function ForbiddenFlashHub() {
   };
 
   const nextTurnHandler = () => {
-     if (!gameState) return;
-     setGameState(startNextTurn(gameState));
+    if (!gameState) return;
+    setGameState(startNextTurn(gameState));
   };
 
-  // Timer logic
+  // Timer logic - fixed to properly end game when timer hits 0
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (gameState?.phase === "playing" && gameState.timer > 0) {
       interval = setInterval(() => {
         setGameState(prev => {
-          if (prev && prev.timer > 0) {
-            return { ...prev, timer: prev.timer - 1 };
+          if (!prev) return prev;
+          const newTimer = prev.timer - 1;
+          if (newTimer <= 0) {
+            // Timer hit 0, end the game
+            return endTurn(prev);
           }
-          if (prev && prev.timer === 0) {
-             return { ...prev, phase: "round-summary" };
-          }
-          return prev;
+          return { ...prev, timer: newTimer };
         });
       }, 1000);
     }
     return () => clearInterval(interval);
   }, [gameState?.phase, gameState?.timer]);
 
+  // Dev shortcut: Up Up Down Down to set timer to 5s for quick testing
+  useEffect(() => {
+    const sequence: string[] = [];
+    const targetSequence = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown"];
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      sequence.push(e.key);
+      // Keep only the last 4 keys
+      if (sequence.length > 4) {
+        sequence.shift();
+      }
+      // Check if sequence matches
+      if (sequence.join(",") === targetSequence.join(",") && gameState?.phase === "playing") {
+        setGameState(prev => prev ? { ...prev, timer: 5 } : prev);
+        console.log("🎮 DEV MODE: Timer set to 5 seconds!");
+        sequence.length = 0; // Reset sequence
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [gameState?.phase]);
+
   if (!gameState) {
     return (
-      <div className="flex justify-center">
+      <div className="flex-1 flex items-center justify-center min-h-screen">
         <GameSetup onStart={startNewGame} />
       </div>
     );
@@ -97,7 +122,7 @@ export function ForbiddenFlashHub() {
               <Info className="w-4 h-4" />
               UP NEXT
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10 text-left">
               <div className="space-y-4 p-6 bg-white/5 rounded-2xl border border-white/10">
                 <span className="text-[10px] font-pixel text-white/30 uppercase tracking-[0.2em] block">Clue Giver</span>
@@ -140,11 +165,10 @@ export function ForbiddenFlashHub() {
                   <button
                     key={d}
                     onClick={() => setSelectedDifficulty(d)}
-                    className={`py-3 rounded-xl font-display font-black text-xs uppercase transition-all border-2 ${
-                      selectedDifficulty === d
-                        ? "bg-[#00f5ff] text-[#1a0f2e] border-[#00f5ff] shadow-[0_0_20px_rgba(0,245,255,0.4)]"
-                        : "bg-white/5 text-white/40 border-white/10 hover:border-white/20"
-                    }`}
+                    className={`py-3 rounded-xl font-display font-black text-xs uppercase transition-all border-2 ${selectedDifficulty === d
+                      ? "bg-[#00f5ff] text-[#1a0f2e] border-[#00f5ff] shadow-[0_0_20px_rgba(0,245,255,0.4)]"
+                      : "bg-white/5 text-white/40 border-white/10 hover:border-white/20"
+                      }`}
                   >
                     {d}
                   </button>
@@ -171,48 +195,48 @@ export function ForbiddenFlashHub() {
             className="flex flex-col items-center"
           >
             {/* HUD */}
-              <div className="w-full grid grid-cols-3 items-center mb-10 px-4">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-pixel text-white/30 uppercase tracking-widest">Team Score</span>
-                  <span className="text-3xl font-display font-black text-[#ff006e]">{gameState.roundScore}</span>
-                </div>
-                
-                <div className="flex justify-center">
-                  <div className="relative">
-                    <div className={`w-20 h-20 rounded-full border-4 flex items-center justify-center font-display font-black text-2xl transition-colors ${gameState.timer <= 10 ? 'border-red-500 text-red-500 animate-pulse' : 'border-[#00f5ff] text-[#00f5ff]'}`}>
-                      {gameState.timer}
-                    </div>
-                    <Timer className={`absolute -bottom-1 -right-1 w-6 h-6 p-1 rounded-full bg-black border-2 transition-colors ${gameState.timer <= 10 ? 'border-red-500 text-red-500' : 'border-[#00f5ff] text-[#00f5ff]'}`} />
+            <div className="w-full grid grid-cols-3 items-center mb-10 px-4">
+              <div className="flex flex-col">
+                <span className="text-[10px] font-pixel text-white/30 uppercase tracking-widest">Team Score</span>
+                <span className="text-3xl font-display font-black text-[#ff006e]">{gameState.roundScore}</span>
+              </div>
+
+              <div className="flex justify-center">
+                <div className="relative">
+                  <div className={`w-20 h-20 rounded-full border-4 flex items-center justify-center font-display font-black text-2xl transition-colors ${gameState.timer <= 10 ? 'border-red-500 text-red-500 animate-pulse' : 'border-[#00f5ff] text-[#00f5ff]'}`}>
+                    {gameState.timer}
                   </div>
-                </div>
-
-                <div className="flex flex-col items-end">
-                  <span className="text-[10px] font-pixel text-white/30 uppercase tracking-widest">Answered</span>
-                  <span className="text-3xl font-display font-black text-[#8338ec]">{gameState.cardsInRound}</span>
+                  <Timer className={`absolute -bottom-1 -right-1 w-6 h-6 p-1 rounded-full bg-black border-2 transition-colors ${gameState.timer <= 10 ? 'border-red-500 text-red-500' : 'border-[#00f5ff] text-[#00f5ff]'}`} />
                 </div>
               </div>
 
-              <div className="mb-6 flex items-center gap-3">
-                <div className="px-4 py-1.5 bg-white/5 border border-white/10 rounded-full">
-                  <span className="font-pixel text-[10px] text-white/40 uppercase mr-2">Skips:</span>
-                  <span className="font-display font-black text-[#ff006e]">{gameState.skipsUsed}</span>
-                </div>
+              <div className="flex flex-col items-end">
+                <span className="text-[10px] font-pixel text-white/30 uppercase tracking-widest">Answered</span>
+                <span className="text-3xl font-display font-black text-[#8338ec]">{gameState.cardsInRound}</span>
               </div>
+            </div>
 
-              <ForbiddenCard card={gameState.currentCard} difficulty={gameState.difficulty} />
+            <div className="mb-6 flex items-center gap-3">
+              <div className="px-4 py-1.5 bg-white/5 border border-white/10 rounded-full">
+                <span className="font-pixel text-[10px] text-white/40 uppercase mr-2">Skips:</span>
+                <span className="font-display font-black text-[#ff006e]">{gameState.skipsUsed}</span>
+              </div>
+            </div>
 
-              {/* Controls */}
-              <div className="grid grid-cols-2 gap-6 w-full mt-10 max-w-md">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={onPass}
-                  className="group py-5 bg-white/5 border-2 border-white/10 hover:border-white/20 rounded-2xl flex flex-col items-center gap-2 transition-colors"
-                >
-                  <X className="w-6 h-6 text-white/40 group-hover:text-white" />
-                  <span className="font-display font-bold text-white/60 group-hover:text-white uppercase tracking-wider">Pass</span>
-                </motion.button>
-              
+            <ForbiddenCard card={gameState.currentCard} difficulty={gameState.difficulty} />
+
+            {/* Controls */}
+            <div className="grid grid-cols-2 gap-6 w-full mt-10 max-w-md">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onPass}
+                className="group py-5 bg-white/5 border-2 border-white/10 hover:border-white/20 rounded-2xl flex flex-col items-center gap-2 transition-colors"
+              >
+                <X className="w-6 h-6 text-white/40 group-hover:text-white" />
+                <span className="font-display font-bold text-white/60 group-hover:text-white uppercase tracking-wider">Pass</span>
+              </motion.button>
+
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -234,7 +258,7 @@ export function ForbiddenFlashHub() {
             className="bg-[#1a0f2e]/80 backdrop-blur-xl border-2 border-white/10 rounded-3xl p-10 text-center shadow-2xl overflow-hidden relative"
           >
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#ff006e] via-[#8338ec] to-[#00f5ff]" />
-            
+
             <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-6" />
             <h2 className="font-display font-black text-5xl text-white mb-2 uppercase tracking-tighter">Round Results</h2>
             <p className="text-white/40 font-space text-sm mb-10 uppercase tracking-[0.3em]">Performance Summary</p>
@@ -264,7 +288,7 @@ export function ForbiddenFlashHub() {
         )}
 
         {gameState.phase === "game-over" && (
-           <motion.div
+          <motion.div
             key="gameover"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -272,28 +296,28 @@ export function ForbiddenFlashHub() {
           >
             <Trophy className="w-24 h-24 text-yellow-500 mx-auto mb-8 animate-bounce" />
             <h2 className="font-display font-black text-7xl text-white mb-8 tracking-tighter uppercase glitch">Final Scores</h2>
-            
+
             <div className="space-y-4 mb-12">
-               {[...gameState.players].sort((a,b) => b.score - a.score).map((player, i) => (
-                 <motion.div
+              {[...gameState.players].sort((a, b) => b.score - a.score).map((player, i) => (
+                <motion.div
                   key={player.id}
                   initial={{ x: -50, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: i * 0.1 }}
                   className={`flex items-center justify-between p-5 rounded-2xl border-2 ${i === 0 ? 'bg-yellow-500/10 border-yellow-500 shadow-[0_0_30px_rgba(234,179,8,0.2)]' : 'bg-white/5 border-white/10'}`}
-                 >
-                   <div className="flex items-center gap-4">
-                     <span className={`w-8 h-8 rounded-full flex items-center justify-center font-display font-black ${i === 0 ? 'bg-yellow-500 text-[#1a0f2e]' : 'bg-white/10 text-white'}`}>
-                       {i + 1}
-                     </span>
-                     <span className="text-2xl font-display font-bold text-white uppercase">{player.name}</span>
-                   </div>
-                   <span className={`text-2xl font-display font-black ${i === 0 ? 'text-yellow-500' : 'text-[#00f5ff]'}`}>{player.score} PTS</span>
-                 </motion.div>
-               ))}
+                >
+                  <div className="flex items-center gap-4">
+                    <span className={`w-8 h-8 rounded-full flex items-center justify-center font-display font-black ${i === 0 ? 'bg-yellow-500 text-[#1a0f2e]' : 'bg-white/10 text-white'}`}>
+                      {i + 1}
+                    </span>
+                    <span className="text-2xl font-display font-bold text-white uppercase">{player.name}</span>
+                  </div>
+                  <span className={`text-2xl font-display font-black ${i === 0 ? 'text-yellow-500' : 'text-[#00f5ff]'}`}>{player.score} PTS</span>
+                </motion.div>
+              ))}
             </div>
 
-            <button 
+            <button
               onClick={() => window.location.reload()}
               className="px-12 py-5 bg-white text-black font-display font-black text-xl rounded-2xl uppercase tracking-widest hover:scale-105 transition-transform"
             >

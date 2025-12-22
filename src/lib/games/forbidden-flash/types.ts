@@ -23,7 +23,7 @@ export interface GameState {
   maxRounds: number;
   score: number;
   timer: number;
-  phase: "setup" | "instructions" | "playing" | "round-summary" | "game-over";
+  phase: "setup" | "instructions" | "playing" | "round-summary" | "game-over" | "turn-ended";
   cards: Card[];
   usedCardIds: string[];
   currentCard: Card | null;

@@ -56,23 +56,26 @@ export function createTeams(players: Player[]): Team[] {
 export function generateRhymePairs(): RhymePair[] {
   const pairs: RhymePair[] = [];
   const usedRhymes = new Set<string>();
-  
+
   const shuffled = shuffleDeck(allRhymes);
-  
+
   for (let i = 0; i < 18 && i < shuffled.length; i++) {
     const card = shuffled[i];
     if (!usedRhymes.has(card.rhyme)) {
+      // Pre-compute which half to display to avoid hydration issues
+      const showCelebHalf = Math.random() > 0.5;
       pairs.push({
         id: `pair-${i}`,
         celebHalf: card.celeb,
         rhymeHalf: card.rhyme,
+        displayHalf: showCelebHalf ? card.celeb : card.rhyme,
         isFlipped: false,
         isMatched: false,
       });
       usedRhymes.add(card.rhyme);
     }
   }
-  
+
   return shuffleArray(pairs);
 }
 
@@ -118,18 +121,18 @@ export function submitGuess(
   const normalizedPhrase = state.currentCard.phrase.toLowerCase().trim();
   const normalizedCeleb = state.currentCard.celeb.toLowerCase().trim();
   const normalizedRhyme = state.currentCard.rhyme.toLowerCase().trim();
-  
+
   let isCorrect = false;
-  
+
   if (state.currentMode === 'solve') {
     const fullAnswer = `${normalizedCeleb} ${normalizedRhyme}`;
-    isCorrect = 
+    isCorrect =
       normalizedGuess === normalizedCeleb ||
       normalizedGuess === normalizedRhyme ||
       normalizedGuess === fullAnswer ||
       normalizedGuess.includes(normalizedCeleb) && normalizedGuess.includes(normalizedRhyme);
   } else {
-    isCorrect = 
+    isCorrect =
       normalizedGuess === normalizedPhrase ||
       normalizedGuess === normalizedCeleb ||
       normalizedPhrase.includes(normalizedGuess) && normalizedGuess.length > 3;
@@ -177,7 +180,7 @@ export function matchPairs(
     return { state, isMatch: false, points: 0 };
   }
 
-  const isMatch = 
+  const isMatch =
     (firstPair.celebHalf === secondPair.celebHalf && firstPair.rhymeHalf === secondPair.rhymeHalf) ||
     firstPair.id === secondPair.id;
 
@@ -212,7 +215,7 @@ export function nextTurn(state: GameState): GameState {
   const currentTeam = state.teams[state.currentTeamIndex];
   const currentGiverIndex = currentTeam.players.findIndex(p => p.id === state.currentClueGiverId);
   const nextGiverIndex = (currentGiverIndex + 1) % currentTeam.players.length;
-  
+
   let nextTeamIndex = state.currentTeamIndex;
   let nextRound = state.currentRound;
   let nextClueGiverId = currentTeam.players[nextGiverIndex].id;

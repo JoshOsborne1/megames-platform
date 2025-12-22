@@ -5,23 +5,26 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { ColorSpectrum } from "@/components/games/shade-signals/ColorSpectrum";
-import { ArrowLeft, Users, Wifi, WifiOff, Play, Sparkles, X, Trophy, ArrowRight } from "lucide-react";
+import { GameLobby, PlayerManager, GameSettings, createInitialPlayers, type Player } from "@/components/games/shared";
+import { Sparkles, X, Trophy, ArrowRight, Palette, Users } from "lucide-react";
 import Link from "next/link";
 import type { ColorWithPosition } from "@/lib/games/shade-signals/types";
 import { generateColorOptions, calculateHSVDistance, calculateScore } from "@/lib/games/shade-signals/colorUtils";
 import { validateClue, suggestClueWords } from "@/lib/games/shade-signals/clueWords";
 
-type GameMode = "select" | "local" | "online";
 type GamePhase = "setup" | "signal-pick" | "clue-1" | "guess-1" | "clue-2" | "guess-2" | "reveal" | "leaderboard" | "finished";
 
+interface GamePlayer {
+  name: string;
+  score: number;
+  markers: ColorWithPosition[];
+}
+
 export default function ShadeSignalsGame() {
-  const [mode, setMode] = useState<GameMode>("local");
   const [phase, setPhase] = useState<GamePhase>("setup");
-  const [playerCount, setPlayerCount] = useState(2);
-  const [playerNames, setPlayerNames] = useState<string[]>(["", "", "", "", "", "", "", "", "", ""]);
-  const [players, setPlayers] = useState<{ name: string; score: number; markers: ColorWithPosition[] }[]>([]);
+  const [sharedPlayers, setSharedPlayers] = useState<Player[]>(createInitialPlayers(2));
+  const [players, setPlayers] = useState<GamePlayer[]>([]);
   const [currentRound, setCurrentRound] = useState(1);
   const [totalRounds, setTotalRounds] = useState(4);
   const [signalGiverIndex, setSignalGiverIndex] = useState(0);
@@ -33,7 +36,9 @@ export default function ShadeSignalsGame() {
   const [showTarget, setShowTarget] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPassPhone, setShowPassPhone] = useState(false);
-  const [nextAction, setNextAction] = useState<() => void>(() => {});
+  const [nextAction, setNextAction] = useState<() => void>(() => { });
+
+  const playerCount = sharedPlayers.length;
 
   const changePhase = (newPhase: GamePhase) => {
     setPhase(newPhase);
@@ -41,10 +46,10 @@ export default function ShadeSignalsGame() {
   };
 
   const startGame = () => {
-    const newPlayers = Array.from({ length: playerCount }, (_, i) => ({
-      name: playerNames[i]?.trim() || `Player ${i + 1}`,
+    const newPlayers = sharedPlayers.map(p => ({
+      name: p.name,
       score: 0,
-      markers: [],
+      markers: [] as ColorWithPosition[],
     }));
     setPlayers(newPlayers);
     setCurrentRound(1);
@@ -74,8 +79,7 @@ export default function ShadeSignalsGame() {
       setErrorMessage("Invalid clue! Must be 1 word and no color names.");
       return;
     }
-    
-    const nextGuesser = players[0 >= signalGiverIndex ? 1 : 0];
+
     setNextAction(() => () => changePhase("guess-1"));
     setShowPassPhone(true);
     setCurrentGuesserIndex(0);
@@ -93,11 +97,10 @@ export default function ShadeSignalsGame() {
 
     const nextGuesserIndex = currentGuesserIndex + 1;
     const totalGuessers = playerCount - 1;
-    
+
     if (nextGuesserIndex < totalGuessers) {
       setCurrentGuesserIndex(nextGuesserIndex);
-      const nextGuesser = players[nextGuesserIndex >= signalGiverIndex ? nextGuesserIndex + 1 : nextGuesserIndex];
-      setNextAction(() => () => {}); // No phase change, just continue
+      setNextAction(() => () => { }); // No phase change, just continue
       setShowPassPhone(true);
     } else {
       if (phase === "guess-1") {
@@ -160,80 +163,33 @@ export default function ShadeSignalsGame() {
     return (
       <div className="min-h-screen flex flex-col bg-[#0a0a14]">
         <Header />
-        <main className="flex-1 pt-24 pb-16 px-4">
-          <div className="max-w-2xl mx-auto">
-            <Link href="/games" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Games
-            </Link>
+        <main className="flex-1 pt-24 pb-16 px-4 flex items-center justify-center">
+          <GameLobby
+            title="Shade Signals"
+            subtitle="Guess the color from cryptic clues"
+            icon={<Palette className="w-12 h-12" />}
+            onStart={startGame}
+            startButtonText="Start Game"
+            startDisabled={sharedPlayers.length < 2}
+            backUrl="/games"
+            accentColor="#00f5ff"
+          >
+            <PlayerManager
+              players={sharedPlayers}
+              onPlayersChange={setSharedPlayers}
+              minPlayers={2}
+              maxPlayers={10}
+              accentColor="#00f5ff"
+            />
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-[#16162a] border border-white/10 rounded-3xl p-8">
-              <h2 className="font-display text-3xl font-bold text-white mb-6">Game Setup</h2>
-              
-              <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-white mb-2 font-semibold text-sm opacity-70">Players (2-10)</label>
-                    <Input
-                      type="number"
-                      min={2}
-                      max={10}
-                      value={playerCount}
-                      onChange={(e) => setPlayerCount(Math.min(10, Math.max(2, parseInt(e.target.value) || 2)))}
-                      className="bg-white/5 border-white/10 text-white text-lg"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-white mb-2 font-semibold text-sm opacity-70">Rounds (1-10)</label>
-                    <Input
-                      type="number"
-                      min={1}
-                      max={10}
-                      value={totalRounds}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        if (val === "") {
-                          setTotalRounds(1);
-                          return;
-                        }
-                        setTotalRounds(Math.min(10, Math.max(1, parseInt(val) || 1)));
-                      }}
-                      className="bg-white/5 border-white/10 text-white text-lg"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <label className="block text-white font-semibold">Player Names</label>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                    {Array.from({ length: playerCount }).map((_, i) => (
-                      <div key={i} className="relative">
-                        <Input
-                          placeholder={`Player ${i + 1}`}
-                          value={playerNames[i]}
-                          onChange={(e) => {
-                            const newNames = [...playerNames];
-                            newNames[i] = e.target.value;
-                            setPlayerNames(newNames);
-                          }}
-                          className="bg-white/5 border-white/10 text-white pl-10"
-                        />
-                        <Users className="w-4 h-4 text-white/30 absolute left-3 top-1/2 -translate-y-1/2" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <Button
-                  onClick={startGame}
-                  className="w-full py-6 text-xl font-bold bg-gradient-to-r from-[#00f5ff] to-[#ff006e] hover:opacity-90 mt-4 shadow-[0_0_20px_rgba(0,245,255,0.2)]"
-                >
-                  <Play className="w-6 h-6 mr-2" />
-                  Start Game!
-                </Button>
-              </div>
-            </motion.div>
-          </div>
+            <GameSettings
+              rounds={totalRounds}
+              onRoundsChange={setTotalRounds}
+              minRounds={1}
+              maxRounds={10}
+              accentColor="#ff006e"
+            />
+          </GameLobby>
         </main>
         <Footer />
       </div>
@@ -264,43 +220,42 @@ export default function ShadeSignalsGame() {
             </div>
           </div>
 
-            {phase === "signal-pick" && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center mb-8">
-                <h3 className="font-display text-4xl font-bold text-white mb-6">
-                  {signalGiver?.name}, pick your secret color:
-                </h3>
-                <div className="flex gap-6 justify-center flex-wrap mb-10">
-                  {colorOptions.map((color, i) => (
-                    <motion.div
-                      key={i}
-                      whileHover={{ scale: 1.1 }}
-                      onClick={() => setTargetColor(color)}
-                      className={`w-32 h-32 rounded-2xl cursor-pointer border-4 transition-all ${
-                        targetColor?.hex === color.hex ? 'border-[#00f5ff] scale-110' : 'border-white/20'
+          {phase === "signal-pick" && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center mb-8">
+              <h3 className="font-display text-4xl font-bold text-white mb-6">
+                {signalGiver?.name}, pick your secret color:
+              </h3>
+              <div className="flex gap-6 justify-center flex-wrap mb-10">
+                {colorOptions.map((color, i) => (
+                  <motion.div
+                    key={i}
+                    whileHover={{ scale: 1.1 }}
+                    onClick={() => setTargetColor(color)}
+                    className={`w-32 h-32 rounded-2xl cursor-pointer border-4 transition-all ${targetColor?.hex === color.hex ? 'border-[#00f5ff] scale-110' : 'border-white/20'
                       }`}
-                      style={{ backgroundColor: color.hex }}
-                    />
-                  ))}
-                </div>
-                
-                {targetColor && (
-                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                    <Button 
-                      onClick={() => changePhase("clue-1")}
-                      className="bg-gradient-to-r from-[#00f5ff] to-[#39ff14] text-[#0a0a14] font-black px-12 py-8 text-2xl rounded-2xl shadow-[0_10px_30px_rgba(0,245,255,0.3)]"
-                    >
-                      CONFIRM SECRET COLOR
-                    </Button>
-                  </motion.div>
-                )}
-              </motion.div>
-            )}
+                    style={{ backgroundColor: color.hex }}
+                  />
+                ))}
+              </div>
+
+              {targetColor && (
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                  <Button
+                    onClick={() => changePhase("clue-1")}
+                    className="bg-gradient-to-r from-[#00f5ff] to-[#39ff14] text-[#0a0a14] font-black px-12 py-8 text-2xl rounded-2xl shadow-[0_10px_30px_rgba(0,245,255,0.3)]"
+                  >
+                    CONFIRM SECRET COLOR
+                  </Button>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
 
           {(phase === "clue-1" || phase === "clue-2") && targetColor && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-center mb-4">
               <div className="flex items-center gap-4 bg-[#16162a] border border-white/10 rounded-2xl px-6 py-3">
                 <span className="text-white/70 font-semibold">Your Color:</span>
-                <div 
+                <div
                   className="w-16 h-16 rounded-lg border-2 border-white/30"
                   style={{ backgroundColor: targetColor.hex }}
                 />
@@ -313,11 +268,12 @@ export default function ShadeSignalsGame() {
               <div className="bg-[#16162a] border border-white/10 rounded-3xl p-8">
                 <h3 className="font-display text-3xl font-bold text-white mb-4">Give your 1-word clue:</h3>
                 <div className="flex gap-4">
-                  <Input
+                  <input
+                    type="text"
                     value={firstClue}
-                    onChange={(e) => setFirstClue(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFirstClue(e.target.value)}
                     placeholder="e.g., ocean, fire, sunset..."
-                    className="bg-white/5 border-white/10 text-white text-xl flex-1"
+                    className="bg-white/5 border border-white/10 text-white text-xl flex-1 rounded-xl px-4 py-3 outline-none focus:border-[#00f5ff]"
                   />
                   <Button onClick={submitFirstClue} className="bg-[#00f5ff] hover:bg-[#00f5ff]/80 text-black font-bold px-8">
                     Submit
@@ -333,11 +289,12 @@ export default function ShadeSignalsGame() {
               <div className="bg-[#16162a] border border-white/10 rounded-3xl p-8">
                 <h3 className="font-display text-3xl font-bold text-white mb-4">Give your 2-3 word clarifying clue:</h3>
                 <div className="flex gap-4">
-                  <Input
+                  <input
+                    type="text"
                     value={secondClue}
-                    onChange={(e) => setSecondClue(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSecondClue(e.target.value)}
                     placeholder="e.g., deep ocean waves, fiery sunset glow..."
-                    className="bg-white/5 border-white/10 text-white text-xl flex-1"
+                    className="bg-white/5 border border-white/10 text-white text-xl flex-1 rounded-xl px-4 py-3 outline-none focus:border-[#ff006e]"
                   />
                   <Button onClick={submitSecondClue} className="bg-[#ff006e] hover:bg-[#ff006e]/80 text-white font-bold px-8">
                     Submit
@@ -384,11 +341,10 @@ export default function ShadeSignalsGame() {
                         initial={{ x: -10, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ delay: i * 0.1 }}
-                        className={`flex justify-between items-center py-4 px-6 rounded-xl ${
-                          i === 0
-                            ? 'bg-gradient-to-r from-[#39ff14]/30 to-[#39ff14]/10 border-2 border-[#39ff14]'
-                            : 'bg-white/5 border border-white/10'
-                        }`}
+                        className={`flex justify-between items-center py-4 px-6 rounded-xl ${i === 0
+                          ? 'bg-gradient-to-r from-[#39ff14]/30 to-[#39ff14]/10 border-2 border-[#39ff14]'
+                          : 'bg-white/5 border border-white/10'
+                          }`}
                       >
                         <div className="flex items-center gap-4">
                           <span className={`font-display text-3xl font-bold ${i === 0 ? 'text-[#39ff14]' : 'text-white/50'}`}>
@@ -470,7 +426,7 @@ export default function ShadeSignalsGame() {
                   <div className="flex flex-col items-center gap-6">
                     <div className="relative group">
                       <div className="absolute -inset-4 bg-white/20 blur-2xl rounded-full group-hover:bg-[#39ff14]/20 transition-all duration-500" />
-                      <div 
+                      <div
                         className="relative w-48 h-48 md:w-64 md:h-64 rounded-[3rem] border-8 border-white shadow-2xl transition-transform duration-500 hover:scale-105"
                         style={{ backgroundColor: targetColor.hex }}
                       />
@@ -488,7 +444,7 @@ export default function ShadeSignalsGame() {
                   <div className="space-y-6">
                     {players.map((p, i) => (
                       i !== signalGiverIndex && (
-                        <motion.div 
+                        <motion.div
                           key={i}
                           initial={{ x: 20, opacity: 0 }}
                           animate={{ x: 0, opacity: 1 }}
@@ -500,7 +456,7 @@ export default function ShadeSignalsGame() {
                             <div className="flex gap-2">
                               {p.markers.map((m, mi) => (
                                 <div key={mi} className="flex flex-col items-center gap-1">
-                                  <div 
+                                  <div
                                     className="w-12 h-12 rounded-xl border-2 border-white/30"
                                     style={{ backgroundColor: m.hex }}
                                   />
@@ -512,7 +468,7 @@ export default function ShadeSignalsGame() {
                             </div>
                           </div>
                           <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                            <motion.div 
+                            <motion.div
                               initial={{ width: 0 }}
                               animate={{ width: `${Math.max(...p.markers.map(m => (1 - calculateHSVDistance(m.hsv, targetColor.hsv)) * 100))}%` }}
                               className="h-full bg-gradient-to-r from-[#00f5ff] to-[#39ff14]"
@@ -538,7 +494,7 @@ export default function ShadeSignalsGame() {
               {/* Mini Spectrum for Spatial Reference */}
               <div className="mt-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
                 <ColorSpectrum
-                  onColorSelect={() => {}}
+                  onColorSelect={() => { }}
                   markers={players.flatMap(p => p.markers)}
                   targetColor={targetColor}
                   showTarget={true}
@@ -562,7 +518,7 @@ export default function ShadeSignalsGame() {
             <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} className="text-center mt-12 max-w-4xl mx-auto">
               <div className="relative mb-12">
                 <motion.div
-                  animate={{ 
+                  animate={{
                     scale: [1, 1.1, 1],
                     rotate: [0, 5, -5, 0]
                   }}
@@ -583,24 +539,23 @@ export default function ShadeSignalsGame() {
               <h2 className="font-display text-7xl md:text-9xl font-black text-white mb-4 tracking-tighter italic">
                 VICTORY!
               </h2>
-              
+
               <div className="bg-[#16162a]/80 backdrop-blur-xl border-2 border-white/10 rounded-[3rem] p-12 shadow-2xl relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#00f5ff] via-[#ff006e] to-[#39ff14]" />
-                
+
                 <h3 className="text-3xl font-bold text-white/50 mb-10 uppercase tracking-widest">Final Leaderboard</h3>
-                
+
                 <div className="space-y-4 mb-12">
                   {players.sort((a, b) => b.score - a.score).map((p, i) => (
-                    <motion.div 
+                    <motion.div
                       key={i}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: i * 0.15 }}
-                      className={`flex justify-between items-center py-6 px-10 rounded-2xl ${
-                        i === 0 
-                          ? 'bg-gradient-to-r from-[#39ff14]/30 to-[#39ff14]/10 border-2 border-[#39ff14] scale-105 shadow-[0_0_40px_rgba(57,255,20,0.2)]' 
-                          : 'bg-white/5 border border-white/10'
-                      }`}
+                      className={`flex justify-between items-center py-6 px-10 rounded-2xl ${i === 0
+                        ? 'bg-gradient-to-r from-[#39ff14]/30 to-[#39ff14]/10 border-2 border-[#39ff14] scale-105 shadow-[0_0_40px_rgba(57,255,20,0.2)]'
+                        : 'bg-white/5 border border-white/10'
+                        }`}
                     >
                       <div className="flex items-center gap-6">
                         <span className={`font-display text-4xl font-black ${i === 0 ? 'text-[#39ff14]' : 'text-white/40'}`}>
@@ -617,14 +572,14 @@ export default function ShadeSignalsGame() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <Button 
-                    onClick={() => { setMode("local"); setPhase("setup"); }} 
+                  <Button
+                    onClick={() => { setSharedPlayers(createInitialPlayers(2)); setPhase("setup"); }}
                     className="bg-white text-[#0a0a14] hover:bg-white/90 font-black px-12 py-10 text-2xl rounded-[2rem] transition-all hover:scale-105 active:scale-95"
                   >
                     PLAY AGAIN
                   </Button>
                   <Link href="/games" className="w-full">
-                    <Button 
+                    <Button
                       className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 font-black px-12 py-10 text-2xl rounded-[2rem] transition-all hover:scale-105 active:scale-95"
                     >
                       HOME
@@ -653,7 +608,7 @@ export default function ShadeSignalsGame() {
             >
               <div className="relative mb-8">
                 <motion.div
-                  animate={{ 
+                  animate={{
                     rotateY: [0, 180, 0],
                     x: [-20, 20, -20]
                   }}
@@ -663,7 +618,7 @@ export default function ShadeSignalsGame() {
                   <div className="w-full h-1 bg-[#00f5ff]/30 rounded-full" />
                 </motion.div>
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex gap-4">
-                  <motion.div 
+                  <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
                     className="w-32 h-32 border-2 border-dashed border-[#00f5ff]/20 rounded-full"
@@ -674,18 +629,18 @@ export default function ShadeSignalsGame() {
               <h2 className="font-display text-4xl font-black text-white mb-4 tracking-tighter">
                 PASS THE <span className="text-[#00f5ff]">PHONE</span>
               </h2>
-              
+
               <div className="bg-white/5 rounded-2xl p-6 mb-8 border border-white/10">
                 <p className="text-white/70 text-lg mb-2">Next up:</p>
                 <p className="text-3xl font-black text-[#39ff14] glow-text">
-                  {(phase.includes("guess") || phase.includes("clue")) 
+                  {(phase.includes("guess") || phase.includes("clue"))
                     ? (currentPlayer?.name || signalGiver?.name)
                     : nextSignalGiver?.name}
                 </p>
               </div>
 
               <p className="text-white/40 text-sm mb-10 leading-relaxed">
-                Make sure the previous player can't see the screen! <br/>
+                Make sure the previous player can't see the screen! <br />
                 Tap the button when you're ready to start.
               </p>
 

@@ -139,7 +139,7 @@ export function Footer() {
           className="pt-6 md:pt-8 border-t border-[#8338ec]/20 flex flex-col md:flex-row items-center justify-between gap-4"
         >
           <p className="text-white/40 text-[10px] md:text-sm font-display font-bold uppercase tracking-widest">
-            © {new Date().getFullYear()} MEGAMES. ALL RIGHTS RESERVED.
+            © 2025 MEGAMES. ALL RIGHTS RESERVED.
           </p>
           <motion.p
             whileHover={{ scale: 1.05 }}

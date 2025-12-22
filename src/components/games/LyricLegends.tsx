@@ -1,15 +1,16 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trophy, Users, Play, RotateCcw, SkipForward, Check, Mic2, Star, Menu, X, Home, LayoutGrid, AlertCircle } from "lucide-react";
+import { Trophy, Play, RotateCcw, SkipForward, Check, Mic2, Star, Menu, X, Home, LayoutGrid, AlertCircle } from "lucide-react";
 import { LYRIC_WORDS } from "@/lib/games/lyric-legends/data";
 import confetti from "canvas-confetti";
 import { useRouter } from "next/navigation";
+import { GameLobby, PlayerManager, createInitialPlayers, type Player as SharedPlayer } from "./shared";
 
 type GameState = "setup" | "lobby" | "countdown" | "round" | "winner-selection" | "leaderboard" | "game-over";
 
-interface Player {
+interface GamePlayer {
   id: string;
   name: string;
   score: number;
@@ -18,8 +19,8 @@ interface Player {
 export default function LyricLegendsGame() {
   const router = useRouter();
   const [gameState, setGameState] = useState<GameState>("setup");
-  const [players, setPlayers] = useState<Player[]>([]);
-  const [playerName, setPlayerName] = useState("");
+  const [sharedPlayers, setSharedPlayers] = useState<SharedPlayer[]>(createInitialPlayers(2));
+  const [players, setPlayers] = useState<GamePlayer[]>([]);
   const [currentWord, setCurrentWord] = useState("");
   const [countdown, setCountdown] = useState(3);
   const [roundCount, setRoundCount] = useState(0);
@@ -56,15 +57,15 @@ export default function LyricLegendsGame() {
     return word;
   };
 
-  const addPlayer = () => {
-    if (playerName.trim() && players.length < 10) {
-      setPlayers([...players, { id: Math.random().toString(36).substr(2, 9), name: playerName.trim(), score: 0 }]);
-      setPlayerName("");
-    }
-  };
-
-    const startGame = () => {
-    if (players.length >= 2) {
+  const startGame = () => {
+    if (sharedPlayers.length >= 2) {
+      // Convert shared players to game players with score
+      const gamePlayers: GamePlayer[] = sharedPlayers.map(p => ({
+        id: p.id,
+        name: p.name,
+        score: 0,
+      }));
+      setPlayers(gamePlayers);
       setGameState("lobby");
     }
   };
@@ -91,7 +92,7 @@ export default function LyricLegendsGame() {
   }, [gameState, countdown]);
 
   const selectWinner = (playerId: string) => {
-    const updatedPlayers = players.map(p => 
+    const updatedPlayers = players.map(p =>
       p.id === playerId ? { ...p, score: p.score + 10 } : p
     );
     setPlayers(updatedPlayers);
@@ -118,7 +119,7 @@ export default function LyricLegendsGame() {
     <div className="min-h-screen bg-[#0f0a1e] text-white flex flex-col p-4 font-space overflow-hidden select-none relative">
       {/* Header with Hamburger */}
       <div className="absolute top-4 right-4 z-[60]">
-        <button 
+        <button
           onClick={() => setIsSidebarOpen(true)}
           className="p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors shadow-lg"
         >
@@ -160,7 +161,7 @@ export default function LyricLegendsGame() {
                   <span className="font-bold text-lg">Home</span>
                 </button>
                 <button
-                  onClick={() => handleNavigate("/lobbies")}
+                  onClick={() => handleNavigate("/games")}
                   className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors group"
                 >
                   <LayoutGrid className="w-6 h-6 text-[#ff006e] group-hover:scale-110 transition-transform" />
@@ -173,117 +174,95 @@ export default function LyricLegendsGame() {
                   <Mic2 className="w-5 h-5 text-[#00f5ff]" />
                   <span className="font-black text-xs uppercase tracking-widest text-white/40">Active Game</span>
                 </div>
-                  <p className="font-bold text-sm">Lyric Legends</p>
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+                <p className="font-bold text-sm">Lyric Legends</p>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
-        {/* Navigation Confirmation Modal */}
-        <AnimatePresence>
-          {navConfirmTarget && (
-            <div className="fixed inset-0 flex items-center justify-center p-4 z-[100]">
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setNavConfirmTarget(null)}
-                className="absolute inset-0 bg-black/80 backdrop-blur-md"
-              />
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                className="relative bg-[#1a142e] border-2 border-white/10 p-8 rounded-3xl max-w-sm w-full shadow-[0_0_50px_rgba(0,0,0,0.5)]"
-              >
-                <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <AlertCircle className="w-10 h-10 text-red-500" />
-                </div>
-                <h2 className="text-2xl font-black mb-4 text-center">END GAME?</h2>
-                <p className="text-white/60 text-center mb-8 font-medium">
-                  Leaving now will end the current session and all scores will be lost!
-                </p>
-                <div className="flex gap-4">
-                  <button
-                    onClick={() => setNavConfirmTarget(null)}
-                    className="flex-1 py-4 bg-white/5 hover:bg-white/10 rounded-xl font-bold transition-colors"
-                  >
-                    Go Back
-                  </button>
-                  <button
-                    onClick={confirmNavigation}
-                    className="flex-1 py-4 bg-red-500 hover:bg-red-600 rounded-xl font-bold transition-colors"
-                  >
-                    Quit Game
-                  </button>
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
-
-        <AnimatePresence mode="wait">
-          {gameState === "setup" && (
-            <motion.div 
-              key="setup"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 1.1 }}
-              className="flex-1 flex flex-col items-center justify-center max-w-md mx-auto w-full"
+      {/* Navigation Confirmation Modal */}
+      <AnimatePresence>
+        {navConfirmTarget && (
+          <div className="fixed inset-0 flex items-center justify-center p-4 z-[100]">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setNavConfirmTarget(null)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative bg-[#1a142e] border-2 border-white/10 p-8 rounded-3xl max-w-sm w-full shadow-[0_0_50px_rgba(0,0,0,0.5)]"
             >
-              <Mic2 className="w-16 h-16 text-[#00f5ff] mb-6 animate-pulse" />
-              <h1 className="text-4xl font-black mb-8 text-center text-gradient-neon uppercase">Lyric Legends</h1>
-            <div className="bg-white/5 border border-white/10 p-6 rounded-2xl w-full mb-6">
-              <label className="block text-sm font-bold mb-2 text-white/60">ADD PLAYERS (2-10)</label>
-              <div className="flex gap-2 mb-4">
-                <input 
-                  type="text" 
-                  value={playerName}
-                  onChange={(e) => setPlayerName(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && addPlayer()}
-                  className="bg-white/10 border-2 border-white/20 rounded-xl px-4 py-2 flex-1 focus:border-[#00f5ff] outline-none transition-colors"
-                  placeholder="Player name..."
-                />
-                <button 
-                  onClick={addPlayer}
-                  className="bg-[#00f5ff] text-black font-black px-6 rounded-xl hover:scale-105 transition-transform"
+              <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <AlertCircle className="w-10 h-10 text-red-500" />
+              </div>
+              <h2 className="text-2xl font-black mb-4 text-center">END GAME?</h2>
+              <p className="text-white/60 text-center mb-8 font-medium">
+                Leaving now will end the current session and all scores will be lost!
+              </p>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setNavConfirmTarget(null)}
+                  className="flex-1 py-4 bg-white/5 hover:bg-white/10 rounded-xl font-bold transition-colors"
                 >
-                  ADD
+                  Go Back
+                </button>
+                <button
+                  onClick={confirmNavigation}
+                  className="flex-1 py-4 bg-red-500 hover:bg-red-600 rounded-xl font-bold transition-colors"
+                >
+                  Quit Game
                 </button>
               </div>
-              <div className="space-y-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
-                {players.map(p => (
-                  <div key={p.id} className="bg-white/10 px-4 py-2 rounded-lg flex justify-between items-center">
-                    <span className="font-bold">{p.name}</span>
-                    <button onClick={() => setPlayers(players.filter(pl => pl.id !== p.id))} className="text-red-400">×</button>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <button 
-              disabled={players.length < 2}
-              onClick={startGame}
-              className={`w-full py-4 rounded-xl font-black text-xl transition-all ${
-                players.length >= 2 
-                ? "bg-gradient-to-r from-[#00f5ff] to-[#00d2ff] text-black shadow-[0_0_20px_rgba(0,245,255,0.4)] hover:scale-105" 
-                : "bg-white/10 text-white/30 cursor-not-allowed"
-              }`}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence mode="wait">
+        {gameState === "setup" && (
+          <motion.div
+            key="setup"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.1 }}
+            className="flex-1 flex items-center justify-center"
+          >
+            <GameLobby
+              title="Lyric Legends"
+              subtitle="Sing a song with the word"
+              icon={<Mic2 className="w-12 h-12" />}
+              onStart={startGame}
+              startButtonText="Start Game"
+              startDisabled={sharedPlayers.length < 2}
+              backUrl="/games"
+              accentColor="#00f5ff"
             >
-              START GAME
-            </button>
+              <PlayerManager
+                players={sharedPlayers}
+                onPlayersChange={setSharedPlayers}
+                minPlayers={2}
+                maxPlayers={10}
+                accentColor="#00f5ff"
+              />
+            </GameLobby>
           </motion.div>
         )}
 
         {gameState === "lobby" && (
-          <motion.div 
+          <motion.div
             key="lobby"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="flex-1 flex flex-col items-center justify-center"
           >
             <h2 className="text-2xl text-white/50 mb-4">READY TO ROCK?</h2>
-            <button 
+            <button
               onClick={startRound}
               className="w-64 h-64 rounded-full bg-gradient-to-br from-[#ff006e] to-[#ff00a0] flex flex-col items-center justify-center border-8 border-white/20 shadow-[0_0_50px_rgba(255,0,110,0.5)] hover:scale-110 active:scale-95 transition-all group"
             >
@@ -294,7 +273,7 @@ export default function LyricLegendsGame() {
         )}
 
         {gameState === "countdown" && (
-          <motion.div 
+          <motion.div
             key="countdown"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -313,14 +292,14 @@ export default function LyricLegendsGame() {
         )}
 
         {gameState === "round" && (
-          <motion.div 
+          <motion.div
             key="round"
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             className="flex-1 flex flex-col items-center justify-center p-4 text-center"
           >
             <span className="text-white/40 text-xl font-bold mb-4 tracking-widest uppercase">SING THE WORD</span>
-            <motion.h2 
+            <motion.h2
               initial={{ scale: 0.8 }}
               animate={{ scale: [1, 1.05, 1] }}
               transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
@@ -329,14 +308,14 @@ export default function LyricLegendsGame() {
               {currentWord}
             </motion.h2>
             <div className="flex gap-4 w-full max-w-lg">
-              <button 
+              <button
                 onClick={handleSkip}
                 className="flex-1 bg-white/10 hover:bg-white/20 py-6 rounded-2xl flex flex-col items-center gap-2 border border-white/10 transition-colors"
               >
                 <SkipForward className="w-8 h-8" />
                 <span className="font-bold">SKIP</span>
               </button>
-              <button 
+              <button
                 onClick={() => setGameState("winner-selection")}
                 className="flex-[2] bg-[#39ff14] text-black py-6 rounded-2xl flex flex-col items-center gap-2 shadow-[0_0_30px_rgba(57,255,20,0.4)] hover:scale-105 transition-all"
               >
@@ -349,13 +328,13 @@ export default function LyricLegendsGame() {
         )}
 
         {gameState === "winner-selection" && (
-            <motion.div 
-              key="winner-selection"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex-1 flex flex-col max-w-md mx-auto w-full pt-10"
-            >
-              <h2 className="text-3xl font-black mb-8 text-center text-gradient-neon uppercase">WHO WAS THE QUICKEST?</h2>
+          <motion.div
+            key="winner-selection"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex-1 flex flex-col max-w-md mx-auto w-full pt-10"
+          >
+            <h2 className="text-3xl font-black mb-8 text-center text-gradient-neon uppercase">WHO WAS THE QUICKEST?</h2>
             <div className="grid grid-cols-1 gap-3 overflow-y-auto pr-2 custom-scrollbar pb-10">
               {players.map(p => (
                 <button
@@ -378,7 +357,7 @@ export default function LyricLegendsGame() {
         )}
 
         {gameState === "leaderboard" && (
-          <motion.div 
+          <motion.div
             key="leaderboard"
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -389,8 +368,8 @@ export default function LyricLegendsGame() {
               <h2 className="text-3xl font-black text-gradient-neon uppercase">Leaderboard</h2>
             </div>
             <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden mb-8">
-              {[...players].sort((a,b) => b.score - a.score).map((p, idx) => (
-                <div key={p.id} className={`flex justify-between items-center p-4 ${idx !== players.length-1 ? 'border-b border-white/5' : ''} ${idx === 0 ? 'bg-[#00f5ff]/10' : ''}`}>
+              {[...players].sort((a, b) => b.score - a.score).map((p, idx) => (
+                <div key={p.id} className={`flex justify-between items-center p-4 ${idx !== players.length - 1 ? 'border-b border-white/5' : ''} ${idx === 0 ? 'bg-[#00f5ff]/10' : ''}`}>
                   <div className="flex items-center gap-4">
                     <span className="w-6 text-white/30 font-black">{idx + 1}</span>
                     <span className="font-black text-lg">{p.name}</span>
@@ -400,7 +379,7 @@ export default function LyricLegendsGame() {
               ))}
             </div>
             <div className="mt-auto pb-4">
-              <button 
+              <button
                 onClick={startRound}
                 className="w-full bg-[#ff006e] text-white py-6 rounded-2xl font-black text-2xl shadow-[0_0_30px_rgba(255,0,110,0.3)] hover:scale-105 transition-all"
               >
@@ -411,7 +390,7 @@ export default function LyricLegendsGame() {
         )}
 
         {gameState === "game-over" && (
-          <motion.div 
+          <motion.div
             key="game-over"
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -419,7 +398,7 @@ export default function LyricLegendsGame() {
           >
             <div className="relative mb-8">
               <Trophy className="w-32 h-32 text-yellow-400" />
-              <motion.div 
+              <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
                 className="absolute inset-0 border-4 border-dashed border-yellow-400/30 rounded-full"
@@ -428,9 +407,9 @@ export default function LyricLegendsGame() {
             <h1 className="text-5xl font-black mb-2 text-gradient-neon">GAME OVER!</h1>
             <p className="text-2xl font-bold mb-12 text-white/50">THE CHAMPION IS</p>
             <div className="text-7xl font-black italic mb-16 text-[#00f5ff] drop-shadow-[0_0_20px_rgba(0,245,255,0.4)]">
-              {[...players].sort((a,b) => b.score - a.score)[0].name}
+              {[...players].sort((a, b) => b.score - a.score)[0].name}
             </div>
-            <button 
+            <button
               onClick={resetGame}
               className="w-full max-w-xs bg-white text-black py-4 rounded-xl font-black text-xl flex items-center justify-center gap-3 hover:scale-105 transition-all"
             >

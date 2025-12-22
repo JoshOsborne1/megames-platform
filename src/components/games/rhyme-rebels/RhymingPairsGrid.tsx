@@ -54,9 +54,8 @@ export function RhymingPairsGrid({
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.05 }}
             onClick={() => handleCardClick(index)}
-            className={`relative aspect-square cursor-pointer ${
-              !canInteract || pair.isMatched ? "cursor-not-allowed" : ""
-            }`}
+            className={`relative aspect-square cursor-pointer ${!canInteract || pair.isMatched ? "cursor-not-allowed" : ""
+              }`}
             whileHover={
               canInteract && !pair.isMatched ? { scale: 1.05 } : {}
             }
@@ -84,9 +83,8 @@ export function RhymingPairsGrid({
               </div>
 
               <div
-                className={`absolute inset-0 rounded-xl flex flex-col items-center justify-center p-2 ${
-                  pair.isMatched ? "bg-green-500" : "bg-gradient-to-br from-purple-600 to-pink-600"
-                }`}
+                className={`absolute inset-0 rounded-xl flex flex-col items-center justify-center p-2 ${pair.isMatched ? "bg-green-500" : "bg-gradient-to-br from-purple-600 to-pink-600"
+                  }`}
                 style={{
                   backfaceVisibility: "hidden",
                   transform: "rotateY(180deg)",
@@ -104,9 +102,9 @@ export function RhymingPairsGrid({
                     <Check className="w-8 h-8 text-white" />
                   </motion.div>
                 )}
-                
+
                 <span className="font-space font-bold text-white text-xs text-center leading-tight">
-                  {Math.random() > 0.5 ? pair.celebHalf : pair.rhymeHalf}
+                  {pair.displayHalf}
                 </span>
               </div>
             </motion.div>

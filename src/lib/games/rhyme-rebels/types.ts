@@ -20,6 +20,7 @@ export interface RhymePair {
   id: string;
   celebHalf: string;
   rhymeHalf: string;
+  displayHalf: string; // Pre-computed display text to avoid hydration issues
   isFlipped: boolean;
   isMatched: boolean;
 }
