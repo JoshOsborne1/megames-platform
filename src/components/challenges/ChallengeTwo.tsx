@@ -22,23 +22,23 @@ export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
     const newTiles = Array.from({ length: TILE_COUNT }, (_, i) => i + 1);
     let currentTiles = [...newTiles];
     let emptyIndex = TILE_COUNT - 1;
-    
+
     // Shuffle with valid moves to ensure solvability
     for (let i = 0; i < 200; i++) {
       const neighbors = [];
       const row = Math.floor(emptyIndex / GRID_SIZE);
       const col = emptyIndex % GRID_SIZE;
-      
+
       if (row > 0) neighbors.push(emptyIndex - GRID_SIZE);
       if (row < GRID_SIZE - 1) neighbors.push(emptyIndex + GRID_SIZE);
       if (col > 0) neighbors.push(emptyIndex - 1);
       if (col < GRID_SIZE - 1) neighbors.push(emptyIndex + 1);
-      
+
       const nextIndex = neighbors[Math.floor(Math.random() * neighbors.length)];
       [currentTiles[emptyIndex], currentTiles[nextIndex]] = [currentTiles[nextIndex], currentTiles[emptyIndex]];
       emptyIndex = nextIndex;
     }
-    
+
     setTiles(currentTiles);
     setIsSolved(false);
     setMoves(0);
@@ -58,7 +58,7 @@ export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
     const emptyCol = emptyIndex % GRID_SIZE;
 
     const isNeighbor = (Math.abs(row - emptyRow) === 1 && col === emptyCol) ||
-                      (Math.abs(col - emptyCol) === 1 && row === emptyRow);
+      (Math.abs(col - emptyCol) === 1 && row === emptyRow);
 
     if (isNeighbor) {
       const newTiles = [...tiles];
@@ -66,16 +66,16 @@ export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
       setTiles(newTiles);
       setMoves(m => m + 1);
 
-        const solved = newTiles.every((tile, i) => tile === i + 1);
-        if (solved) {
-          setIsSolved(true);
-          setTimeout(() => onComplete(9), 1500);
-        }
+      const solved = newTiles.every((tile, i) => tile === i + 1);
+      if (solved) {
+        setIsSolved(true);
+        setTimeout(() => onComplete(9), 1500);
+      }
     }
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       className="w-full max-w-md mx-auto relative"
@@ -86,10 +86,10 @@ export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
           <div className="text-white/60 font-pixel text-sm">
             Moves: {moves}
           </div>
-          </div>
-          
-          <div className="grid grid-cols-4 gap-2 aspect-square w-full bg-black/40 p-3 rounded-2xl border border-white/10 touch-none">
-            {tiles.map((tile, index) => {
+        </div>
+
+        <div className="grid grid-cols-4 gap-2 aspect-square w-full bg-black/40 p-3 rounded-2xl border border-white/10">
+          {tiles.map((tile, index) => {
 
             const isEmpty = tile === TILE_COUNT;
             const correctPos = tile - 1;
@@ -101,15 +101,14 @@ export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
                 key={tile}
                 layout
                 onClick={() => handleTileClick(index)}
-                className={`relative aspect-square rounded-lg cursor-pointer overflow-hidden ${
-                  isEmpty ? "bg-white/5 border border-white/5" : "border border-white/20 shadow-lg"
-                }`}
+                className={`relative aspect-square rounded-lg cursor-pointer overflow-hidden ${isEmpty ? "bg-white/5 border border-white/5" : "border border-white/20 shadow-lg"
+                  }`}
                 whileHover={!isEmpty && !isSolved ? { scale: 1.02 } : {}}
                 whileTap={!isEmpty && !isSolved ? { scale: 0.95 } : {}}
               >
                 {!isEmpty && (
                   <>
-                    <div 
+                    <div
                       className="absolute inset-0 bg-cover bg-no-repeat transition-transform duration-500"
                       style={{
                         backgroundImage: `url(${IMAGE_URL})`,
@@ -143,7 +142,7 @@ export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
           )}
         </AnimatePresence>
 
-        <button 
+        <button
           onClick={initPuzzle}
           className="w-full mt-6 py-2 text-[10px] text-white/20 hover:text-white/60 transition-colors font-pixel tracking-widest uppercase"
         >

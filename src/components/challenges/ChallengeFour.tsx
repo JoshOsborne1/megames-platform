@@ -84,19 +84,19 @@ export function ChallengeFour({ onComplete }: ChallengeFourProps) {
 
   function canPlace(word: string, row: number, col: number, dir: number[], grid: string[][]) {
     for (let i = 0; i < word.length; i++) {
-        const r = row + i * dir[0];
-        const c = col + i * dir[1];
-        if (r < 0 || r >= GRID_SIZE || c < 0 || c >= GRID_SIZE) return false;
-        if (grid[r][c] !== "" && grid[r][c] !== word[i]) return false;
+      const r = row + i * dir[0];
+      const c = col + i * dir[1];
+      if (r < 0 || r >= GRID_SIZE || c < 0 || c >= GRID_SIZE) return false;
+      if (grid[r][c] !== "" && grid[r][c] !== word[i]) return false;
     }
     return true;
   }
 
   function place(word: string, row: number, col: number, dir: number[], grid: string[][]) {
     for (let i = 0; i < word.length; i++) {
-        const r = row + i * dir[0];
-        const c = col + i * dir[1];
-        grid[r][c] = word[i];
+      const r = row + i * dir[0];
+      const c = col + i * dir[1];
+      grid[r][c] = word[i];
     }
   }
 
@@ -109,7 +109,7 @@ export function ChallengeFour({ onComplete }: ChallengeFourProps) {
     const dr = end.row - start.row;
     const dc = end.col - start.col;
     const dist = Math.max(Math.abs(dr), Math.abs(dc));
-    
+
     if (dist === 0) return [start];
 
     // Check if it's a valid direction (horizontal, vertical, or 45deg diagonal)
@@ -134,21 +134,30 @@ export function ChallengeFour({ onComplete }: ChallengeFourProps) {
     setSelecting({ start: cell, current: cell });
   };
 
-  const handlePointerMove = (e: React.PointerEvent) => {
+  const handlePointerMove = useCallback((e: PointerEvent) => {
     if (!selecting) return;
-    
+
     const element = document.elementFromPoint(e.clientX, e.clientY);
     if (element) {
       const row = element.getAttribute('data-row');
       const col = element.getAttribute('data-col');
       if (row !== null && col !== null) {
-        const cell = grid[parseInt(row)][parseInt(col)];
+        const r = parseInt(row);
+        const c = parseInt(col);
+        const cell = grid[r][c];
         if (cell && (cell.row !== selecting.current.row || cell.col !== selecting.current.col)) {
-          setSelecting({ ...selecting, current: cell });
+          setSelecting(prev => prev ? { ...prev, current: cell } : null);
         }
       }
     }
-  };
+  }, [selecting, grid]);
+
+  useEffect(() => {
+    if (selecting) {
+      window.addEventListener("pointermove", handlePointerMove);
+      return () => window.removeEventListener("pointermove", handlePointerMove);
+    }
+  }, [selecting, handlePointerMove]);
 
   const handlePointerUp = () => {
     if (!selecting) return;
@@ -163,10 +172,10 @@ export function ChallengeFour({ onComplete }: ChallengeFourProps) {
       selected.forEach(c => newFoundCells.add(`${c.row}-${c.col}`));
       setFoundCells(newFoundCells);
     } else if (WORDS.includes(revWord) && !foundWords.includes(revWord)) {
-        setFoundWords(prev => [...prev, revWord]);
-        const newFoundCells = new Set(foundCells);
-        selected.forEach(c => newFoundCells.add(`${c.row}-${c.col}`));
-        setFoundCells(newFoundCells);
+      setFoundWords(prev => [...prev, revWord]);
+      const newFoundCells = new Set(foundCells);
+      selected.forEach(c => newFoundCells.add(`${c.row}-${c.col}`));
+      setFoundCells(newFoundCells);
     }
 
     setSelecting(null);
@@ -187,9 +196,8 @@ export function ChallengeFour({ onComplete }: ChallengeFourProps) {
   const selectedKeys = new Set(selectedCells.map(c => `${c.row}-${c.col}`));
 
   return (
-    <div 
-      className="w-full max-w-2xl mx-auto flex flex-col items-center gap-6" 
-      onPointerMove={selecting ? handlePointerMove : undefined}
+    <div
+      className="w-full max-w-2xl mx-auto flex flex-col items-center gap-6"
     >
       <div className="text-center">
         <p className="text-gray-400 text-sm">Find all the festive words!</p>
@@ -197,13 +205,12 @@ export function ChallengeFour({ onComplete }: ChallengeFourProps) {
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 w-full max-w-md">
         {WORDS.map(word => (
-          <div 
+          <div
             key={word}
-            className={`px-3 py-1 rounded-full text-xs font-bold border transition-colors flex items-center justify-between ${
-              foundWords.includes(word) 
-                ? 'bg-green-500/20 border-green-500 text-green-400' 
-                : 'bg-white/5 border-white/10 text-white/40'
-            }`}
+            className={`px-3 py-1 rounded-full text-xs font-bold border transition-colors flex items-center justify-between ${foundWords.includes(word)
+              ? 'bg-green-500/20 border-green-500 text-green-400'
+              : 'bg-white/5 border-white/10 text-white/40'
+              }`}
           >
             {word}
             {foundWords.includes(word) && <CheckCircle2 className="w-3 h-3" />}
@@ -211,10 +218,10 @@ export function ChallengeFour({ onComplete }: ChallengeFourProps) {
         ))}
       </div>
 
-      <div 
+      <div
         className="relative bg-white/5 p-2 rounded-xl border border-white/10 select-none touch-none"
-        style={{ 
-          display: 'grid', 
+        style={{
+          display: 'grid',
           gridTemplateColumns: `repeat(${GRID_SIZE}, 1fr)`,
           gap: '2px'
         }}
@@ -223,25 +230,25 @@ export function ChallengeFour({ onComplete }: ChallengeFourProps) {
           const key = `${r}-${c}`;
           const isSelected = selectedKeys.has(key);
           const isFound = foundCells.has(key);
-          
-            return (
-              <motion.div
-                key={key}
-                data-row={r}
-                data-col={c}
-                onPointerDown={() => handlePointerDown(cell)}
-                className={`
+
+          return (
+            <motion.div
+              key={key}
+              data-row={r}
+              data-col={c}
+              onPointerDown={() => handlePointerDown(cell)}
+              className={`
                   w-[26px] h-[26px] sm:w-8 sm:h-8 flex items-center justify-center text-[10px] sm:text-sm font-bold rounded-md cursor-pointer transition-colors relative z-10
                   ${isSelected ? 'bg-red-600 text-white' : ''}
                   ${isFound && !isSelected ? 'bg-green-600/60 text-white shadow-[0_0_10px_rgba(34,197,94,0.3)]' : ''}
                   ${!isSelected && !isFound ? 'text-white/60 hover:bg-white/10' : ''}
                 `}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                {cell.char}
-              </motion.div>
-            );
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              {cell.char}
+            </motion.div>
+          );
 
         }))}
       </div>

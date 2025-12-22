@@ -25,7 +25,7 @@ export default function HiddenPage() {
     const newAnswers = [...answers, answer];
     const newCompleted = [...completedChallenges];
     newCompleted[currentChallenge] = true;
-    
+
     setAnswers(newAnswers);
     setCompletedChallenges(newCompleted);
     setLastUnlockedNumber(answer);
@@ -57,6 +57,7 @@ export default function HiddenPage() {
     setShowSuccessModal(false);
     if (currentChallenge < 3) {
       setCurrentChallenge(currentChallenge + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -85,11 +86,11 @@ export default function HiddenPage() {
   const CurrentChallengeComponent = challenges[currentChallenge].component;
 
   return (
-    <div className="min-h-screen bg-[#0a0015] flex flex-col overflow-hidden relative">
+    <div className="min-h-screen bg-[#0a0015] flex flex-col overflow-x-hidden relative">
       <Snowfall />
       <div className="flex-1 flex flex-col max-w-md mx-auto w-full px-4 py-6 safe-area-inset relative z-20">
-        
-        <motion.div 
+
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-6 relative"
@@ -101,20 +102,19 @@ export default function HiddenPage() {
             {challenges.map((_, idx) => (
               <motion.div
                 key={idx}
-                className={`h-2 rounded-full transition-all ${
-                  completedChallenges[idx] 
-                    ? 'w-12 bg-gradient-to-r from-[#ff006e] to-[#8338ec]' 
-                    : idx === currentChallenge
+                className={`h-2 rounded-full transition-all ${completedChallenges[idx]
+                  ? 'w-12 bg-gradient-to-r from-[#ff006e] to-[#8338ec]'
+                  : idx === currentChallenge
                     ? 'w-12 bg-white/40'
                     : 'w-8 bg-white/10'
-                }`}
+                  }`}
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: idx * 0.1 }}
               />
             ))}
           </div>
-          
+
           <div className="flex justify-center gap-3 mb-4">
             {[0, 1, 2, 3].map((idx) => (
               <motion.div
@@ -122,11 +122,10 @@ export default function HiddenPage() {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: idx * 0.1 + 0.3 }}
-                className={`w-12 h-12 rounded-lg flex items-center justify-center text-xl font-pixel border-2 transition-all ${
-                  completedChallenges[idx]
-                    ? 'bg-green-500/20 border-green-500 text-green-400'
-                    : 'bg-white/5 border-white/20 text-white/40'
-                }`}
+                className={`w-12 h-12 rounded-lg flex items-center justify-center text-xl font-pixel border-2 transition-all ${completedChallenges[idx]
+                  ? 'bg-green-500/20 border-green-500 text-green-400'
+                  : 'bg-white/5 border-white/20 text-white/40'
+                  }`}
               >
                 {completedChallenges[idx] ? answers[idx] : '?'}
               </motion.div>
@@ -150,7 +149,7 @@ export default function HiddenPage() {
                 className="bg-[#1a0f2e] border-2 border-white/10 p-8 rounded-3xl max-w-sm w-full text-center relative overflow-hidden"
               >
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#ff006e] to-transparent" />
-                
+
                 <motion.div
                   initial={{ rotate: -10, scale: 0 }}
                   animate={{ rotate: 0, scale: 1 }}
@@ -181,43 +180,43 @@ export default function HiddenPage() {
           )}
         </AnimatePresence>
 
-          <AnimatePresence mode="wait">
-            {allComplete ? (
+        <AnimatePresence mode="wait">
+          {allComplete ? (
+            <motion.div
+              key="complete"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex-1 flex flex-col items-center justify-center"
+            >
               <motion.div
-                key="complete"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex-1 flex flex-col items-center justify-center"
+                animate={{
+                  rotate: [0, 10, -10, 10, 0],
+                  scale: [1, 1.1, 1.1, 1.1, 1]
+                }}
+                transition={{ duration: 0.8, delay: 0.2 }}
               >
-                <motion.div
-                  animate={{ 
-                    rotate: [0, 10, -10, 10, 0],
-                    scale: [1, 1.1, 1.1, 1.1, 1]
-                  }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                >
-                  <Trophy className="w-20 h-20 text-[#fb00ff] mb-4" />
-                </motion.div>
-                <h2 className="font-display text-3xl font-bold text-white mb-2 text-center">
-                  Merry Christmas, you&apos;re in!
-                </h2>
-                <p className="text-[#fb00ff] font-bold mb-4 text-center px-4 uppercase tracking-wider">
-                  "No shortcuts, here&apos;s the real code!"
-                </p>
-                <p className="text-gray-400 mb-8 text-center px-4">Here is your special security code:</p>
-                <div className="text-6xl font-pixel tracking-wider text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] px-8 py-4 rounded-2xl bg-white/5 border-2 border-white/20 relative mb-12">
-                  <div className="relative z-10">2437</div>
-                </div>
-
-                <Link 
-                  href="/"
-                  className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold flex items-center gap-3 transition-all border border-white/10 hover:border-white/30 backdrop-blur-sm group"
-                >
-                  <Home className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
-                  Back to Main Site
-                </Link>
+                <Trophy className="w-20 h-20 text-[#fb00ff] mb-4" />
               </motion.div>
-            ) : (
+              <h2 className="font-display text-3xl font-bold text-white mb-2 text-center">
+                Merry Christmas, you&apos;re in!
+              </h2>
+              <p className="text-[#fb00ff] font-bold mb-4 text-center px-4 uppercase tracking-wider">
+                "No shortcuts, here&apos;s the real code!"
+              </p>
+              <p className="text-gray-400 mb-8 text-center px-4">Here is your special security code:</p>
+              <div className="text-6xl font-pixel tracking-wider text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] px-8 py-4 rounded-2xl bg-white/5 border-2 border-white/20 relative mb-12">
+                <div className="relative z-10">2437</div>
+              </div>
+
+              <Link
+                href="/"
+                className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold flex items-center gap-3 transition-all border border-white/10 hover:border-white/30 backdrop-blur-sm group"
+              >
+                <Home className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
+                Back to Main Site
+              </Link>
+            </motion.div>
+          ) : (
             <motion.div
               key={currentChallenge}
               initial={{ opacity: 0, x: 100 }}
@@ -226,12 +225,12 @@ export default function HiddenPage() {
               transition={{ type: "spring", stiffness: 100 }}
               className="flex-1 flex flex-col"
             >
-              <div 
+              <div
                 className="mb-4 p-4 rounded-2xl border-2 bg-black/60 relative"
                 style={{ borderColor: `${challenges[currentChallenge].color}33` }}
               >
                 <div className="flex items-center gap-2 mb-2 relative z-10">
-                  <div 
+                  <div
                     className="w-8 h-8 rounded-full flex items-center justify-center font-display text-sm text-white"
                     style={{ backgroundColor: challenges[currentChallenge].color }}
                   >
@@ -244,8 +243,8 @@ export default function HiddenPage() {
               </div>
 
               <div className="flex-1 flex items-center justify-center">
-                <CurrentChallengeComponent 
-                  onComplete={handleChallengeComplete} 
+                <CurrentChallengeComponent
+                  onComplete={handleChallengeComplete}
                   completedAnswers={answers}
                 />
               </div>
@@ -253,14 +252,14 @@ export default function HiddenPage() {
           )}
         </AnimatePresence>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
           className="mt-6 flex justify-between items-center text-xs text-gray-500"
         >
           <span>Challenge {currentChallenge + 1}/4</span>
-          <button 
+          <button
             onClick={() => setShowSkipPrompt(true)}
             className="flex items-center gap-1 hover:text-white transition-colors opacity-20 hover:opacity-100"
           >
@@ -291,13 +290,13 @@ export default function HiddenPage() {
                 onKeyDown={(e) => e.key === "Enter" && handleSkip()}
               />
               <div className="flex gap-2">
-                <button 
+                <button
                   onClick={() => setShowSkipPrompt(false)}
                   className="flex-1 py-2 text-gray-400 text-sm"
                 >
                   Cancel
                 </button>
-                <button 
+                <button
                   onClick={handleSkip}
                   className="flex-1 py-2 bg-white text-black rounded-lg font-bold"
                 >
