@@ -6,6 +6,27 @@ export interface Card {
   forbidden: string[];
   points: number;
   color: "yellow" | "blue" | "green" | "red";
+  // Random Rhymes specific fields
+  clue?: string;    // The description to read aloud
+  answer?: string;  // The rhyming answer phrase
+}
+
+export type DeckType = "forbidden" | "rhymes";
+
+
+export interface DeckInfo {
+  id: string;
+  name: string;
+  description: string;
+  icon: string; // Lucide icon name
+  cardCount: number;
+  accentColor: string;
+  deckType: DeckType; // "forbidden" or "rhymes"
+}
+
+export interface Deck {
+  info: DeckInfo;
+  cards: Card[];
 }
 
 export interface Player {
@@ -31,4 +52,5 @@ export interface GameState {
   skipsUsed: number;
   cardsInRound: number;
   maxCardsInRound: number;
+  deckId: string;
 }

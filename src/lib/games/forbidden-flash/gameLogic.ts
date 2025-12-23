@@ -1,15 +1,22 @@
-import { FORBIDDEN_CARDS } from "./data";
+import { getDeckCards, FORBIDDEN_CARDS } from "./data";
 import { GameState, Player, Difficulty, Card } from "./types";
 
 export const INITIAL_TIMER = 60;
 export const CARDS_PER_ROUND = 10;
 
-export function createInitialState(players: string[], difficulty: Difficulty, maxRounds: number = 3): GameState {
+export function createInitialState(
+  players: string[],
+  difficulty: Difficulty,
+  maxRounds: number = 3,
+  deckId: string = "classic"
+): GameState {
   const playerObjects: Player[] = players.map((name, index) => ({
     id: `p${index}`,
     name,
     score: 0,
   }));
+
+  const deckCards = getDeckCards(deckId);
 
   return {
     players: playerObjects,
@@ -21,21 +28,23 @@ export function createInitialState(players: string[], difficulty: Difficulty, ma
     score: 0,
     timer: INITIAL_TIMER,
     phase: "setup",
-    cards: [...FORBIDDEN_CARDS].sort(() => Math.random() - 0.5),
+    cards: [...deckCards].sort(() => Math.random() - 0.5),
     usedCardIds: [],
     currentCard: null,
     roundScore: 0,
     skipsUsed: 0,
     cardsInRound: 0,
     maxCardsInRound: CARDS_PER_ROUND,
+    deckId,
   };
 }
 
 export function drawNextCard(state: GameState): GameState {
   const availableCards = state.cards.filter(c => !state.usedCardIds.includes(c.id));
   if (availableCards.length === 0) {
-    // Reshuffle if we run out
-    const reshuffled = [...FORBIDDEN_CARDS].sort(() => Math.random() - 0.5);
+    // Reshuffle if we run out - use the deck from state
+    const deckCards = getDeckCards(state.deckId);
+    const reshuffled = [...deckCards].sort(() => Math.random() - 0.5);
     return {
       ...state,
       cards: reshuffled,

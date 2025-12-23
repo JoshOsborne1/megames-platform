@@ -21,8 +21,8 @@ export function ForbiddenFlashHub() {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("medium");
 
-  const startNewGame = (players: string[], rounds: number) => {
-    const initialState = createInitialState(players, "medium", rounds);
+  const startNewGame = (players: string[], rounds: number, deckId: string) => {
+    const initialState = createInitialState(players, "medium", rounds, deckId);
     setGameState({ ...initialState, phase: "instructions" });
   };
 
@@ -202,59 +202,59 @@ export function ForbiddenFlashHub() {
             key="playing"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="flex flex-col items-center"
+            className="flex flex-col items-center w-full px-4 sm:px-0"
           >
-            {/* HUD */}
-            <div className="w-full grid grid-cols-3 items-center mb-10 px-4">
+            {/* HUD - Mobile optimized */}
+            <div className="w-full grid grid-cols-3 items-center mb-6 sm:mb-10">
               <div className="flex flex-col">
-                <span className="text-[10px] font-pixel text-white/30 uppercase tracking-widest">Team Score</span>
-                <span className="text-3xl font-display font-black text-[#ff006e]">{gameState.roundScore}</span>
+                <span className="text-[8px] sm:text-[10px] font-pixel text-white/30 uppercase tracking-widest">Score</span>
+                <span className="text-2xl sm:text-3xl font-display font-black text-[#ff006e]">{gameState.roundScore}</span>
               </div>
 
               <div className="flex justify-center">
                 <div className="relative">
-                  <div className={`w-20 h-20 rounded-full border-4 flex items-center justify-center font-display font-black text-2xl transition-colors ${gameState.timer <= 10 ? 'border-red-500 text-red-500 animate-pulse' : 'border-[#00f5ff] text-[#00f5ff]'}`}>
+                  <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-full border-[3px] sm:border-4 flex items-center justify-center font-display font-black text-xl sm:text-2xl transition-colors ${gameState.timer <= 10 ? 'border-red-500 text-red-500 animate-pulse' : 'border-[#00f5ff] text-[#00f5ff]'}`}>
                     {gameState.timer}
                   </div>
-                  <Timer className={`absolute -bottom-1 -right-1 w-6 h-6 p-1 rounded-full bg-black border-2 transition-colors ${gameState.timer <= 10 ? 'border-red-500 text-red-500' : 'border-[#00f5ff] text-[#00f5ff]'}`} />
+                  <Timer className={`absolute -bottom-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 p-0.5 sm:p-1 rounded-full bg-black border-2 transition-colors ${gameState.timer <= 10 ? 'border-red-500 text-red-500' : 'border-[#00f5ff] text-[#00f5ff]'}`} />
                 </div>
               </div>
 
               <div className="flex flex-col items-end">
-                <span className="text-[10px] font-pixel text-white/30 uppercase tracking-widest">Answered</span>
-                <span className="text-3xl font-display font-black text-[#8338ec]">{gameState.cardsInRound}</span>
+                <span className="text-[8px] sm:text-[10px] font-pixel text-white/30 uppercase tracking-widest">Done</span>
+                <span className="text-2xl sm:text-3xl font-display font-black text-[#8338ec]">{gameState.cardsInRound}</span>
               </div>
             </div>
 
-            <div className="mb-6 flex items-center gap-3">
-              <div className="px-4 py-1.5 bg-white/5 border border-white/10 rounded-full">
-                <span className="font-pixel text-[10px] text-white/40 uppercase mr-2">Skips:</span>
-                <span className="font-display font-black text-[#ff006e]">{gameState.skipsUsed}</span>
+            <div className="mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3">
+              <div className="px-3 sm:px-4 py-1 sm:py-1.5 bg-white/5 border border-white/10 rounded-full">
+                <span className="font-pixel text-[8px] sm:text-[10px] text-white/40 uppercase mr-1 sm:mr-2">Skips:</span>
+                <span className="font-display font-black text-[#ff006e] text-sm sm:text-base">{gameState.skipsUsed}</span>
               </div>
             </div>
 
             <ForbiddenCard card={gameState.currentCard} difficulty={gameState.difficulty} />
 
-            {/* Controls */}
-            <div className="grid grid-cols-2 gap-6 w-full mt-10 max-w-md">
+            {/* Controls - Touch-friendly mobile buttons */}
+            <div className="grid grid-cols-2 gap-3 sm:gap-6 w-full mt-6 sm:mt-10 max-w-md">
               <motion.button
-                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onPass}
-                className="group py-5 bg-white/5 border-2 border-white/10 hover:border-white/20 rounded-2xl flex flex-col items-center gap-2 transition-colors"
+                className="group py-4 sm:py-5 bg-white/5 border-2 border-white/10 active:border-white/30 rounded-xl sm:rounded-2xl flex flex-col items-center gap-1.5 sm:gap-2 transition-colors touch-manipulation"
+                style={{ WebkitTapHighlightColor: 'transparent' }}
               >
-                <X className="w-6 h-6 text-white/40 group-hover:text-white" />
-                <span className="font-display font-bold text-white/60 group-hover:text-white uppercase tracking-wider">Pass</span>
+                <X className="w-5 h-5 sm:w-6 sm:h-6 text-white/40 group-active:text-white" />
+                <span className="font-display font-bold text-sm sm:text-base text-white/60 group-active:text-white uppercase tracking-wider">Pass</span>
               </motion.button>
 
               <motion.button
-                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onCorrect}
-                className="group py-5 bg-[#00f5ff]/10 border-2 border-[#00f5ff]/40 hover:bg-[#00f5ff]/20 rounded-2xl flex flex-col items-center gap-2 transition-all shadow-[0_0_20px_rgba(0,245,255,0.1)]"
+                className="group py-4 sm:py-5 bg-[#00f5ff]/10 border-2 border-[#00f5ff]/40 active:bg-[#00f5ff]/20 rounded-xl sm:rounded-2xl flex flex-col items-center gap-1.5 sm:gap-2 transition-all shadow-[0_0_20px_rgba(0,245,255,0.1)] touch-manipulation"
+                style={{ WebkitTapHighlightColor: 'transparent' }}
               >
-                <Check className="w-6 h-6 text-[#00f5ff]" />
-                <span className="font-display font-bold text-[#00f5ff] uppercase tracking-wider">Correct</span>
+                <Check className="w-5 h-5 sm:w-6 sm:h-6 text-[#00f5ff]" />
+                <span className="font-display font-bold text-sm sm:text-base text-[#00f5ff] uppercase tracking-wider">Correct</span>
               </motion.button>
             </div>
           </motion.div>
@@ -298,10 +298,10 @@ export function ForbiddenFlashHub() {
                       animate={{ x: 0, opacity: 1 }}
                       transition={{ delay: i * 0.05 }}
                       className={`flex items-center justify-between p-3 rounded-xl transition-all ${i === 0
-                          ? 'bg-yellow-500/10 border border-yellow-500/30'
-                          : justScored
-                            ? 'bg-[#ff006e]/10 border border-[#ff006e]/30'
-                            : 'bg-white/5'
+                        ? 'bg-yellow-500/10 border border-yellow-500/30'
+                        : justScored
+                          ? 'bg-[#ff006e]/10 border border-[#ff006e]/30'
+                          : 'bg-white/5'
                         }`}
                     >
                       <div className="flex items-center gap-3">
@@ -348,34 +348,35 @@ export function ForbiddenFlashHub() {
             key="gameover"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-[#1a0f2e]/80 backdrop-blur-xl border-2 border-[#ff006e]/30 rounded-3xl p-12 text-center"
+            className="bg-[#1a0f2e]/80 backdrop-blur-xl border-2 border-[#ff006e]/30 rounded-2xl sm:rounded-3xl p-6 sm:p-12 text-center mx-4 sm:mx-0"
           >
-            <Trophy className="w-24 h-24 text-yellow-500 mx-auto mb-8 animate-bounce" />
-            <h2 className="font-display font-black text-7xl text-white mb-8 tracking-tighter uppercase glitch">Final Scores</h2>
+            <Trophy className="w-16 h-16 sm:w-24 sm:h-24 text-yellow-500 mx-auto mb-4 sm:mb-8 animate-bounce" />
+            <h2 className="font-display font-black text-3xl sm:text-5xl md:text-7xl text-white mb-4 sm:mb-8 tracking-tighter uppercase">Final Scores</h2>
 
-            <div className="space-y-4 mb-12">
+            <div className="space-y-2 sm:space-y-4 mb-6 sm:mb-12">
               {[...gameState.players].sort((a, b) => b.score - a.score).map((player, i) => (
                 <motion.div
                   key={player.id}
                   initial={{ x: -50, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: i * 0.1 }}
-                  className={`flex items-center justify-between p-5 rounded-2xl border-2 ${i === 0 ? 'bg-yellow-500/10 border-yellow-500 shadow-[0_0_30px_rgba(234,179,8,0.2)]' : 'bg-white/5 border-white/10'}`}
+                  className={`flex items-center justify-between p-3 sm:p-5 rounded-xl sm:rounded-2xl border-2 ${i === 0 ? 'bg-yellow-500/10 border-yellow-500 shadow-[0_0_30px_rgba(234,179,8,0.2)]' : 'bg-white/5 border-white/10'}`}
                 >
-                  <div className="flex items-center gap-4">
-                    <span className={`w-8 h-8 rounded-full flex items-center justify-center font-display font-black ${i === 0 ? 'bg-yellow-500 text-[#1a0f2e]' : 'bg-white/10 text-white'}`}>
+                  <div className="flex items-center gap-2 sm:gap-4">
+                    <span className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-display font-black text-sm sm:text-base ${i === 0 ? 'bg-yellow-500 text-[#1a0f2e]' : 'bg-white/10 text-white'}`}>
                       {i + 1}
                     </span>
-                    <span className="text-2xl font-display font-bold text-white uppercase">{player.name}</span>
+                    <span className="text-base sm:text-2xl font-display font-bold text-white uppercase">{player.name}</span>
                   </div>
-                  <span className={`text-2xl font-display font-black ${i === 0 ? 'text-yellow-500' : 'text-[#00f5ff]'}`}>{player.score} PTS</span>
+                  <span className={`text-lg sm:text-2xl font-display font-black ${i === 0 ? 'text-yellow-500' : 'text-[#00f5ff]'}`}>{player.score} PTS</span>
                 </motion.div>
               ))}
             </div>
 
             <button
               onClick={() => window.location.reload()}
-              className="px-12 py-5 bg-white text-black font-display font-black text-xl rounded-2xl uppercase tracking-widest hover:scale-105 transition-transform"
+              className="w-full sm:w-auto px-8 sm:px-12 py-4 sm:py-5 bg-white text-black font-display font-black text-base sm:text-xl rounded-xl sm:rounded-2xl uppercase tracking-widest active:scale-95 transition-transform touch-manipulation"
+              style={{ WebkitTapHighlightColor: 'transparent' }}
             >
               Play Again
             </button>

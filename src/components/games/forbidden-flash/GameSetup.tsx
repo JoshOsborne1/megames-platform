@@ -3,18 +3,20 @@
 import { useState } from "react";
 import { Zap } from "lucide-react";
 import { GameLobby, PlayerManager, GameSettings, createInitialPlayers, type Player } from "../shared";
+import { DeckSelector } from "./DeckSelector";
 
 interface GameSetupProps {
-  onStart: (players: string[], rounds: number) => void;
+  onStart: (players: string[], rounds: number, deckId: string) => void;
 }
 
 export function GameSetup({ onStart }: GameSetupProps) {
   const [players, setPlayers] = useState<Player[]>(createInitialPlayers());
   const [rounds, setRounds] = useState(3);
+  const [selectedDeckId, setSelectedDeckId] = useState("classic");
 
   const handleStart = () => {
     const playerNames = players.map(p => p.name);
-    onStart(playerNames, rounds);
+    onStart(playerNames, rounds, selectedDeckId);
   };
 
   return (
@@ -34,6 +36,12 @@ export function GameSetup({ onStart }: GameSetupProps) {
         minPlayers={2}
         maxPlayers={10}
         accentColor="#ff006e"
+      />
+
+      <DeckSelector
+        selectedDeckId={selectedDeckId}
+        onDeckChange={setSelectedDeckId}
+        accentColor="#8338ec"
       />
 
       <GameSettings
