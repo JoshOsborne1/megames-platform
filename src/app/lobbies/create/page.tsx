@@ -14,7 +14,7 @@ import { Layers, Brain, Swords, Globe, Lock, Users, Loader2, Mic2, ShieldAlert }
 
 const games = [
   { id: "lyric-legends", name: "Lyric Legends", icon: Mic2, color: "#8338ec", maxPlayers: 10 },
-  { id: "forbidden-flash", name: "Forbidden Flash", icon: ShieldAlert, color: "#ff006e", maxPlayers: 10 },
+  { id: "dynamic-decks", name: "Dynamic Decks", icon: ShieldAlert, color: "#ff006e", maxPlayers: 10 },
   { id: "shade-signals", name: "Shade Signals", icon: Layers, color: "#00f5ff", maxPlayers: 10 },
 ];
 
@@ -44,10 +44,10 @@ export default function CreateLobbyPage() {
     }
 
     setLoading(true);
-    
+
     // Simulate lobby creation
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    
+
     const code = generateLobbyCode();
     toast.success(`Lobby created! Code: ${code}`);
     router.push(`/lobbies/${code}`);
@@ -90,11 +90,10 @@ export default function CreateLobbyPage() {
                         setSelectedGame(game.id);
                         setMaxPlayers(Math.min(maxPlayers, game.maxPlayers));
                       }}
-                      className={`p-4 rounded-xl border-2 transition-all ${
-                        selectedGame === game.id
+                      className={`p-4 rounded-xl border-2 transition-all ${selectedGame === game.id
                           ? "border-white/40 bg-white/10"
                           : "border-white/10 bg-white/5 hover:border-white/20"
-                      }`}
+                        }`}
                     >
                       <div
                         className="w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-2"

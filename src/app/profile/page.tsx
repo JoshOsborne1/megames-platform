@@ -38,7 +38,7 @@ const mockStats = {
 
 const mockGameStats = [
   { game: "Lyric Legends", played: 45, wins: 28, color: "#8338ec" },
-  { game: "Forbidden Flash", played: 52, wins: 25, color: "#ff006e" },
+  { game: "Dynamic Decks", played: 52, wins: 25, color: "#ff006e" },
   { game: "Shade Signals", played: 30, wins: 15, color: "#00f5ff" },
 ];
 
@@ -46,7 +46,7 @@ const mockAchievements = [
   { id: 1, name: "First Win", description: "Win your first game", icon: Trophy, unlocked: true },
   { id: 2, name: "Streak Master", description: "Win 10 games in a row", icon: TrendingUp, unlocked: true },
   { id: 3, name: "Lyric Legend", description: "Play 50 Lyric Legends games", icon: Target, unlocked: false },
-  { id: 4, name: "Flash Master", description: "Win 25 Forbidden Flash games", icon: Crown, unlocked: false },
+  { id: 4, name: "Deck Master", description: "Win 25 Dynamic Decks games", icon: Crown, unlocked: false },
 ];
 
 const rankColors: Record<string, string> = {
@@ -178,8 +178,8 @@ export default function ProfilePage() {
                   <div
                     key={achievement.id}
                     className={`p-4 rounded-xl border ${achievement.unlocked
-                        ? "border-[#FFD700]/30 bg-[#FFD700]/10"
-                        : "border-white/10 bg-white/5 opacity-50"
+                      ? "border-[#FFD700]/30 bg-[#FFD700]/10"
+                      : "border-white/10 bg-white/5 opacity-50"
                       }`}
                   >
                     <achievement.icon

@@ -1,20 +1,25 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Card, Difficulty } from "@/lib/games/forbidden-flash/types";
+import { Card, Difficulty } from "@/lib/games/dynamic-decks/types";
+import { calculatePoints, DIFFICULTY_MULTIPLIERS } from "@/lib/games/dynamic-decks/gameLogic";
 import { Ban, Target, MessageCircleQuestion, Sparkles } from "lucide-react";
 
-interface ForbiddenCardProps {
+interface DynamicCardProps {
   card: Card;
   difficulty: Difficulty;
+  deckId?: string;
 }
 
-export function ForbiddenCard({ card, difficulty }: ForbiddenCardProps) {
+export function DynamicCard({ card, difficulty, deckId = "classic" }: DynamicCardProps) {
   // Check if this is a rhymes card (has clue and answer)
   const isRhymesCard = Boolean(card.clue && card.answer);
 
   const forbiddenCount = difficulty === "easy" ? 2 : difficulty === "medium" ? 3 : 4;
   const activeForbidden = card.forbidden.slice(0, forbiddenCount);
+
+  // Calculate actual points with difficulty multiplier
+  const actualPoints = calculatePoints(card, difficulty, deckId);
 
   // Determine card difficulty based on points: 20=Easy, 30=Medium, 50=Hard
   const getCardDifficulty = (points: number): "easy" | "medium" | "hard" => {
@@ -81,7 +86,7 @@ export function ForbiddenCard({ card, difficulty }: ForbiddenCardProps) {
                 {colors.label}
               </span>
               <span className="font-display font-black text-base sm:text-lg" style={{ color: colors.primary }}>
-                {card.points}pts
+                {actualPoints}pts
               </span>
             </div>
           </div>
@@ -161,7 +166,7 @@ export function ForbiddenCard({ card, difficulty }: ForbiddenCardProps) {
               {colors.label}
             </span>
             <span className="font-display font-black text-base sm:text-lg" style={{ color: colors.primary }}>
-              {card.points}pts
+              {actualPoints}pts
             </span>
           </div>
         </div>
@@ -170,8 +175,8 @@ export function ForbiddenCard({ card, difficulty }: ForbiddenCardProps) {
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
           className={`font-display font-black text-white text-center py-3 sm:py-4 ${card.word.length > 12 ? 'text-xl sm:text-2xl' :
-              card.word.length > 8 ? 'text-2xl sm:text-3xl' :
-                'text-3xl sm:text-4xl'
+            card.word.length > 8 ? 'text-2xl sm:text-3xl' :
+              'text-3xl sm:text-4xl'
             }`}
           style={{
             wordBreak: 'break-word',

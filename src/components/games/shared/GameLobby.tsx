@@ -24,6 +24,8 @@ interface GameLobbyProps {
     backUrl?: string;
     /** Optional color accent for the game (default: #ff006e) */
     accentColor?: string;
+    /** Use wider layout (default: false) */
+    wideLayout?: boolean;
 }
 
 export function GameLobby({
@@ -36,13 +38,14 @@ export function GameLobby({
     startDisabled = false,
     backUrl = "/games",
     accentColor = "#ff006e",
+    wideLayout = false,
 }: GameLobbyProps) {
     return (
         <div className="flex items-center justify-center w-full min-h-[60vh] p-4">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="max-w-2xl w-full bg-[#1a0f2e]/80 backdrop-blur-xl border-2 border-white/10 rounded-3xl p-8 shadow-2xl"
+                className={`${wideLayout ? "max-w-4xl" : "max-w-2xl"} w-full bg-[#1a0f2e]/80 backdrop-blur-xl border-2 border-white/10 rounded-3xl p-6 md:p-8 shadow-2xl`}
             >
                 {/* Back Link */}
                 <Link
@@ -91,8 +94,8 @@ export function GameLobby({
                         onClick={onStart}
                         disabled={startDisabled}
                         className={`w-full py-5 rounded-2xl font-display font-black text-xl text-white shadow-lg uppercase tracking-widest mt-4 flex items-center justify-center gap-3 transition-all ${startDisabled
-                                ? "bg-white/10 text-white/30 cursor-not-allowed"
-                                : ""
+                            ? "bg-white/10 text-white/30 cursor-not-allowed"
+                            : ""
                             }`}
                         style={{
                             background: startDisabled

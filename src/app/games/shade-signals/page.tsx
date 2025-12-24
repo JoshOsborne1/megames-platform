@@ -641,9 +641,34 @@ export default function ShadeSignalsGame() {
               <div className="bg-white/5 rounded-2xl p-6 mb-8 border border-white/10">
                 <p className="text-white/70 text-lg mb-2">Next up:</p>
                 <p className="text-3xl font-black text-[#39ff14] glow-text">
-                  {(phase.includes("guess") || phase.includes("clue"))
-                    ? (currentPlayer?.name || signalGiver?.name)
-                    : nextSignalGiver?.name}
+                  {(() => {
+                    // Determine who is next based on phase
+                    if (phase === "clue-1" || phase === "clue-2") {
+                      // After submitting clue, first guesser is up
+                      // Calculate actual player index: skip the signal giver
+                      const firstGuesserActualIndex = 0 >= signalGiverIndex ? 1 : 0;
+                      return players[firstGuesserActualIndex]?.name || "Next Player";
+                    } else if (phase === "guess-1" || phase === "guess-2") {
+                      // During guessing, show who guesses next
+                      const nextGuesserIndex = currentGuesserIndex + 1;
+                      const totalGuessers = playerCount - 1;
+                      if (nextGuesserIndex < totalGuessers) {
+                        // More guessers remaining
+                        const actualNextIndex = nextGuesserIndex >= signalGiverIndex ? nextGuesserIndex + 1 : nextGuesserIndex;
+                        return players[actualNextIndex]?.name || "Next Player";
+                      } else if (phase === "guess-1") {
+                        // After all guess-1, signal giver gives clue 2
+                        return signalGiver?.name || "Signal Giver";
+                      } else {
+                        // After guess-2, going to reveal (no specific player)
+                        return "Everyone";
+                      }
+                    } else if (phase === "leaderboard") {
+                      // After leaderboard, next signal giver takes over
+                      return nextSignalGiver?.name || "Next Player";
+                    }
+                    return nextSignalGiver?.name || "Next Player";
+                  })()}
                 </p>
               </div>
 

@@ -24,7 +24,7 @@ const mockLobbies = [
   {
     id: "2",
     code: "XYZ789",
-    game: "Forbidden Flash",
+    game: "Dynamic Decks",
     host: "QuizWhiz",
     players: 5,
     maxPlayers: 8,

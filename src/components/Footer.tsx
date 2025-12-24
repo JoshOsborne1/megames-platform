@@ -10,7 +10,7 @@ export function Footer() {
     games: [
       { href: "/games", label: "ALL GAMES" },
       { href: "/games/lyric-legends", label: "LYRIC LEGENDS" },
-      { href: "/games/forbidden-flash", label: "FORBIDDEN FLASH" },
+      { href: "/games/dynamic-decks", label: "DYNAMIC DECKS" },
       { href: "/games/shade-signals", label: "SHADE SIGNALS" },
     ],
     support: [

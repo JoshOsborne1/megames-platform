@@ -79,13 +79,19 @@ export function calculateHSVDistance(
 }
 
 export function calculateScore(distance: number): number {
-  if (distance < 0.02) return 6;
-  if (distance < 0.08) return 5;
-  if (distance < 0.15) return 4;
-  if (distance < 0.25) return 3;
-  if (distance < 0.4) return 2;
-  if (distance < 0.6) return 1;
-  return 0;
+  // Max 100 points for perfect match, granular scoring based on distance
+  // Distance is 0-1 where 0 = perfect match, 1 = completely different
+  if (distance < 0.01) return 100;  // Near-perfect match
+  if (distance < 0.03) return 90;   // Extremely close
+  if (distance < 0.05) return 80;   // Very close
+  if (distance < 0.08) return 70;   // Close
+  if (distance < 0.12) return 60;   // Good guess
+  if (distance < 0.18) return 50;   // Decent guess
+  if (distance < 0.25) return 40;   // Okay guess
+  if (distance < 0.35) return 30;   // Fair guess
+  if (distance < 0.50) return 20;   // Somewhat close
+  if (distance < 0.70) return 10;   // In the ballpark
+  return 0;                          // Too far off
 }
 
 export function hsvToPosition(

@@ -15,8 +15,8 @@ const games = [
     color: "#8338ec",
   },
   {
-    id: "forbidden-flash",
-    name: "FORBIDDEN FLASH",
+    id: "dynamic-decks",
+    name: "DYNAMIC DECKS",
     description: "The ultimate word race! Describe the target without saying the forbidden words. 2-10 players – local swap & play chaos.",
     icon: <ShieldAlert className="w-full h-full" />,
     players: "2-10",

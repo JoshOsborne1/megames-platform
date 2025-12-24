@@ -1,4 +1,4 @@
-export type Difficulty = "easy" | "medium" | "hard";
+export type Difficulty = "easy" | "medium" | "hard" | "random";
 
 export interface Card {
   id: string;
@@ -6,6 +6,7 @@ export interface Card {
   forbidden: string[];
   points: number;
   color: "yellow" | "blue" | "green" | "red";
+  difficulty: "easy" | "medium" | "hard"; // Card's inherent difficulty level
   // Random Rhymes specific fields
   clue?: string;    // The description to read aloud
   answer?: string;  // The rhyming answer phrase

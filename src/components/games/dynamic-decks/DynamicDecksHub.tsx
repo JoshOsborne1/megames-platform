@@ -2,41 +2,54 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { GameState, Difficulty } from "@/lib/games/forbidden-flash/types";
+import { GameState, Difficulty } from "@/lib/games/dynamic-decks/types";
 import {
   createInitialState,
   drawNextCard,
   handleCorrect,
   handlePass,
   startNextTurn,
-  endTurn
-} from "@/lib/games/forbidden-flash/gameLogic";
+  endTurn,
+  DIFFICULTY_MULTIPLIERS
+} from "@/lib/games/dynamic-decks/gameLogic";
 
-import { ForbiddenCard } from "./ForbiddenCard";
+import { DynamicCard } from "./DynamicCard";
 import { GameSetup } from "./GameSetup";
 import { InGameNav } from "../shared";
-import { Timer, Trophy, ArrowRight, Check, X, Info, Zap, ShieldAlert } from "lucide-react";
+import { Timer, Trophy, ArrowRight, Check, X, Info, Zap, ShieldAlert, Shuffle, Smile, Brain, Flame } from "lucide-react";
 
-export function ForbiddenFlashHub() {
+const DIFFICULTY_OPTIONS: { id: Difficulty; label: string; icon: React.ReactNode; description: string; multiplier: string; color: string }[] = [
+  { id: "easy", label: "Easy", icon: <Smile className="w-5 h-5" />, description: "2 forbidden words", multiplier: "1x", color: "#00f5ff" },
+  { id: "medium", label: "Medium", icon: <Brain className="w-5 h-5" />, description: "3 forbidden words", multiplier: "1.5x", color: "#ff9f1c" },
+  { id: "hard", label: "Hard", icon: <Flame className="w-5 h-5" />, description: "4 forbidden words", multiplier: "2x", color: "#ff006e" },
+];
+
+export function DynamicDecksHub() {
   const [gameState, setGameState] = useState<GameState | null>(null);
-  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("medium");
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("easy");
 
   const startNewGame = (players: string[], rounds: number, deckId: string) => {
-    const initialState = createInitialState(players, "medium", rounds, deckId);
+    // Start with easy difficulty, will be selected per-round
+    const initialState = createInitialState(players, "easy", rounds, deckId);
     setGameState({ ...initialState, phase: "instructions" });
   };
 
   const beginRound = () => {
     if (!gameState) return;
-    const stateWithCard = drawNextCard({
+    // Apply the selected difficulty for this round
+    const stateWithDifficulty = {
       ...gameState,
       difficulty: selectedDifficulty,
+    };
+    // Force reload cards to match the new difficulty
+    const stateWithCard = drawNextCard({
+      ...stateWithDifficulty,
       phase: "playing",
       timer: 60,
       skipsUsed: 0,
       roundScore: 0,
       cardsInRound: 0
-    });
+    }, true); // forceReload = true
     setGameState(stateWithCard);
   };
 
@@ -112,7 +125,7 @@ export function ForbiddenFlashHub() {
     <div className="w-full max-w-4xl mx-auto px-4">
       {/* In-Game Navigation */}
       <InGameNav
-        gameName="Forbidden Flash"
+        gameName="Dynamic Decks"
         accentColor="#ff006e"
         gameIcon={<ShieldAlert className="w-full h-full" />}
         showConfirmation={gameState.phase !== "game-over"}
@@ -126,38 +139,38 @@ export function ForbiddenFlashHub() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.1 }}
-            className="bg-[#1a0f2e]/80 backdrop-blur-xl border-2 border-[#00f5ff]/20 rounded-3xl p-10 text-center shadow-2xl"
+            className="bg-[#1a0f2e]/80 backdrop-blur-xl border-2 border-[#00f5ff]/20 rounded-2xl sm:rounded-3xl p-4 sm:p-8 text-center shadow-2xl"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#00f5ff]/10 border border-[#00f5ff]/20 rounded-full text-[#00f5ff] font-pixel text-[10px] mb-8">
-              <Info className="w-4 h-4" />
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-[#00f5ff]/10 border border-[#00f5ff]/20 rounded-full text-[#00f5ff] font-pixel text-[9px] sm:text-[10px] mb-4 sm:mb-6">
+              <Info className="w-3 h-3 sm:w-4 sm:h-4" />
               UP NEXT
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10 text-left">
-              <div className="space-y-4 p-6 bg-white/5 rounded-2xl border border-white/10">
-                <span className="text-[10px] font-pixel text-white/30 uppercase tracking-[0.2em] block">Clue Giver</span>
-                <div className="text-3xl font-display font-black text-[#ff006e] uppercase tracking-wider">{clueGiver.name}</div>
-                <p className="text-white/60 font-space text-sm">Pass the phone to {clueGiver.name}. You see the word and the forbidden words!</p>
+            <div className="grid grid-cols-2 gap-3 sm:gap-6 mb-4 sm:mb-6 text-left">
+              <div className="space-y-2 p-3 sm:p-5 bg-white/5 rounded-xl border border-white/10">
+                <span className="text-[8px] sm:text-[10px] font-pixel text-white/30 uppercase tracking-wider block">Clue Giver</span>
+                <div className="text-lg sm:text-2xl font-display font-black text-[#ff006e] uppercase tracking-wider truncate">{clueGiver.name}</div>
+                <p className="text-white/60 font-space text-[10px] sm:text-xs hidden sm:block">Pass the phone to {clueGiver.name}</p>
               </div>
-              <div className="space-y-4 p-6 bg-white/5 rounded-2xl border border-white/10">
-                <span className="text-[10px] font-pixel text-white/30 uppercase tracking-[0.2em] block">Guesser</span>
-                <div className="text-3xl font-display font-black text-[#00f5ff] uppercase tracking-wider">{guesser.name}</div>
-                <p className="text-white/60 font-space text-sm">{guesser.name}, your job is to guess the secret word as fast as possible!</p>
+              <div className="space-y-2 p-3 sm:p-5 bg-white/5 rounded-xl border border-white/10">
+                <span className="text-[8px] sm:text-[10px] font-pixel text-white/30 uppercase tracking-wider block">Guesser</span>
+                <div className="text-lg sm:text-2xl font-display font-black text-[#00f5ff] uppercase tracking-wider truncate">{guesser.name}</div>
+                <p className="text-white/60 font-space text-[10px] sm:text-xs hidden sm:block">Guess the word!</p>
               </div>
             </div>
 
             {/* Local Leaderboard */}
-            <div className="mb-10 text-left">
-              <div className="flex items-center gap-2 mb-4 text-white/30">
+            <div className="mb-8 text-left">
+              <div className="flex items-center gap-2 mb-3 text-white/30">
                 <Trophy className="w-4 h-4" />
                 <h4 className="font-pixel text-[10px] uppercase tracking-widest">Current Leaderboard</h4>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2">
                 {[...gameState.players].sort((a, b) => b.score - a.score).map((p, i) => (
-                  <div key={p.id} className="flex justify-between items-center p-3 bg-white/5 rounded-xl border border-white/5">
-                    <div className="flex items-center gap-3">
+                  <div key={p.id} className="flex justify-between items-center p-2 bg-white/5 rounded-lg border border-white/5">
+                    <div className="flex items-center gap-2">
                       <span className="font-pixel text-[10px] text-white/20">{i + 1}</span>
-                      <span className="font-space font-bold text-white text-sm uppercase">{p.name}</span>
+                      <span className="font-space font-bold text-white text-xs uppercase">{p.name}</span>
                     </div>
                     <span className="font-display font-black text-[#00f5ff] text-sm">{p.score}</span>
                   </div>
@@ -165,24 +178,62 @@ export function ForbiddenFlashHub() {
               </div>
             </div>
 
-            <div className="space-y-6 mb-10">
-              <div className="flex items-center justify-center gap-2 text-[#00f5ff]">
-                <Zap className="w-5 h-5" />
-                <h3 className="font-display font-bold text-xl uppercase tracking-wider">Select Difficulty</h3>
+            {/* Per-Round Difficulty Selection */}
+            <div className="mb-4 sm:mb-6">
+              <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4 text-[#39ff14]">
+                <Zap className="w-4 h-4 sm:w-5 sm:h-5" />
+                <h3 className="font-display font-bold text-sm sm:text-lg uppercase tracking-wider">Select Difficulty</h3>
               </div>
-              <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
-                {(["easy", "medium", "hard"] as Difficulty[]).map((d) => (
+
+              <div className="grid grid-cols-4 gap-2 sm:gap-3 max-w-xl mx-auto">
+                {DIFFICULTY_OPTIONS.map((option) => (
                   <button
-                    key={d}
-                    onClick={() => setSelectedDifficulty(d)}
-                    className={`py-3 rounded-xl font-display font-black text-xs uppercase transition-all border-2 ${selectedDifficulty === d
-                      ? "bg-[#00f5ff] text-[#1a0f2e] border-[#00f5ff] shadow-[0_0_20px_rgba(0,245,255,0.4)]"
-                      : "bg-white/5 text-white/40 border-white/10 hover:border-white/20"
+                    key={option.id}
+                    onClick={() => setSelectedDifficulty(option.id)}
+                    className={`p-2 sm:p-4 rounded-lg sm:rounded-xl border-2 transition-all touch-manipulation ${selectedDifficulty === option.id
+                      ? "border-white/40 bg-white/10"
+                      : "border-white/10 hover:border-white/20 bg-white/5"
                       }`}
+                    style={{
+                      borderColor: selectedDifficulty === option.id ? option.color : undefined,
+                      boxShadow: selectedDifficulty === option.id ? `0 0 15px ${option.color}30` : undefined,
+                      WebkitTapHighlightColor: 'transparent'
+                    }}
                   >
-                    {d}
+                    <div
+                      className="flex justify-center mb-1 sm:mb-2"
+                      style={{ color: selectedDifficulty === option.id ? option.color : "rgba(255,255,255,0.5)" }}
+                    >
+                      <div className="w-4 h-4 sm:w-5 sm:h-5">{option.icon}</div>
+                    </div>
+                    <div
+                      className="font-bold text-[10px] sm:text-sm text-center"
+                      style={{ color: selectedDifficulty === option.id ? option.color : "white" }}
+                    >
+                      {option.label}
+                    </div>
+                    <div className="hidden sm:block text-[9px] text-white/40 text-center mt-1">{option.description}</div>
+                    <div
+                      className="text-[9px] sm:text-xs font-bold text-center mt-1 sm:mt-2"
+                      style={{ color: selectedDifficulty === option.id ? "#00f5ff" : "rgba(255,255,255,0.3)" }}
+                    >
+                      {option.multiplier}
+                    </div>
                   </button>
                 ))}
+              </div>
+
+              {/* Multiplier Explanation - Hidden on mobile for space */}
+              <div className="hidden sm:block mt-3 p-2 bg-white/5 border border-white/10 rounded-lg max-w-sm mx-auto">
+                <p className="text-white/60 text-[10px] text-center">
+                  {selectedDifficulty === "easy" ? (
+                    <>2 forbidden words, <span className="text-[#00f5ff] font-bold">×1</span> pts</>
+                  ) : selectedDifficulty === "medium" ? (
+                    <>3 forbidden words, <span className="text-[#ff9f1c] font-bold">×1.5</span> pts</>
+                  ) : (
+                    <>4 forbidden words, <span className="text-[#ff006e] font-bold">×2</span> pts</>
+                  )}
+                </p>
               </div>
             </div>
 
@@ -190,7 +241,8 @@ export function ForbiddenFlashHub() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={beginRound}
-              className="px-12 py-5 bg-[#00f5ff] text-[#1a0f2e] rounded-2xl font-display font-black text-2xl uppercase tracking-tighter shadow-[0_0_30px_rgba(0,245,255,0.4)]"
+              className="px-8 sm:px-12 py-3 sm:py-4 bg-[#00f5ff] text-[#1a0f2e] rounded-xl sm:rounded-2xl font-display font-black text-lg sm:text-2xl uppercase tracking-tighter shadow-[0_0_20px_rgba(0,245,255,0.4)] touch-manipulation"
+              style={{ WebkitTapHighlightColor: 'transparent' }}
             >
               Start Round
             </motion.button>
@@ -233,7 +285,7 @@ export function ForbiddenFlashHub() {
               </div>
             </div>
 
-            <ForbiddenCard card={gameState.currentCard} difficulty={gameState.difficulty} />
+            <DynamicCard card={gameState.currentCard} difficulty={gameState.difficulty} deckId={gameState.deckId} />
 
             {/* Controls - Touch-friendly mobile buttons */}
             <div className="grid grid-cols-2 gap-3 sm:gap-6 w-full mt-6 sm:mt-10 max-w-md">

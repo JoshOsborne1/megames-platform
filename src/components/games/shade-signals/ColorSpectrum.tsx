@@ -42,7 +42,21 @@ export function ColorSpectrum({
     return () => window.removeEventListener("resize", updateSize);
   }, []);
 
-  const getColorFromPosition = (x: number, y: number): ColorWithPosition => {
+  const getColorFromPosition = (x: number, y: number): ColorWithPosition | null => {
+    const centerX = canvasSize.width / 2;
+    const centerY = canvasSize.height / 2;
+    const maxRadius = Math.min(centerX, centerY) * 0.9;
+
+    // Check if position is within the wheel
+    const dx = x - centerX;
+    const dy = y - centerY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance > maxRadius) {
+      // Position is outside the wheel - return null
+      return null;
+    }
+
     const hsv = positionToHSV(x, y, canvasSize.width, canvasSize.height);
     hsv.v = brightness;
     const rgb = hsvToRgb(hsv.h, hsv.s, hsv.v);
@@ -50,12 +64,40 @@ export function ColorSpectrum({
     return { hsv, rgb, hex, x, y };
   };
 
+  // Version that constrains to wheel edge (for dragging)
+  const getConstrainedColor = (x: number, y: number): ColorWithPosition => {
+    const centerX = canvasSize.width / 2;
+    const centerY = canvasSize.height / 2;
+    const maxRadius = Math.min(centerX, centerY) * 0.9;
+
+    const dx = x - centerX;
+    const dy = y - centerY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    // If outside wheel, constrain to edge
+    let constrainedX = x;
+    let constrainedY = y;
+
+    if (distance > maxRadius) {
+      const angle = Math.atan2(dy, dx);
+      constrainedX = centerX + maxRadius * Math.cos(angle);
+      constrainedY = centerY + maxRadius * Math.sin(angle);
+    }
+
+    const hsv = positionToHSV(constrainedX, constrainedY, canvasSize.width, canvasSize.height);
+    hsv.v = brightness;
+    const rgb = hsvToRgb(hsv.h, hsv.s, hsv.v);
+    const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+    return { hsv, rgb, hex, x: constrainedX, y: constrainedY };
+  };
+
   // Sync selection with brightness
   useEffect(() => {
     if (pendingColor) {
-      const updatedColor = getColorFromPosition(pendingColor.x, pendingColor.y);
+      const updatedColor = getConstrainedColor(pendingColor.x, pendingColor.y);
       setPendingColor(updatedColor);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [brightness, canvasSize]);
 
   useEffect(() => {
@@ -110,20 +152,24 @@ export function ColorSpectrum({
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    const color = getColorFromPosition(x, y);
-    
     if (!disabled) {
-      setHoverColor(color);
       if (isDragging) {
+        // While dragging, constrain to wheel edge
+        const color = getConstrainedColor(x, y);
         setPreviewColor(color);
-        setDragPreviewPosition({ x, y });
+        setHoverColor(color);
+        setDragPreviewPosition({ x: color.x, y: color.y });
+      } else {
+        // Just hovering - only show if within wheel
+        const color = getColorFromPosition(x, y);
+        setHoverColor(color);
       }
     }
   };
 
   const handleMouseUp = () => {
     if (disabled || !isDragging) return;
-    
+
     setIsDragging(false);
     if (previewColor) {
       setPendingColor(previewColor);
@@ -136,8 +182,21 @@ export function ColorSpectrum({
     if (isDragging) {
       setIsDragging(false);
       setDragPreviewPosition(null);
+      // Only set pending color if we have a valid preview color
+      // that is within the wheel bounds
       if (previewColor) {
-        setPendingColor(previewColor);
+        // Verify previewColor is within bounds before setting
+        const centerX = canvasSize.width / 2;
+        const centerY = canvasSize.height / 2;
+        const maxRadius = Math.min(centerX, centerY) * 0.9;
+        const dx = previewColor.x - centerX;
+        const dy = previewColor.y - centerY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance <= maxRadius) {
+          setPendingColor(previewColor);
+        }
+        // If outside bounds, discard the preview - don't set pending
         setPreviewColor(null);
       }
     }
@@ -160,8 +219,11 @@ export function ColorSpectrum({
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
+    // Only allow clicks within the wheel
     const color = getColorFromPosition(x, y);
-    setPendingColor(color);
+    if (color) {
+      setPendingColor(color);
+    }
   };
 
   const getTouchPosition = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
@@ -178,7 +240,7 @@ export function ColorSpectrum({
   const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
     if (disabled) return;
     e.preventDefault();
-    
+
     const pos = getTouchPosition(e);
     if (!pos) return;
 
@@ -191,22 +253,24 @@ export function ColorSpectrum({
   const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
     if (disabled || !isDragging) return;
     e.preventDefault();
-    
+
     const pos = getTouchPosition(e);
     if (!pos) return;
 
-    const color = getColorFromPosition(pos.x, pos.y);
+    // Constrain touch position to wheel bounds
+    const color = getConstrainedColor(pos.x, pos.y);
     setPreviewColor(color);
-    setDragPreviewPosition({ x: pos.x, y: pos.y });
+    setDragPreviewPosition({ x: color.x, y: color.y });
   };
 
   const handleTouchEnd = (e: React.TouchEvent<HTMLCanvasElement>) => {
     if (disabled || !isDragging) return;
     e.preventDefault();
-    
+
     setIsDragging(false);
     setDragPreviewPosition(null);
     if (previewColor) {
+      // Only set pending if within bounds (which it should be since we constrain during drag)
       setPendingColor(previewColor);
       setPreviewColor(null);
     }
@@ -218,9 +282,9 @@ export function ColorSpectrum({
       <div className="flex flex-col md:flex-row items-center gap-6 bg-[#16162a]/80 backdrop-blur-xl border border-white/10 rounded-[2rem] p-6 shadow-2xl w-full max-w-2xl">
         {/* Current Selection */}
         <div className="flex items-center gap-4 flex-1">
-          <div 
+          <div
             className="w-20 h-20 rounded-2xl border-2 border-white/20 transition-colors duration-200"
-            style={{ 
+            style={{
               backgroundColor: pendingColor?.hex || previewColor?.hex || "#111",
             }}
           />
@@ -246,7 +310,7 @@ export function ColorSpectrum({
 
         {/* Brightness Control */}
         <div className="flex flex-col items-center gap-2">
-           <div className="flex items-center gap-2 text-white/50 text-xs font-bold uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-white/50 text-xs font-bold uppercase tracking-wider">
             <Lightbulb className="w-3 h-3 text-[#39ff14]" />
             Brightness: {Math.round(brightness * 100)}%
           </div>
@@ -372,7 +436,7 @@ export function ColorSpectrum({
             className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20 pointer-events-none"
           >
             <div className="flex items-center gap-3">
-              <div 
+              <div
                 className="w-6 h-6 rounded border border-white/40"
                 style={{ backgroundColor: hoverColor.hex }}
               />
