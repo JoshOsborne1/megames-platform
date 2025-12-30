@@ -1,24 +1,41 @@
 "use client";
 
 import { useState } from "react";
-import { Zap, Minus, Plus, Users, RotateCcw, Trash2 } from "lucide-react";
+import { Zap, Minus, Plus, Users, RotateCcw, Trash2, Users2, Crown } from "lucide-react";
 import { motion } from "framer-motion";
 import { GameLobby, createInitialPlayers, type Player } from "../shared";
 import { DeckSelector } from "./DeckSelector";
+import { GameMode } from "@/lib/games/dynamic-decks/types";
 
 interface GameSetupProps {
-  onStart: (players: string[], rounds: number, deckId: string) => void;
+  onStart: (players: string[], rounds: number, deckId: string, gameMode: GameMode) => void;
 }
+
+const GAME_MODES: { id: GameMode; label: string; icon: React.ReactNode; description: string }[] = [
+  {
+    id: "classic",
+    label: "Classic",
+    icon: <Users2 className="w-5 h-5" />,
+    description: "1 reader, 1 guesser"
+  },
+  {
+    id: "question-master",
+    label: "Question Master",
+    icon: <Crown className="w-5 h-5" />,
+    description: "1 QM, everyone guesses"
+  },
+];
 
 export function GameSetup({ onStart }: GameSetupProps) {
   const [players, setPlayers] = useState<Player[]>(createInitialPlayers());
   const [rounds, setRounds] = useState(3);
   const [selectedDeckId, setSelectedDeckId] = useState("classic");
+  const [selectedGameMode, setSelectedGameMode] = useState<GameMode>("classic");
   const [newPlayerName, setNewPlayerName] = useState("");
 
   const handleStart = () => {
     const playerNames = players.map(p => p.name);
-    onStart(playerNames, rounds, selectedDeckId);
+    onStart(playerNames, rounds, selectedDeckId, selectedGameMode);
   };
 
   const addPlayer = () => {
@@ -53,7 +70,7 @@ export function GameSetup({ onStart }: GameSetupProps) {
     >
       {/* Two column layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Left Column: Players + Rounds (compact) */}
+        {/* Left Column: Players + Rounds + Game Mode */}
         <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-4">
           {/* Players Header */}
           <div className="flex items-center justify-between">
@@ -67,7 +84,7 @@ export function GameSetup({ onStart }: GameSetupProps) {
           </div>
 
           {/* Player List - Compact */}
-          <div className="space-y-2 max-h-[140px] overflow-y-auto">
+          <div className="space-y-2 max-h-[100px] overflow-y-auto">
             {players.map((player, index) => (
               <div
                 key={player.id}
@@ -115,7 +132,38 @@ export function GameSetup({ onStart }: GameSetupProps) {
             </button>
           </div>
 
-          {/* Rounds Selector - Inline under players */}
+          {/* Game Mode Selector */}
+          <div className="pt-3 border-t border-white/10">
+            <div className="flex items-center gap-2 mb-3" style={{ color: "#8338ec" }}>
+              <Crown className="w-4 h-4" />
+              <span className="font-display font-bold text-sm uppercase tracking-wider">Game Mode</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {GAME_MODES.map((mode) => (
+                <button
+                  key={mode.id}
+                  onClick={() => setSelectedGameMode(mode.id)}
+                  className={`p-3 rounded-lg border-2 transition-all text-left ${selectedGameMode === mode.id
+                      ? "border-[#8338ec] bg-[#8338ec]/10"
+                      : "border-white/10 hover:border-white/20 bg-white/5"
+                    }`}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className={selectedGameMode === mode.id ? "text-[#8338ec]" : "text-white/50"}>
+                      {mode.icon}
+                    </div>
+                    <span className={`font-display font-bold text-sm ${selectedGameMode === mode.id ? "text-[#8338ec]" : "text-white"
+                      }`}>
+                      {mode.label}
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-white/40">{mode.description}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Rounds Selector - Inline under game mode */}
           <div className="pt-3 border-t border-white/10">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2" style={{ color: "#00f5ff" }}>

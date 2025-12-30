@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { GameState, Difficulty } from "@/lib/games/dynamic-decks/types";
+import { GameState, Difficulty, GameMode } from "@/lib/games/dynamic-decks/types";
 import {
   createInitialState,
   drawNextCard,
   handleCorrect,
+  handleCorrectByPlayer,
   handlePass,
   startNextTurn,
   endTurn,
@@ -16,7 +17,7 @@ import {
 import { DynamicCard } from "./DynamicCard";
 import { GameSetup } from "./GameSetup";
 import { InGameNav } from "../shared";
-import { Timer, Trophy, ArrowRight, Check, X, Info, Zap, ShieldAlert, Shuffle, Smile, Brain, Flame } from "lucide-react";
+import { Timer, Trophy, ArrowRight, Check, X, Info, Zap, ShieldAlert, Shuffle, Smile, Brain, Flame, Crown, Users2 } from "lucide-react";
 
 const DIFFICULTY_OPTIONS: { id: Difficulty; label: string; icon: React.ReactNode; description: string; multiplier: string; color: string }[] = [
   { id: "easy", label: "Easy", icon: <Smile className="w-5 h-5" />, description: "2 forbidden words", multiplier: "1x", color: "#00f5ff" },
@@ -28,9 +29,9 @@ export function DynamicDecksHub() {
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("easy");
 
-  const startNewGame = (players: string[], rounds: number, deckId: string) => {
+  const startNewGame = (players: string[], rounds: number, deckId: string, gameMode: GameMode) => {
     // Start with easy difficulty, will be selected per-round
-    const initialState = createInitialState(players, "easy", rounds, deckId);
+    const initialState = createInitialState(players, "easy", rounds, deckId, gameMode);
     setGameState({ ...initialState, phase: "instructions" });
   };
 
@@ -56,6 +57,12 @@ export function DynamicDecksHub() {
   const onCorrect = () => {
     if (!gameState) return;
     setGameState(handleCorrect(gameState));
+  };
+
+  // QM Mode: Award points to the player who answered correctly
+  const onCorrectPlayer = (playerId: string) => {
+    if (!gameState) return;
+    setGameState(handleCorrectByPlayer(gameState, playerId));
   };
 
   const onPass = () => {
@@ -142,22 +149,50 @@ export function DynamicDecksHub() {
             className="bg-[#1a0f2e]/80 backdrop-blur-xl border-2 border-[#00f5ff]/20 rounded-2xl sm:rounded-3xl p-4 sm:p-8 text-center shadow-2xl"
           >
             <div className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-[#00f5ff]/10 border border-[#00f5ff]/20 rounded-full text-[#00f5ff] font-pixel text-[9px] sm:text-[10px] mb-4 sm:mb-6">
-              <Info className="w-3 h-3 sm:w-4 sm:h-4" />
-              UP NEXT
+              {gameState.gameMode === "question-master" ? (
+                <Crown className="w-3 h-3 sm:w-4 sm:h-4" />
+              ) : (
+                <Info className="w-3 h-3 sm:w-4 sm:h-4" />
+              )}
+              {gameState.gameMode === "question-master" ? "QUESTION MASTER MODE" : "UP NEXT"}
             </div>
 
-            <div className="grid grid-cols-2 gap-3 sm:gap-6 mb-4 sm:mb-6 text-left">
-              <div className="space-y-2 p-3 sm:p-5 bg-white/5 rounded-xl border border-white/10">
-                <span className="text-[8px] sm:text-[10px] font-pixel text-white/30 uppercase tracking-wider block">Clue Giver</span>
-                <div className="text-lg sm:text-2xl font-display font-black text-[#ff006e] uppercase tracking-wider truncate">{clueGiver.name}</div>
-                <p className="text-white/60 font-space text-[10px] sm:text-xs hidden sm:block">Pass the phone to {clueGiver.name}</p>
+            {gameState.gameMode === "question-master" ? (
+              /* QM Mode: Show QM and list of guessers */
+              <div className="mb-4 sm:mb-6 text-left">
+                <div className="p-3 sm:p-5 bg-white/5 rounded-xl border border-white/10 mb-3">
+                  <span className="text-[8px] sm:text-[10px] font-pixel text-white/30 uppercase tracking-wider block">Question Master</span>
+                  <div className="text-lg sm:text-2xl font-display font-black text-[#8338ec] uppercase tracking-wider truncate flex items-center gap-2">
+                    <Crown className="w-5 h-5" /> {clueGiver.name}
+                  </div>
+                  <p className="text-white/60 font-space text-[10px] sm:text-xs">Pass the phone to {clueGiver.name}</p>
+                </div>
+                <div className="p-3 sm:p-4 bg-white/5 rounded-xl border border-white/10">
+                  <span className="text-[8px] sm:text-[10px] font-pixel text-white/30 uppercase tracking-wider block mb-2">Guessers (Everyone Else)</span>
+                  <div className="flex flex-wrap gap-2">
+                    {gameState.players.filter(p => p.id !== clueGiver.id).map(p => (
+                      <span key={p.id} className="px-2 py-1 bg-[#00f5ff]/10 border border-[#00f5ff]/30 rounded-lg text-[#00f5ff] font-display font-bold text-xs uppercase">
+                        {p.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <div className="space-y-2 p-3 sm:p-5 bg-white/5 rounded-xl border border-white/10">
-                <span className="text-[8px] sm:text-[10px] font-pixel text-white/30 uppercase tracking-wider block">Guesser</span>
-                <div className="text-lg sm:text-2xl font-display font-black text-[#00f5ff] uppercase tracking-wider truncate">{guesser.name}</div>
-                <p className="text-white/60 font-space text-[10px] sm:text-xs hidden sm:block">Guess the word!</p>
+            ) : (
+              /* Classic Mode: Show Clue Giver and Guesser */
+              <div className="grid grid-cols-2 gap-3 sm:gap-6 mb-4 sm:mb-6 text-left">
+                <div className="space-y-2 p-3 sm:p-5 bg-white/5 rounded-xl border border-white/10">
+                  <span className="text-[8px] sm:text-[10px] font-pixel text-white/30 uppercase tracking-wider block">Clue Giver</span>
+                  <div className="text-lg sm:text-2xl font-display font-black text-[#ff006e] uppercase tracking-wider truncate">{clueGiver.name}</div>
+                  <p className="text-white/60 font-space text-[10px] sm:text-xs hidden sm:block">Pass the phone to {clueGiver.name}</p>
+                </div>
+                <div className="space-y-2 p-3 sm:p-5 bg-white/5 rounded-xl border border-white/10">
+                  <span className="text-[8px] sm:text-[10px] font-pixel text-white/30 uppercase tracking-wider block">Guesser</span>
+                  <div className="text-lg sm:text-2xl font-display font-black text-[#00f5ff] uppercase tracking-wider truncate">{guesser.name}</div>
+                  <p className="text-white/60 font-space text-[10px] sm:text-xs hidden sm:block">Guess the word!</p>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Local Leaderboard */}
             <div className="mb-8 text-left">
@@ -259,8 +294,19 @@ export function DynamicDecksHub() {
             {/* HUD - Mobile optimized */}
             <div className="w-full grid grid-cols-3 items-center mb-6 sm:mb-10">
               <div className="flex flex-col">
-                <span className="text-[8px] sm:text-[10px] font-pixel text-white/30 uppercase tracking-widest">Score</span>
-                <span className="text-2xl sm:text-3xl font-display font-black text-[#ff006e]">{gameState.roundScore}</span>
+                {gameState.gameMode === "question-master" ? (
+                  /* QM Mode: Show QM indicator instead of cumulative score */
+                  <>
+                    <span className="text-[8px] sm:text-[10px] font-pixel text-white/30 uppercase tracking-widest">QM</span>
+                    <span className="text-lg sm:text-xl font-display font-black text-[#8338ec] truncate">{clueGiver.name}</span>
+                  </>
+                ) : (
+                  /* Classic Mode: Show cumulative score */
+                  <>
+                    <span className="text-[8px] sm:text-[10px] font-pixel text-white/30 uppercase tracking-widest">Score</span>
+                    <span className="text-2xl sm:text-3xl font-display font-black text-[#ff006e]">{gameState.roundScore}</span>
+                  </>
+                )}
               </div>
 
               <div className="flex justify-center">
@@ -288,27 +334,65 @@ export function DynamicDecksHub() {
             <DynamicCard card={gameState.currentCard} difficulty={gameState.difficulty} deckId={gameState.deckId} />
 
             {/* Controls - Touch-friendly mobile buttons */}
-            <div className="grid grid-cols-2 gap-3 sm:gap-6 w-full mt-6 sm:mt-10 max-w-md">
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={onPass}
-                className="group py-4 sm:py-5 bg-white/5 border-2 border-white/10 active:border-white/30 rounded-xl sm:rounded-2xl flex flex-col items-center gap-1.5 sm:gap-2 transition-colors touch-manipulation"
-                style={{ WebkitTapHighlightColor: 'transparent' }}
-              >
-                <X className="w-5 h-5 sm:w-6 sm:h-6 text-white/40 group-active:text-white" />
-                <span className="font-display font-bold text-sm sm:text-base text-white/60 group-active:text-white uppercase tracking-wider">Pass</span>
-              </motion.button>
+            {gameState.gameMode === "question-master" ? (
+              /* QM Mode: Pass button + Player name buttons */
+              <div className="w-full mt-4 sm:mt-10 max-w-lg px-2">
+                <div className="mb-2 sm:mb-3 text-center">
+                  <span className="text-[10px] sm:text-xs font-pixel text-white/40 uppercase tracking-wider">Who got it right?</span>
+                </div>
+                <div className={`grid gap-2 sm:gap-3 mb-3 ${gameState.players.length <= 3 ? 'grid-cols-2' :
+                    gameState.players.length <= 5 ? 'grid-cols-2 sm:grid-cols-3' :
+                      'grid-cols-3 sm:grid-cols-4'
+                  }`}>
+                  {gameState.players.filter(p => p.id !== clueGiver.id).map((player) => (
+                    <motion.button
+                      key={player.id}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => onCorrectPlayer(player.id)}
+                      className="group min-h-[56px] sm:min-h-[64px] py-2 sm:py-3 bg-[#00f5ff]/10 border-2 border-[#00f5ff]/40 active:bg-[#00f5ff]/30 rounded-xl flex flex-col items-center justify-center gap-0.5 sm:gap-1 transition-all shadow-[0_0_15px_rgba(0,245,255,0.1)] touch-manipulation"
+                      style={{ WebkitTapHighlightColor: 'transparent' }}
+                    >
+                      <Check className="w-4 h-4 text-[#00f5ff]" />
+                      <span className="font-display font-bold text-[10px] sm:text-xs text-[#00f5ff] uppercase tracking-wider truncate max-w-full px-1">
+                        {player.name}
+                      </span>
+                    </motion.button>
+                  ))}
+                </div>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={onPass}
+                  className="w-full py-3 sm:py-4 bg-white/5 border-2 border-white/10 active:border-white/30 rounded-xl flex items-center justify-center gap-2 transition-colors touch-manipulation"
+                  style={{ WebkitTapHighlightColor: 'transparent' }}
+                >
+                  <X className="w-5 h-5 text-white/40" />
+                  <span className="font-display font-bold text-sm text-white/60 uppercase tracking-wider">Pass / Skip</span>
+                </motion.button>
+              </div>
+            ) : (
+              /* Classic Mode: Pass and Correct buttons */
+              <div className="grid grid-cols-2 gap-3 sm:gap-6 w-full mt-6 sm:mt-10 max-w-md">
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={onPass}
+                  className="group py-4 sm:py-5 bg-white/5 border-2 border-white/10 active:border-white/30 rounded-xl sm:rounded-2xl flex flex-col items-center gap-1.5 sm:gap-2 transition-colors touch-manipulation"
+                  style={{ WebkitTapHighlightColor: 'transparent' }}
+                >
+                  <X className="w-5 h-5 sm:w-6 sm:h-6 text-white/40 group-active:text-white" />
+                  <span className="font-display font-bold text-sm sm:text-base text-white/60 group-active:text-white uppercase tracking-wider">Pass</span>
+                </motion.button>
 
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={onCorrect}
-                className="group py-4 sm:py-5 bg-[#00f5ff]/10 border-2 border-[#00f5ff]/40 active:bg-[#00f5ff]/20 rounded-xl sm:rounded-2xl flex flex-col items-center gap-1.5 sm:gap-2 transition-all shadow-[0_0_20px_rgba(0,245,255,0.1)] touch-manipulation"
-                style={{ WebkitTapHighlightColor: 'transparent' }}
-              >
-                <Check className="w-5 h-5 sm:w-6 sm:h-6 text-[#00f5ff]" />
-                <span className="font-display font-bold text-sm sm:text-base text-[#00f5ff] uppercase tracking-wider">Correct</span>
-              </motion.button>
-            </div>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={onCorrect}
+                  className="group py-4 sm:py-5 bg-[#00f5ff]/10 border-2 border-[#00f5ff]/40 active:bg-[#00f5ff]/20 rounded-xl sm:rounded-2xl flex flex-col items-center gap-1.5 sm:gap-2 transition-all shadow-[0_0_20px_rgba(0,245,255,0.1)] touch-manipulation"
+                  style={{ WebkitTapHighlightColor: 'transparent' }}
+                >
+                  <Check className="w-5 h-5 sm:w-6 sm:h-6 text-[#00f5ff]" />
+                  <span className="font-display font-bold text-sm sm:text-base text-[#00f5ff] uppercase tracking-wider">Correct</span>
+                </motion.button>
+              </div>
+            )}
           </motion.div>
         )}
 
@@ -323,14 +407,31 @@ export function DynamicDecksHub() {
             <div className="text-center mb-6">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-[#39ff14]/10 border border-[#39ff14]/30 rounded-full mb-3">
                 <Check className="w-4 h-4 text-[#39ff14]" />
-                <span className="text-[#39ff14] font-display font-bold text-sm">Round Complete</span>
+                <span className="text-[#39ff14] font-display font-bold text-sm">
+                  {gameState.gameMode === "question-master" ? `${clueGiver.name}'s Turn Complete` : "Round Complete"}
+                </span>
               </div>
-              <h3 className="font-display font-black text-2xl text-white">
-                {guesser.name} scored <span className="text-[#ff006e]">+{gameState.roundScore}</span>
-              </h3>
-              <p className="text-white/40 text-sm font-space mt-1">
-                {gameState.cardsInRound} cards completed
-              </p>
+              {gameState.gameMode === "question-master" ? (
+                /* QM Mode: Just show cards completed, no cumulative score */
+                <>
+                  <h3 className="font-display font-black text-2xl text-white">
+                    <span className="text-[#00f5ff]">{gameState.cardsInRound}</span> Cards Completed
+                  </h3>
+                  <p className="text-white/40 text-sm font-space mt-1">
+                    Check the leaderboard for individual scores
+                  </p>
+                </>
+              ) : (
+                /* Classic Mode: Show guesser's score */
+                <>
+                  <h3 className="font-display font-black text-2xl text-white">
+                    {guesser.name} scored <span className="text-[#ff006e]">+{gameState.roundScore}</span>
+                  </h3>
+                  <p className="text-white/40 text-sm font-space mt-1">
+                    {gameState.cardsInRound} cards completed
+                  </p>
+                </>
+              )}
             </div>
 
             {/* Leaderboard */}
@@ -342,7 +443,11 @@ export function DynamicDecksHub() {
 
               <div className="space-y-2">
                 {[...gameState.players].sort((a, b) => b.score - a.score).map((player, i) => {
-                  const justScored = player.id === guesser.id;
+                  // In QM mode, highlight if player scored this round (not just guesser)
+                  // For simplicity, we highlight the current guesser in classic mode
+                  const justScored = gameState.gameMode === "question-master"
+                    ? player.id !== clueGiver.id // In QM mode, all non-QM players could have scored
+                    : player.id === guesser.id;
                   return (
                     <motion.div
                       key={player.id}
@@ -351,9 +456,7 @@ export function DynamicDecksHub() {
                       transition={{ delay: i * 0.05 }}
                       className={`flex items-center justify-between p-3 rounded-xl transition-all ${i === 0
                         ? 'bg-yellow-500/10 border border-yellow-500/30'
-                        : justScored
-                          ? 'bg-[#ff006e]/10 border border-[#ff006e]/30'
-                          : 'bg-white/5'
+                        : 'bg-white/5'
                         }`}
                     >
                       <div className="flex items-center gap-3">
@@ -362,9 +465,9 @@ export function DynamicDecksHub() {
                           {i + 1}
                         </span>
                         <span className="font-display font-bold text-white">{player.name}</span>
-                        {justScored && (
-                          <span className="text-[10px] font-pixel text-[#ff006e] bg-[#ff006e]/10 px-2 py-0.5 rounded">
-                            +{gameState.roundScore}
+                        {player.id === clueGiver.id && gameState.gameMode === "question-master" && (
+                          <span className="text-[10px] font-pixel text-[#8338ec] bg-[#8338ec]/10 px-2 py-0.5 rounded">
+                            QM
                           </span>
                         )}
                       </div>
@@ -380,7 +483,12 @@ export function DynamicDecksHub() {
             {/* Round Progress */}
             <div className="flex items-center justify-between text-sm text-white/40 mb-6 px-2">
               <span className="font-space">Round {gameState.currentRound}/{gameState.maxRounds}</span>
-              <span className="font-space">Next: {gameState.players[(gameState.currentPlayerIndex + 1) % gameState.players.length]?.name}</span>
+              <span className="font-space">
+                {gameState.gameMode === "question-master"
+                  ? `Next QM: ${gameState.players[(gameState.clueGiverIndex + 1) % gameState.players.length]?.name}`
+                  : `Next: ${gameState.players[(gameState.currentPlayerIndex + 1) % gameState.players.length]?.name}`
+                }
+              </span>
             </div>
 
             {/* Continue Button */}

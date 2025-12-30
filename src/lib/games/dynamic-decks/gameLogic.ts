@@ -1,5 +1,5 @@
 import { getDeckCards, getDeckCardsByDifficulty, DYNAMIC_CARDS } from "./data";
-import { GameState, Player, Difficulty, Card } from "./types";
+import { GameState, Player, Difficulty, Card, GameMode } from "./types";
 
 export const INITIAL_TIMER = 60;
 export const CARDS_PER_ROUND = 10;
@@ -28,7 +28,8 @@ export function createInitialState(
   players: string[],
   difficulty: Difficulty,
   maxRounds: number = 3,
-  deckId: string = "classic"
+  deckId: string = "classic",
+  gameMode: GameMode = "classic"
 ): GameState {
   const playerObjects: Player[] = players.map((name, index) => ({
     id: `p${index}`,
@@ -44,9 +45,10 @@ export function createInitialState(
 
   return {
     players: playerObjects,
-    currentPlayerIndex: 1, // The player guessing
-    clueGiverIndex: 0,    // The player before guessing player
+    currentPlayerIndex: 1, // The player guessing (in classic mode)
+    clueGiverIndex: 0,    // The Question Master / clue giver
     difficulty,
+    gameMode,             // NEW: Track game mode
     currentRound: 1,
     maxRounds,
     score: 0,
@@ -60,6 +62,7 @@ export function createInitialState(
     cardsInRound: 0,
     maxCardsInRound: CARDS_PER_ROUND,
     deckId,
+    lastWinnerId: undefined,
   };
 }
 
@@ -113,6 +116,7 @@ export function getForbiddenWords(card: Card, difficulty: Difficulty): string[] 
   return card.forbidden.slice(0, count);
 }
 
+// Classic mode: Award points to the current guesser (currentPlayerIndex)
 export function handleCorrect(state: GameState): GameState {
   if (!state.currentCard) return state;
 
@@ -125,6 +129,29 @@ export function handleCorrect(state: GameState): GameState {
     players: updatedPlayers,
     roundScore: state.roundScore + points,
     cardsInRound: state.cardsInRound + 1,
+    lastWinnerId: state.players[state.currentPlayerIndex].id,
+  };
+
+  return drawNextCard(nextState);
+}
+
+// QM Mode: Award points to a specific player (chosen by the Question Master)
+export function handleCorrectByPlayer(state: GameState, playerId: string): GameState {
+  if (!state.currentCard) return state;
+
+  const playerIndex = state.players.findIndex(p => p.id === playerId);
+  if (playerIndex === -1) return state;
+
+  const points = calculatePoints(state.currentCard, state.difficulty, state.deckId);
+  const updatedPlayers = [...state.players];
+  updatedPlayers[playerIndex].score += points;
+
+  const nextState = {
+    ...state,
+    players: updatedPlayers,
+    roundScore: state.roundScore + points,
+    cardsInRound: state.cardsInRound + 1,
+    lastWinnerId: playerId,
   };
 
   return drawNextCard(nextState);
@@ -143,12 +170,23 @@ export function handlePass(state: GameState): GameState {
 export function startNextTurn(state: GameState): GameState {
   const totalPlayers = state.players.length;
 
-  // Calculate who goes next
-  const nextGuesser = (state.currentPlayerIndex + 1) % totalPlayers;
-  const nextClueGiver = state.currentPlayerIndex;
+  // In QM mode: only the Question Master rotates (everyone else guesses together)
+  // In Classic mode: both clue giver and guesser rotate
+  let nextClueGiver: number;
+  let nextGuesser: number;
+
+  if (state.gameMode === "question-master") {
+    // QM mode: Just rotate the Question Master, guesser index doesn't matter
+    nextClueGiver = (state.clueGiverIndex + 1) % totalPlayers;
+    nextGuesser = (nextClueGiver + 1) % totalPlayers; // Not really used in QM mode
+  } else {
+    // Classic mode: Rotate both
+    nextGuesser = (state.currentPlayerIndex + 1) % totalPlayers;
+    nextClueGiver = state.currentPlayerIndex;
+  }
 
   // A round is complete when the clueGiver returns to the very first person (index 0)
-  const isRoundComplete = nextClueGiver === totalPlayers - 1;
+  const isRoundComplete = nextClueGiver === 0 && state.clueGiverIndex !== 0;
   const nextRoundNumber = isRoundComplete ? state.currentRound + 1 : state.currentRound;
 
   // Check if we have exceeded the max rounds
@@ -171,6 +209,7 @@ export function startNextTurn(state: GameState): GameState {
     skipsUsed: 0,
     cardsInRound: 0,
     currentCard: null,
+    lastWinnerId: undefined,
   };
 }
 

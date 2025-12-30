@@ -1,5 +1,10 @@
 export type Difficulty = "easy" | "medium" | "hard" | "random";
 
+// Game modes:
+// - "classic": Clue giver reads to one guesser, points go to guesser
+// - "question-master": QM reads to everyone, fastest correct guesser gets points (QM chooses winner)
+export type GameMode = "classic" | "question-master";
+
 export interface Card {
   id: string;
   word: string;
@@ -41,6 +46,7 @@ export interface GameState {
   currentPlayerIndex: number;
   clueGiverIndex: number;
   difficulty: Difficulty;
+  gameMode: GameMode;  // NEW: Classic or Question Master mode
   currentRound: number;
   maxRounds: number;
   score: number;
@@ -54,4 +60,5 @@ export interface GameState {
   cardsInRound: number;
   maxCardsInRound: number;
   deckId: string;
+  lastWinnerId?: string;  // NEW: Track who won the last card (for QM mode display)
 }
