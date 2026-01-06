@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AppShell } from "@/components/AppShell";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { GAMES, GameConfig } from "@/config/games";
@@ -17,7 +18,7 @@ import {
 
 type LobbyView = "main" | "join";
 
-export default function MultiplayerPage() {
+function MultiplayerContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const preselectedGameId = searchParams.get("game");
@@ -565,5 +566,13 @@ export default function MultiplayerPage() {
                 initialMode="login"
             />
         </AppShell>
+    );
+}
+
+export default function MultiplayerPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-[#0a051a] flex items-center justify-center text-white">Loading Multiplayer...</div>}>
+            <MultiplayerContent />
+        </Suspense>
     );
 }

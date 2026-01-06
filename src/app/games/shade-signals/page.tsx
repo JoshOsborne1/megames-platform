@@ -7,6 +7,7 @@ import { createInitialPlayers, InGameNav, type Player, WatchAdButton } from "@/c
 import { X, Trophy, ArrowRight, Palette, Users, Droplet, ChevronRight, Plus, Trash2, Minus, Check, Users2, Crown } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense } from "react";
 import type { ColorWithPosition } from "@/lib/games/shade-signals/types";
 import { generateColorOptions, calculateHSVDistance, calculateScore, hsvToPosition } from "@/lib/games/shade-signals/colorUtils";
 import { FORBIDDEN_COLOR_WORDS } from "@/lib/games/shade-signals/clueWords";
@@ -37,7 +38,7 @@ function validateClue(clue: string, type: "first" | "second"): { valid: boolean;
   return { valid: true };
 }
 
-export default function ShadeSignalsGame() {
+function ShadeSignalsContent() {
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode");
   const roomCode = searchParams.get("room");
@@ -632,5 +633,13 @@ export default function ShadeSignalsGame() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+export default function ShadeSignalsGame() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0a0015] flex items-center justify-center text-white">Loading...</div>}>
+      <ShadeSignalsContent />
+    </Suspense>
   );
 }

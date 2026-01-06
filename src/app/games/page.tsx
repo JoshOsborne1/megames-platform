@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
+
 import { motion } from "framer-motion";
 import { AppShell } from "@/components/AppShell";
 import { Trophy } from "lucide-react";
@@ -13,7 +14,7 @@ import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { useHaptic } from "@/hooks/useHaptic";
 import { QuizProBanner } from "@/components/QuizProBanner";
 
-export default function GamesPage() {
+function GamesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode"); // "local" or "online" from home page
@@ -131,5 +132,13 @@ export default function GamesPage() {
         />
       </div>
     </AppShell>
+  );
+}
+
+export default function GamesPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0f0a1e] flex items-center justify-center text-white">Loading Arcade...</div>}>
+      <GamesContent />
+    </Suspense>
   );
 }
