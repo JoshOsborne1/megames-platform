@@ -2,18 +2,18 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { Button } from "@/components/ui/button";
 import { ColorSpectrum } from "@/components/games/shade-signals/ColorSpectrum";
-import { GameLobby, PlayerManager, GameSettings, createInitialPlayers, InGameNav, type Player } from "@/components/games/shared";
-import { Sparkles, X, Trophy, ArrowRight, Palette, Users, Droplet } from "lucide-react";
+import { createInitialPlayers, InGameNav, type Player, WatchAdButton } from "@/components/games/shared";
+import { X, Trophy, ArrowRight, Palette, Users, Droplet, ChevronRight, Plus, Trash2, Minus, Check, Users2, Crown } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import type { ColorWithPosition } from "@/lib/games/shade-signals/types";
-import { generateColorOptions, calculateHSVDistance, calculateScore } from "@/lib/games/shade-signals/colorUtils";
-import { validateClue, suggestClueWords } from "@/lib/games/shade-signals/clueWords";
+import { generateColorOptions, calculateHSVDistance, calculateScore, hsvToPosition } from "@/lib/games/shade-signals/colorUtils";
+import { FORBIDDEN_COLOR_WORDS } from "@/lib/games/shade-signals/clueWords";
+import { useRoom } from "@/context/RoomContext";
 
 type GamePhase = "setup" | "signal-pick" | "clue-1" | "guess-1" | "clue-2" | "guess-2" | "reveal" | "leaderboard" | "finished";
+type GameMode = "classic" | "qm"; // Classic: giver -> single guesser, QM: giver -> all guess
 
 interface GamePlayer {
   name: string;
@@ -21,8 +21,34 @@ interface GamePlayer {
   markers: ColorWithPosition[];
 }
 
+function validateClue(clue: string, type: "first" | "second"): { valid: boolean; error?: string } {
+  const trimmed = clue.trim();
+  if (type === "second" && trimmed === "") return { valid: true };
+  if (trimmed === "") return { valid: false, error: "Please enter a clue or click Skip" };
+
+  const words = trimmed.toLowerCase().split(/\s+/);
+  if (type === "first" && words.length !== 1) return { valid: false, error: "First clue must be exactly 1 word" };
+
+  for (const word of words) {
+    if (FORBIDDEN_COLOR_WORDS.includes(word)) {
+      return { valid: false, error: `"${word}" is a color word and not allowed!` };
+    }
+  }
+  return { valid: true };
+}
+
 export default function ShadeSignalsGame() {
+  const searchParams = useSearchParams();
+  const mode = searchParams.get("mode");
+  const roomCode = searchParams.get("room");
+  const router = useRouter();
+  const { room } = useRoom();
+
+  // Check if we're coming from a multiplayer room
+  const isFromRoom = mode === "online" && roomCode && room.isActive;
+
   const [phase, setPhase] = useState<GamePhase>("setup");
+  const [gameMode, setGameMode] = useState<GameMode>("qm");
   const [sharedPlayers, setSharedPlayers] = useState<Player[]>(createInitialPlayers());
   const [players, setPlayers] = useState<GamePlayer[]>([]);
   const [currentRound, setCurrentRound] = useState(1);
@@ -36,14 +62,24 @@ export default function ShadeSignalsGame() {
   const [showTarget, setShowTarget] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPassPhone, setShowPassPhone] = useState(false);
+  const [passPhoneTarget, setPassPhoneTarget] = useState("");
   const [nextAction, setNextAction] = useState<() => void>(() => { });
+  const [showPlayersModal, setShowPlayersModal] = useState(false);
+  const [newPlayerName, setNewPlayerName] = useState("");
 
   const playerCount = sharedPlayers.length;
 
-  const changePhase = (newPhase: GamePhase) => {
-    setPhase(newPhase);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  // In QM mode: all players except giver guess. In Classic: only one guesser per round
+  const getGuesserIndex = (guesserIdx: number) => {
+    if (gameMode === "qm") {
+      return guesserIdx >= signalGiverIndex ? guesserIdx + 1 : guesserIdx;
+    } else {
+      // Classic: guesser is the next player after signal giver
+      return (signalGiverIndex + 1) % playerCount;
+    }
   };
+
+  const getTotalGuessers = () => gameMode === "qm" ? playerCount - 1 : 1;
 
   const startGame = () => {
     const newPlayers = sharedPlayers.map(p => ({
@@ -54,41 +90,42 @@ export default function ShadeSignalsGame() {
     setPlayers(newPlayers);
     setCurrentRound(1);
     setSignalGiverIndex(0);
-    startRound();
+    startRound(newPlayers, 0);
   };
 
-  const startRound = () => {
+  const startRound = (playerList = players, sigIdx = signalGiverIndex) => {
     const options = generateColorOptions(4);
     setColorOptions(options);
-    changePhase("signal-pick");
+    setPhase("signal-pick");
     setFirstClue("");
     setSecondClue("");
     setShowTarget(false);
     setTargetColor(null);
-    setPlayers(prev => prev.map(p => ({ ...p, markers: [] })));
+    setPlayers(playerList.map(p => ({ ...p, markers: [] })));
     setCurrentGuesserIndex(0);
   };
 
-  const handleColorOptionSelect = (color: ColorWithPosition) => {
-    setTargetColor(color);
-    changePhase("clue-1");
+  const triggerPassPhone = (targetName: string, action: () => void) => {
+    setPassPhoneTarget(targetName);
+    setNextAction(() => action);
+    setShowPassPhone(true);
   };
 
   const submitFirstClue = () => {
-    if (!validateClue(firstClue, "first")) {
-      setErrorMessage("Invalid clue! Must be 1 word and no color names.");
-      return;
-    }
+    const result = validateClue(firstClue, "first");
+    if (!result.valid) { setErrorMessage(result.error || "Invalid clue"); return; }
 
-    setNextAction(() => () => changePhase("guess-1"));
-    setShowPassPhone(true);
-    setCurrentGuesserIndex(0);
+    const firstGuesserName = players[getGuesserIndex(0)]?.name || "Next Player";
+    triggerPassPhone(firstGuesserName, () => {
+      setPhase("guess-1");
+      setCurrentGuesserIndex(0);
+    });
   };
 
   const handleGuess = (color: ColorWithPosition) => {
+    const actualIndex = getGuesserIndex(currentGuesserIndex);
     setPlayers(prev => {
       const updated = [...prev];
-      const actualIndex = currentGuesserIndex >= signalGiverIndex ? currentGuesserIndex + 1 : currentGuesserIndex;
       if (updated[actualIndex]) {
         updated[actualIndex].markers.push(color);
       }
@@ -96,637 +133,502 @@ export default function ShadeSignalsGame() {
     });
 
     const nextGuesserIndex = currentGuesserIndex + 1;
-    const totalGuessers = playerCount - 1;
+    const totalGuessers = getTotalGuessers();
 
     if (nextGuesserIndex < totalGuessers) {
-      setCurrentGuesserIndex(nextGuesserIndex);
-      setNextAction(() => () => { }); // No phase change, just continue
-      setShowPassPhone(true);
+      const nextPlayerName = players[getGuesserIndex(nextGuesserIndex)]?.name || "Next Player";
+      triggerPassPhone(nextPlayerName, () => setCurrentGuesserIndex(nextGuesserIndex));
     } else {
       if (phase === "guess-1") {
-        setNextAction(() => () => changePhase("clue-2"));
-        setShowPassPhone(true);
-        setCurrentGuesserIndex(0);
+        triggerPassPhone(players[signalGiverIndex]?.name || "Signal Giver", () => {
+          setPhase("clue-2");
+          setCurrentGuesserIndex(0);
+        });
       } else {
         revealResults();
       }
     }
   };
 
-  const submitSecondClue = () => {
-    if (!validateClue(secondClue, "second")) {
-      setErrorMessage("Invalid clue! Must be 2-3 words and no color names.");
-      return;
+  const submitSecondClue = (skipClue = false) => {
+    if (!skipClue) {
+      const result = validateClue(secondClue, "second");
+      if (!result.valid) { setErrorMessage(result.error || "Invalid clue"); return; }
     }
-    setNextAction(() => () => changePhase("guess-2"));
-    setShowPassPhone(true);
-    setCurrentGuesserIndex(0);
+    const firstGuesserName = players[getGuesserIndex(0)]?.name || "Next Player";
+    triggerPassPhone(firstGuesserName, () => {
+      setPhase("guess-2");
+      setCurrentGuesserIndex(0);
+    });
   };
 
   const revealResults = () => {
     if (!targetColor) return;
-
-    changePhase("reveal");
+    setPhase("reveal");
     setShowTarget(true);
     setPlayers(prev => prev.map((player, idx) => {
       if (idx === signalGiverIndex) return player;
 
-      let roundScore = 0;
-      player.markers.forEach(marker => {
+      // Calculate scores for each guess
+      const scores = player.markers.map(marker => {
         const distance = calculateHSVDistance(marker.hsv, targetColor.hsv);
-        const points = calculateScore(distance);
-        roundScore += points;
+        return calculateScore(distance);
       });
 
-      if (player.markers.length === 2 && player.markers.every(m => {
-        const dist = calculateHSVDistance(m.hsv, targetColor.hsv);
-        return calculateScore(dist) > 0;
-      })) {
-        roundScore += 1;
-      }
+      // Average score (or single score if only one guess)
+      const avgScore = scores.length > 0
+        ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)
+        : 0;
 
-      return { ...player, score: player.score + roundScore };
+      return { ...player, score: player.score + avgScore };
     }));
   };
 
   const handleContinueToNextRound = () => {
     if (currentRound < totalRounds) {
+      const nextSignalIdx = (signalGiverIndex + 1) % playerCount;
       setCurrentRound(prev => prev + 1);
-      setSignalGiverIndex((signalGiverIndex + 1) % playerCount);
-      startRound();
+      setSignalGiverIndex(nextSignalIdx);
+      triggerPassPhone(players[nextSignalIdx]?.name || "Next Player", () => startRound(players, nextSignalIdx));
     } else {
       setPhase("finished");
     }
   };
 
-  if (phase === "setup") {
-    return (
-      <div className="min-h-screen flex flex-col bg-[#0a0a14]">
-        <Header />
-        <main className="flex-1 pt-24 pb-16 px-4 flex items-center justify-center">
-          <GameLobby
-            title="Shade Signals"
-            subtitle="Guess the color from cryptic clues"
-            icon={<Palette className="w-12 h-12" />}
-            onStart={startGame}
-            startButtonText="Start Game"
-            startDisabled={sharedPlayers.length < 2 || sharedPlayers.some(p => !p.name.trim())}
-            backUrl="/games"
-            accentColor="#00f5ff"
-          >
-            <PlayerManager
-              players={sharedPlayers}
-              onPlayersChange={setSharedPlayers}
-              minPlayers={2}
-              maxPlayers={10}
-              accentColor="#00f5ff"
-            />
+  // Player management
+  const addPlayer = () => {
+    if (!newPlayerName.trim() || sharedPlayers.length >= 10) return;
+    setSharedPlayers([...sharedPlayers, { id: `player-${Date.now()}`, name: newPlayerName.trim() }]);
+    setNewPlayerName("");
+  };
+  const removePlayer = (id: string) => setSharedPlayers(sharedPlayers.filter(p => p.id !== id));
+  const updatePlayerName = (id: string, name: string) => setSharedPlayers(sharedPlayers.map(p => p.id === id ? { ...p, name } : p));
+  const canStart = sharedPlayers.length >= 2 && sharedPlayers.every(p => p.name.trim());
 
-            <GameSettings
-              rounds={totalRounds}
-              onRoundsChange={setTotalRounds}
-              minRounds={1}
-              maxRounds={10}
-              accentColor="#ff006e"
+  // SETUP SCREEN
+  if (phase === "setup") {
+    // If online mode without room, redirect to multiplayer
+    if (mode === "online" && !isFromRoom) {
+      router.push("/multiplayer?game=shade-signals");
+      return null;
+    }
+
+    return (
+      <div className="min-h-screen bg-[#0a0015] text-white">
+        <div className="max-w-md mx-auto px-4 pb-8">
+          <div className="text-center pt-4 mb-6">
+            <Link href="/games" className="inline-block mb-3">
+              <span className="text-white/40 text-sm hover:text-white/60 transition-colors">← Back</span>
+            </Link>
+            <h1 className="font-display font-bold text-2xl text-white">Shade Signals</h1>
+            <p className="text-white/40 text-sm">Guess the color from cryptic clues</p>
+          </div>
+
+          {/* Game Info */}
+          <div className="p-4 rounded-xl bg-[#00FFFF]/10 border border-[#00FFFF]/30 mb-4">
+            <div className="flex items-center gap-3 mb-2">
+              <Palette className="w-5 h-5 text-[#00FFFF]" />
+              <h4 className="font-display font-bold text-white">How to Play</h4>
+            </div>
+            <p className="text-white/60 text-sm leading-relaxed">
+              The Signal-Giver picks a secret color and gives word clues. Guessers try to match the exact shade on the color wheel!
+            </p>
+          </div>
+
+          {/* Game Mode Selection */}
+          <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-4">
+            <p className="text-white/40 text-xs uppercase tracking-wider mb-3">Game Mode</p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={() => setGameMode("qm")}
+                className={`p-3 rounded-xl border transition-all flex flex-col items-center gap-1 ${gameMode === "qm" ? "bg-[#8338ec]/20 border-[#8338ec] text-[#8338ec]" : "bg-white/5 border-white/10 text-white/50"
+                  }`}
+              >
+                <Crown className="w-5 h-5" />
+                <span className="font-bold text-sm">QM Mode</span>
+                <span className="text-[10px] opacity-70">All guess</span>
+              </button>
+              <button
+                onClick={() => setGameMode("classic")}
+                className={`p-3 rounded-xl border transition-all flex flex-col items-center gap-1 ${gameMode === "classic" ? "bg-[#8338ec]/20 border-[#8338ec] text-[#8338ec]" : "bg-white/5 border-white/10 text-white/50"
+                  }`}
+              >
+                <Users2 className="w-5 h-5" />
+                <span className="font-bold text-sm">Classic</span>
+                <span className="text-[10px] opacity-70">1v1 turns</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Players Button */}
+          <button
+            onClick={() => setShowPlayersModal(true)}
+            className="w-full p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors flex items-center justify-between mb-4"
+          >
+            <div className="flex items-center gap-2">
+              <Users className="w-4 h-4 text-[#00FFFF]" />
+              <span className="text-sm text-white font-medium">{sharedPlayers.length} Players</span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-white/30" />
+          </button>
+
+          {/* Rounds */}
+          <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-6 flex items-center justify-between">
+            <span className="text-white font-medium">Rounds</span>
+            <div className="flex items-center gap-2">
+              <button onClick={() => setTotalRounds(Math.max(1, totalRounds - 1))} className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white">
+                <Minus className="w-4 h-4" />
+              </button>
+              <span className="w-8 text-center font-bold text-[#00FFFF]">{totalRounds}</span>
+              <button onClick={() => setTotalRounds(Math.min(10, totalRounds + 1))} className="w-8 h-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center text-white">
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <div className="mb-6">
+            <WatchAdButton
+              variant="card"
+              label="Boost Color Palette"
+              description="Get +10% more color options instantly"
+              onReward={() => {
+                // Logic to set enhanced colors would go here
+                // For now visual feedback is handled by button
+              }}
             />
-          </GameLobby>
-        </main>
-        <Footer />
+          </div>
+
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            onClick={startGame}
+            disabled={!canStart}
+            className="w-full py-4 rounded-xl bg-[#00FFFF] text-black font-display font-bold text-lg disabled:opacity-50 flex items-center justify-center gap-2"
+          >
+            Start Game <ChevronRight className="w-5 h-5" />
+          </motion.button>
+
+          {!canStart && <p className="text-center text-white/30 text-xs mt-2">Need at least 2 players with names</p>}
+        </div>
+
+        {/* Players Modal */}
+        <AnimatePresence>
+          {showPlayersModal && (
+            <>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowPlayersModal(false)} className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50" />
+              <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 50 }} className="fixed inset-x-4 bottom-4 sm:inset-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-sm z-50">
+                <div className="bg-[#0a0015] border border-white/10 rounded-2xl p-5 shadow-2xl">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2 text-[#00FFFF]">
+                      <Users className="w-5 h-5" />
+                      <h3 className="font-display font-bold text-lg">Players</h3>
+                    </div>
+                    <button onClick={() => setShowPlayersModal(false)} className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50"><X className="w-4 h-4" /></button>
+                  </div>
+                  <div className="space-y-2 mb-4 max-h-48 overflow-y-auto">
+                    {sharedPlayers.map((player, i) => (
+                      <div key={player.id} className="flex items-center gap-2 p-2 bg-white/5 border border-white/10 rounded-lg">
+                        <span className="w-6 h-6 rounded bg-white/10 flex items-center justify-center text-xs text-white/50">{i + 1}</span>
+                        <input type="text" value={player.name} onChange={(e) => updatePlayerName(player.id, e.target.value)} className="flex-1 bg-transparent outline-none text-white text-sm min-w-0" placeholder={`Player ${i + 1}`} />
+                        <button onClick={() => removePlayer(player.id)} disabled={sharedPlayers.length <= 2} className="p-1.5 text-white/20 hover:text-red-500 disabled:opacity-0"><Trash2 className="w-3.5 h-3.5" /></button>
+                      </div>
+                    ))}
+                  </div>
+                  {sharedPlayers.length < 10 && (
+                    <div className="flex gap-2 mb-4">
+                      <input type="text" value={newPlayerName} onChange={(e) => setNewPlayerName(e.target.value)} onKeyPress={(e) => e.key === "Enter" && addPlayer()} placeholder="Add player..." maxLength={15} className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm outline-none" />
+                      <button onClick={addPlayer} disabled={!newPlayerName.trim()} className="px-3 bg-[#00FFFF]/20 text-[#00FFFF] hover:bg-[#00FFFF]/30 rounded-lg disabled:opacity-30"><Plus className="w-4 h-4" /></button>
+                    </div>
+                  )}
+                  <button onClick={() => setShowPlayersModal(false)} className="w-full py-3 rounded-xl bg-[#00FFFF] text-black font-bold flex items-center justify-center gap-2">
+                    <Check className="w-4 h-4" /> Done ({sharedPlayers.length} players)
+                  </button>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </div>
     );
   }
 
+  // GAME SCREENS
   const signalGiver = players[signalGiverIndex];
-  const currentPlayer = phase.includes("guess") ? players[currentGuesserIndex >= signalGiverIndex ? currentGuesserIndex + 1 : currentGuesserIndex] : null;
-  const nextSignalGiver = players[(signalGiverIndex + 1) % playerCount];
+  const currentPlayer = phase.includes("guess") ? players[getGuesserIndex(currentGuesserIndex)] : null;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a14]">
-      {/* In-Game Navigation - replaces Header during gameplay */}
-      <InGameNav
-        gameName="Shade Signals"
-        accentColor="#00f5ff"
-        gameIcon={<Droplet className="w-full h-full" />}
-        showConfirmation={phase !== "finished"}
-        onConfirmLeave={() => { setSharedPlayers(createInitialPlayers()); setPhase("setup"); }}
-      />
+    <div className="min-h-screen bg-[#0a0015] text-white">
+      <InGameNav gameName="Shade Signals" accentColor="#00FFFF" gameIcon={<Droplet className="w-full h-full" />} showConfirmation={phase !== "finished"} onConfirmLeave={() => { setSharedPlayers(createInitialPlayers()); setPhase("setup"); }} />
 
-      <main className="flex-1 pt-8 pb-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <div className="text-white">
-              <h2 className="font-display text-2xl font-bold">Round {currentRound}/{totalRounds}</h2>
-              <p className="text-white/70">Signal-Giver: {signalGiver?.name}</p>
-            </div>
-            <div className="flex gap-4">
-              {players.map((p, i) => (
-                <div key={i} className={`px-4 py-2 rounded-lg ${i === signalGiverIndex ? 'bg-[#00f5ff]/20 border-2 border-[#00f5ff]' : 'bg-white/5'}`}>
-                  <div className="text-white font-bold">{p.name}</div>
-                  <div className="text-[#39ff14]">{p.score} pts</div>
-                </div>
-              ))}
-            </div>
+      <div className="max-w-lg mx-auto px-4 pb-8">
+        {/* Round Info */}
+        <div className="flex items-center justify-between py-4 mb-4">
+          <div>
+            <p className="text-white/40 text-xs uppercase tracking-wider">Round {currentRound}/{totalRounds}</p>
+            <p className="font-display font-bold text-white">Signal-Giver: <span className="text-[#00FFFF]">{signalGiver?.name}</span></p>
           </div>
+          <div className="flex gap-1">
+            {players.map((p, i) => (
+              <div key={i} className={`px-2 py-1 rounded text-xs font-bold ${i === signalGiverIndex ? 'bg-[#00FFFF]/20 text-[#00FFFF]' : 'bg-white/5 text-white/50'}`}>{p.score}</div>
+            ))}
+          </div>
+        </div>
 
+        <AnimatePresence mode="wait">
+          {/* SIGNAL PICK */}
           {phase === "signal-pick" && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center mb-8">
-              <h3 className="font-display text-4xl font-bold text-white mb-6">
-                {signalGiver?.name}, pick your secret color:
-              </h3>
-              <div className="flex gap-6 justify-center flex-wrap mb-10">
+            <motion.div key="signal-pick" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <h2 className="text-center font-display font-bold text-xl text-white mb-6">Pick your secret color</h2>
+              <div className="grid grid-cols-2 gap-3 mb-6">
                 {colorOptions.map((color, i) => (
-                  <motion.div
-                    key={i}
-                    whileHover={{ scale: 1.1 }}
-                    onClick={() => setTargetColor(color)}
-                    className={`w-32 h-32 rounded-2xl cursor-pointer border-4 transition-all ${targetColor?.hex === color.hex ? 'border-[#00f5ff] scale-110' : 'border-white/20'
-                      }`}
-                    style={{ backgroundColor: color.hex }}
-                  />
+                  <motion.button key={i} whileTap={{ scale: 0.95 }} onClick={() => setTargetColor(color)} className={`aspect-square rounded-xl border-4 transition-all ${targetColor?.hex === color.hex ? 'border-white scale-105' : 'border-white/20'}`} style={{ backgroundColor: color.hex }} />
                 ))}
               </div>
-
               {targetColor && (
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                  <Button
-                    onClick={() => changePhase("clue-1")}
-                    className="bg-gradient-to-r from-[#00f5ff] to-[#39ff14] text-[#0a0a14] font-black px-12 py-8 text-2xl rounded-2xl shadow-[0_10px_30px_rgba(0,245,255,0.3)]"
-                  >
-                    CONFIRM SECRET COLOR
-                  </Button>
-                </motion.div>
+                <motion.button initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} whileTap={{ scale: 0.98 }} onClick={() => setPhase("clue-1")} className="w-full py-4 rounded-xl bg-[#00FFFF] text-black font-display font-bold">Confirm Selection</motion.button>
               )}
             </motion.div>
           )}
 
-          {(phase === "clue-1" || phase === "clue-2") && targetColor && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-center mb-4">
-              <div className="flex items-center gap-4 bg-[#16162a] border border-white/10 rounded-2xl px-6 py-3">
-                <span className="text-white/70 font-semibold">Your Color:</span>
-                <div
-                  className="w-16 h-16 rounded-lg border-2 border-white/30"
-                  style={{ backgroundColor: targetColor.hex }}
-                />
-              </div>
-            </motion.div>
-          )}
-
-          {phase === "clue-1" && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-2xl mx-auto mb-8">
-              <div className="bg-[#16162a] border border-white/10 rounded-3xl p-8">
-                <h3 className="font-display text-3xl font-bold text-white mb-4">Give your 1-word clue:</h3>
-                <div className="flex gap-4">
-                  <input
-                    type="text"
-                    value={firstClue}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFirstClue(e.target.value)}
-                    placeholder="e.g., ocean, fire, sunset..."
-                    className="bg-white/5 border border-white/10 text-white text-xl flex-1 rounded-xl px-4 py-3 outline-none focus:border-[#00f5ff]"
-                  />
-                  <Button onClick={submitFirstClue} className="bg-[#00f5ff] hover:bg-[#00f5ff]/80 text-black font-bold px-8">
-                    Submit
-                  </Button>
-                </div>
-                <p className="text-white/50 text-sm mt-2">Suggestions: {suggestClueWords(5).join(", ")}</p>
-              </div>
-            </motion.div>
-          )}
-
-          {phase === "clue-2" && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-2xl mx-auto mb-8">
-              <div className="bg-[#16162a] border border-white/10 rounded-3xl p-8">
-                <h3 className="font-display text-3xl font-bold text-white mb-4">Give your 2-3 word clarifying clue:</h3>
-                <div className="flex gap-4">
-                  <input
-                    type="text"
-                    value={secondClue}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSecondClue(e.target.value)}
-                    placeholder="e.g., deep ocean waves, fiery sunset glow..."
-                    className="bg-white/5 border border-white/10 text-white text-xl flex-1 rounded-xl px-4 py-3 outline-none focus:border-[#ff006e]"
-                  />
-                  <Button onClick={submitSecondClue} className="bg-[#ff006e] hover:bg-[#ff006e]/80 text-white font-bold px-8">
-                    Submit
-                  </Button>
+          {/* CLUE 1 */}
+          {phase === "clue-1" && targetColor && (
+            <motion.div key="clue-1" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 mb-6">
+                <div className="w-12 h-12 rounded-lg border-2 border-white/30" style={{ backgroundColor: targetColor.hex }} />
+                <div>
+                  <p className="text-white/40 text-xs uppercase">Your Secret Color</p>
+                  <p className="font-mono text-white font-bold">{targetColor.hex.toUpperCase()}</p>
                 </div>
               </div>
+              <h2 className="font-display font-bold text-xl text-white mb-4">Give your 1-word clue</h2>
+              <input type="text" value={firstClue} onChange={(e) => setFirstClue(e.target.value)} placeholder="e.g., ocean, fire, sunset..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-[#00FFFF] mb-4" />
+              <motion.button whileTap={{ scale: 0.98 }} onClick={submitFirstClue} disabled={!firstClue.trim()} className="w-full py-4 rounded-xl bg-[#00FFFF] text-black font-display font-bold disabled:opacity-50">Submit Clue</motion.button>
             </motion.div>
           )}
 
+          {/* CLUE 2 */}
+          {phase === "clue-2" && targetColor && (
+            <motion.div key="clue-2" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <div className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 mb-6">
+                <div className="w-12 h-12 rounded-lg border-2 border-white/30" style={{ backgroundColor: targetColor.hex }} />
+                <div>
+                  <p className="text-white/40 text-xs uppercase">First Clue</p>
+                  <p className="font-bold text-[#00FFFF]">{firstClue}</p>
+                </div>
+              </div>
+              <h2 className="font-display font-bold text-xl text-white mb-2">Give a clarifying clue</h2>
+              <p className="text-white/40 text-sm mb-4">Any words, or skip</p>
+              <input type="text" value={secondClue} onChange={(e) => setSecondClue(e.target.value)} placeholder="e.g., deep ocean waves..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-[#ff006e] mb-4" />
+              <div className="grid grid-cols-2 gap-3">
+                <button onClick={() => submitSecondClue(true)} className="py-3 rounded-xl bg-white/5 border border-white/10 text-white/60 font-bold">Skip</button>
+                <motion.button whileTap={{ scale: 0.98 }} onClick={() => submitSecondClue(false)} className="py-3 rounded-xl bg-[#ff006e] text-white font-bold">Submit</motion.button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* GUESS PHASES - Hide other markers during guessing */}
           {(phase === "guess-1" || phase === "guess-2") && currentPlayer && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center mb-8">
-              <h3 className="font-display text-3xl font-bold text-white mb-2">
-                {currentPlayer.name}'s Turn to Guess
-              </h3>
-              <p className="text-white/70 text-xl">
-                Clue{phase === "guess-2" && "s"}: <span className="text-[#00f5ff] font-bold">{firstClue}</span>
-                {phase === "guess-2" && <> • <span className="text-[#ff006e] font-bold">{secondClue}</span></>}
-              </p>
-            </motion.div>
-          )}
-
-          {phase === "leaderboard" && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="max-w-3xl mx-auto"
-            >
-              <div className="bg-gradient-to-br from-[#1a0f2e] to-[#0a0a14] border-2 border-[#00f5ff]/40 rounded-3xl p-8 shadow-2xl mb-8" style={{ boxShadow: "0 0 60px rgba(0, 245, 255, 0.3)" }}>
-                <div className="text-center mb-8">
-                  <div className="w-20 h-20 bg-[#39ff14]/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border-2 border-[#39ff14]">
-                    <Trophy className="w-10 h-10 text-[#39ff14]" />
-                  </div>
-                  <h2 className="font-display text-4xl font-black text-white mb-2">Current Standings</h2>
-                  <p className="text-white/50">After Round {currentRound} of {totalRounds}</p>
-                </div>
-
-                <div className="space-y-3 mb-8">
-                  {players
-                    .map((p, idx) => ({ ...p, originalIndex: idx }))
-                    .sort((a, b) => b.score - a.score)
-                    .map((p, i) => (
-                      <motion.div
-                        key={p.originalIndex}
-                        initial={{ x: -10, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        transition={{ delay: i * 0.1 }}
-                        className={`flex justify-between items-center py-4 px-6 rounded-xl ${i === 0
-                          ? 'bg-gradient-to-r from-[#39ff14]/30 to-[#39ff14]/10 border-2 border-[#39ff14]'
-                          : 'bg-white/5 border border-white/10'
-                          }`}
-                      >
-                        <div className="flex items-center gap-4">
-                          <span className={`font-display text-3xl font-bold ${i === 0 ? 'text-[#39ff14]' : 'text-white/50'}`}>
-                            {i + 1}
-                          </span>
-                          <div>
-                            <span className="text-white font-bold text-xl">{p.name}</span>
-                          </div>
-                        </div>
-                        <span className="text-[#00f5ff] font-black text-2xl">{p.score} pts</span>
-                      </motion.div>
-                    ))}
-                </div>
-
-                {currentRound < totalRounds ? (
-                  <div className="bg-[#16162a] border border-white/10 rounded-2xl p-6 mb-6">
-                    <h3 className="text-white/50 font-bold text-sm uppercase tracking-widest mb-2">Up Next:</h3>
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-[#ff006e]/20 rounded-full flex items-center justify-center">
-                        <Users className="w-6 h-6 text-[#ff006e]" />
-                      </div>
-                      <p className="text-white text-xl">
-                        <span className="font-black text-[#ff006e]">{nextSignalGiver?.name}</span> will be the Signal-Giver
-                      </p>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bg-[#39ff14]/10 border border-[#39ff14]/30 rounded-2xl p-6 mb-6 text-center">
-                    <p className="text-[#39ff14] font-black text-xl italic">The game has concluded!</p>
-                  </div>
-                )}
-
-                <Button
-                  onClick={() => {
-                    setNextAction(() => handleContinueToNextRound);
-                    setShowPassPhone(true);
-                  }}
-                  className="w-full bg-gradient-to-r from-[#00f5ff] to-[#ff006e] hover:opacity-90 text-white font-black py-8 text-2xl rounded-2xl"
-                >
-                  {currentRound < totalRounds ? (
-                    <>
-                      READY FOR ROUND {currentRound + 1}
-                      <ArrowRight className="w-6 h-6 ml-2" />
-                    </>
-                  ) : (
-                    <>
-                      SEE GRAND CHAMPION
-                      <Trophy className="w-6 h-6 ml-2" />
-                    </>
-                  )}
-                </Button>
+            <motion.div key="guess" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <div className="text-center mb-4">
+                <h2 className="font-display font-bold text-xl text-white mb-2">{currentPlayer.name}'s Turn</h2>
+                <p className="text-white/50">
+                  Clues: <span className="text-[#00FFFF] font-bold">{firstClue}</span>
+                  {phase === "guess-2" && secondClue && <> • <span className="text-[#ff006e] font-bold">{secondClue}</span></>}
+                </p>
               </div>
+              <ColorSpectrum
+                onColorSelect={handleGuess}
+                markers={[]}
+                showMarkers={false}
+                targetColor={targetColor || undefined}
+                showTarget={false}
+                disabled={false}
+              />
             </motion.div>
           )}
 
+          {/* REVEAL - Enhanced layout */}
           {phase === "reveal" && targetColor && (
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="max-w-5xl mx-auto">
-              <div className="bg-[#16162a] border border-white/10 rounded-[3rem] p-8 md:p-12 shadow-[0_0_100px_rgba(57,255,20,0.1)]">
-                <div className="text-center mb-12">
-                  <motion.div
-                    initial={{ y: -20 }}
-                    animate={{ y: 0 }}
-                    className="inline-block px-6 py-2 rounded-full bg-[#39ff14]/10 border border-[#39ff14]/30 text-[#39ff14] text-sm font-black uppercase tracking-widest mb-4"
-                  >
-                    Round {currentRound} Results
-                  </motion.div>
-                  <h2 className="font-display text-5xl md:text-7xl font-black text-white tracking-tighter mb-4">
-                    THE <span className="text-[#39ff14]">REVEAL</span>
-                  </h2>
-                  <div className="flex items-center justify-center gap-4 text-white/50 text-xl">
-                    <span className="font-bold text-[#00f5ff]">{firstClue}</span>
-                    <span className="opacity-20">•</span>
-                    <span className="font-bold text-[#ff006e]">{secondClue}</span>
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-12 items-start mb-16">
-                  {/* Left Side: The Target */}
-                  <div className="flex flex-col items-center gap-6">
-                    <div className="relative group">
-                      <div className="absolute -inset-4 bg-white/20 blur-2xl rounded-full group-hover:bg-[#39ff14]/20 transition-all duration-500" />
-                      <div
-                        className="relative w-48 h-48 md:w-64 md:h-64 rounded-[3rem] border-8 border-white shadow-2xl transition-transform duration-500 hover:scale-105"
-                        style={{ backgroundColor: targetColor.hex }}
-                      />
-                      <div className="absolute -bottom-4 -right-4 w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-xl border-4 border-[#0a0a14]">
-                        <Sparkles className="w-8 h-8 text-[#0a0a14]" />
-                      </div>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-white/50 font-bold uppercase tracking-widest text-sm mb-1">Target Color</p>
-                      <p className="text-white font-mono text-3xl font-black">{targetColor.hex.toUpperCase()}</p>
-                    </div>
-                  </div>
-
-                  {/* Right Side: Guesses Comparison */}
-                  <div className="space-y-6">
-                    {players.map((p, i) => (
-                      i !== signalGiverIndex && (
-                        <motion.div
-                          key={i}
-                          initial={{ x: 20, opacity: 0 }}
-                          animate={{ x: 0, opacity: 1 }}
-                          transition={{ delay: i * 0.1 }}
-                          className="bg-white/5 border border-white/10 rounded-3xl p-6 flex flex-col gap-4"
-                        >
-                          <div className="flex justify-between items-center">
-                            <span className="text-white font-black text-xl">{p.name}</span>
-                            <div className="flex gap-2">
-                              {p.markers.map((m, mi) => (
-                                <div key={mi} className="flex flex-col items-center gap-1">
-                                  <div
-                                    className="w-12 h-12 rounded-xl border-2 border-white/30"
-                                    style={{ backgroundColor: m.hex }}
-                                  />
-                                  <span className="text-[10px] text-white/40 font-mono">
-                                    {Math.round((1 - calculateHSVDistance(m.hsv, targetColor.hsv)) * 100)}%
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                          <div className="h-2 w-full bg-white/5 rounded-full overflow-hidden">
-                            <motion.div
-                              initial={{ width: 0 }}
-                              animate={{ width: `${Math.max(...p.markers.map(m => (1 - calculateHSVDistance(m.hsv, targetColor.hsv)) * 100))}%` }}
-                              className="h-full bg-gradient-to-r from-[#00f5ff] to-[#39ff14]"
-                            />
-                          </div>
-                        </motion.div>
-                      )
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex flex-col md:flex-row gap-4">
-                  <Button
-                    onClick={() => changePhase("leaderboard")}
-                    className="flex-1 py-10 text-2xl font-black bg-white text-[#0a0a14] hover:bg-white/90 rounded-[2rem] shadow-2xl transition-all hover:scale-[1.02] active:scale-95 group"
-                  >
-                    CONTINUE TO STANDINGS
-                    <ArrowRight className="w-8 h-8 ml-4 group-hover:translate-x-2 transition-transform" />
-                  </Button>
-                </div>
+            <motion.div key="reveal" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <div className="text-center mb-6">
+                <p className="text-[#00FFFF] text-xs uppercase tracking-wider mb-1">Round {currentRound} Complete</p>
+                <h2 className="font-display font-black text-3xl text-white mb-2">The Reveal!</h2>
+                <p className="text-white/50">
+                  <span className="text-[#00FFFF] font-bold">{firstClue}</span>
+                  {secondClue && <> • <span className="text-[#ff006e] font-bold">{secondClue}</span></>}
+                </p>
               </div>
 
-              {/* Mini Spectrum for Spatial Reference */}
-              <div className="mt-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
-                <ColorSpectrum
-                  onColorSelect={() => { }}
-                  markers={players.flatMap(p => p.markers)}
-                  targetColor={targetColor}
-                  showTarget={true}
-                  disabled={true}
-                />
-              </div>
-            </motion.div>
-          )}
-
-          {phase.includes("guess") && (
-            <ColorSpectrum
-              onColorSelect={handleGuess}
-              markers={players.flatMap(p => p.markers)}
-              targetColor={targetColor || undefined}
-              showTarget={showTarget}
-              disabled={!phase.includes("guess")}
-            />
-          )}
-
-          {phase === "finished" && (
-            <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} className="text-center mt-12 max-w-4xl mx-auto">
-              <div className="relative mb-12">
-                <motion.div
-                  animate={{
-                    scale: [1, 1.1, 1],
-                    rotate: [0, 5, -5, 0]
-                  }}
-                  transition={{ duration: 4, repeat: Infinity }}
-                  className="inline-block"
-                >
-                  <Trophy className="w-32 h-32 text-[#39ff14] drop-shadow-[0_0_30px_rgba(57,255,20,0.5)]" />
-                </motion.div>
-                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center -z-10">
+              {/* Target Color - Hero Display */}
+              <div className="relative mb-8">
+                <div className="flex flex-col items-center">
                   <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    className="w-64 h-64 border-4 border-dashed border-[#00f5ff]/20 rounded-full"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                    className="w-32 h-32 rounded-2xl border-4 border-white shadow-2xl mb-4"
+                    style={{ backgroundColor: targetColor.hex }}
                   />
+                  <p className="text-white/40 text-xs uppercase tracking-wider">Target Color</p>
+                  <p className="font-mono font-bold text-xl text-white">{targetColor.hex.toUpperCase()}</p>
                 </div>
               </div>
 
-              <h2 className="font-display text-7xl md:text-9xl font-black text-white mb-4 tracking-tighter italic">
-                VICTORY!
-              </h2>
+              {/* Player Guesses - Big cards for discussion */}
+              <div className="space-y-4 mb-6">
+                {players.map((p, i) => {
+                  if (i === signalGiverIndex) return null;
+                  const guess1 = p.markers[0];
+                  const guess2 = p.markers[1];
+                  const score1 = guess1 ? calculateScore(calculateHSVDistance(guess1.hsv, targetColor.hsv)) : 0;
+                  const score2 = guess2 ? calculateScore(calculateHSVDistance(guess2.hsv, targetColor.hsv)) : 0;
+                  const avgScore = guess2 ? Math.round((score1 + score2) / 2) : score1;
 
-              <div className="bg-[#16162a]/80 backdrop-blur-xl border-2 border-white/10 rounded-[3rem] p-12 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#00f5ff] via-[#ff006e] to-[#39ff14]" />
-
-                <h3 className="text-3xl font-bold text-white/50 mb-10 uppercase tracking-widest">Final Leaderboard</h3>
-
-                <div className="space-y-4 mb-12">
-                  {players.sort((a, b) => b.score - a.score).map((p, i) => (
+                  return (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.15 }}
-                      className={`flex justify-between items-center py-6 px-10 rounded-2xl ${i === 0
-                        ? 'bg-gradient-to-r from-[#39ff14]/30 to-[#39ff14]/10 border-2 border-[#39ff14] scale-105 shadow-[0_0_40px_rgba(57,255,20,0.2)]'
-                        : 'bg-white/5 border border-white/10'
-                        }`}
+                      transition={{ delay: i * 0.1 }}
+                      className="p-4 rounded-xl bg-white/5 border border-white/10"
                     >
-                      <div className="flex items-center gap-6">
-                        <span className={`font-display text-4xl font-black ${i === 0 ? 'text-[#39ff14]' : 'text-white/40'}`}>
-                          #{i + 1}
-                        </span>
-                        <span className="text-white font-black text-3xl">{p.name}</span>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="font-display font-bold text-lg text-white">{p.name}</span>
+                        <div className="text-right">
+                          <span className={`font-display font-black text-2xl ${avgScore >= 70 ? 'text-emerald-400' : avgScore >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>{avgScore}</span>
+                          <span className="text-white/30 text-sm">/100</span>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <span className="text-[#00f5ff] font-black text-4xl block">{p.score}</span>
-                        <span className="text-white/30 text-xs font-bold uppercase tracking-widest">Points</span>
+                      <div className="flex gap-4">
+                        {/* Guess 1 */}
+                        <div className="flex-1">
+                          <p className="text-white/30 text-[10px] uppercase mb-1">Guess 1</p>
+                          {guess1 ? (
+                            <div className="flex items-center gap-2">
+                              <div className="w-12 h-12 rounded-lg border-2 border-white/30" style={{ backgroundColor: guess1.hex }} />
+                              <div>
+                                <p className="font-mono text-white text-xs">{guess1.hex.toUpperCase()}</p>
+                                <p className={`text-sm font-bold ${score1 >= 70 ? 'text-emerald-400' : score1 >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>
+                                  {score1}/100
+                                </p>
+                              </div>
+                            </div>
+                          ) : <span className="text-white/20">-</span>}
+                        </div>
+                        {/* Guess 2 */}
+                        <div className="flex-1">
+                          <p className="text-white/30 text-[10px] uppercase mb-1">Guess 2</p>
+                          {guess2 ? (
+                            <div className="flex items-center gap-2">
+                              <div className="w-12 h-12 rounded-lg border-2 border-white/30" style={{ backgroundColor: guess2.hex }} />
+                              <div>
+                                <p className="font-mono text-white text-xs">{guess2.hex.toUpperCase()}</p>
+                                <p className={`text-sm font-bold ${score2 >= 70 ? 'text-emerald-400' : score2 >= 40 ? 'text-yellow-400' : 'text-red-400'}`}>
+                                  {score2}/100
+                                </p>
+                              </div>
+                            </div>
+                          ) : <span className="text-white/20">-</span>}
+                        </div>
                       </div>
+                      {avgScore >= 80 && (
+                        <div className="mt-2 text-center text-emerald-400 text-xs font-bold">🎯 Excellent match!</div>
+                      )}
                     </motion.div>
-                  ))}
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <Button
-                    onClick={() => { setSharedPlayers(createInitialPlayers()); setPhase("setup"); }}
-                    className="bg-white text-[#0a0a14] hover:bg-white/90 font-black px-12 py-10 text-2xl rounded-[2rem] transition-all hover:scale-105 active:scale-95"
-                  >
-                    PLAY AGAIN
-                  </Button>
-                  <Link href="/games" className="w-full">
-                    <Button
-                      className="w-full bg-white/10 hover:bg-white/20 text-white border border-white/20 font-black px-12 py-10 text-2xl rounded-[2rem] transition-all hover:scale-105 active:scale-95"
-                    >
-                      HOME
-                    </Button>
-                  </Link>
-                </div>
+                  );
+                })}
               </div>
+
+              <motion.button whileTap={{ scale: 0.98 }} onClick={() => setPhase("leaderboard")} className="w-full py-4 rounded-xl bg-white text-black font-display font-bold flex items-center justify-center gap-2">
+                See Standings <ArrowRight className="w-5 h-5" />
+              </motion.button>
             </motion.div>
           )}
-        </div>
-      </main>
-      <Footer />
 
+          {/* LEADERBOARD */}
+          {phase === "leaderboard" && (
+            <motion.div key="leaderboard" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+              <div className="text-center mb-6">
+                <Trophy className="w-10 h-10 text-yellow-500 mx-auto mb-2" />
+                <h2 className="font-display font-bold text-xl text-white">Standings</h2>
+                <p className="text-white/40 text-sm">After Round {currentRound}</p>
+              </div>
+              <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-6 space-y-2">
+                {[...players].sort((a, b) => b.score - a.score).map((p, i) => (
+                  <div key={i} className={`flex items-center justify-between p-3 rounded-lg ${i === 0 ? 'bg-yellow-500/10 border border-yellow-500/30' : ''}`}>
+                    <div className="flex items-center gap-3">
+                      <span className={`w-6 h-6 rounded flex items-center justify-center text-xs font-bold ${i === 0 ? 'bg-yellow-500 text-black' : 'bg-white/10 text-white/50'}`}>{i + 1}</span>
+                      <span className="font-medium text-white">{p.name}</span>
+                    </div>
+                    <span className={`font-display font-bold ${i === 0 ? 'text-yellow-500' : 'text-white/60'}`}>{p.score}</span>
+                  </div>
+                ))}
+              </div>
+              <motion.button whileTap={{ scale: 0.98 }} onClick={handleContinueToNextRound} className="w-full py-4 rounded-xl bg-[#00FFFF] text-black font-display font-bold flex items-center justify-center gap-2">
+                {currentRound < totalRounds ? <>Next Round <ArrowRight className="w-5 h-5" /></> : <>Final Results <Trophy className="w-5 h-5" /></>}
+              </motion.button>
+            </motion.div>
+          )}
+
+          {/* FINISHED */}
+          {phase === "finished" && (
+            <motion.div key="finished" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="pt-8 text-center">
+              <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
+              <h2 className="font-display font-black text-3xl text-white mb-2">Game Over!</h2>
+              <p className="text-white/40 mb-6">The champion is...</p>
+              <h1 className="font-display font-black text-4xl text-[#00FFFF] mb-8">{[...players].sort((a, b) => b.score - a.score)[0]?.name}</h1>
+              <div className="space-y-2 mb-8">
+                {[...players].sort((a, b) => b.score - a.score).map((p, i) => (
+                  <div key={i} className={`flex items-center justify-between p-4 rounded-lg ${i === 0 ? 'bg-yellow-500/10 border-2 border-yellow-500' : 'bg-white/5'}`}>
+                    <div className="flex items-center gap-3">
+                      <span className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${i === 0 ? 'bg-yellow-500 text-black' : 'bg-white/10 text-white/50'}`}>{i + 1}</span>
+                      <span className="font-display font-bold text-white">{p.name}</span>
+                    </div>
+                    <span className={`font-display font-black text-xl ${i === 0 ? 'text-yellow-500' : 'text-white/50'}`}>{p.score}</span>
+                  </div>
+                ))}
+              </div>
+              <button onClick={() => { setSharedPlayers(createInitialPlayers()); setPhase("setup"); }} className="w-full py-4 rounded-xl bg-white text-black font-display font-bold">Play Again</button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* PASS PHONE MODAL */}
       <AnimatePresence>
         {showPassPhone && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0a0a14]/fb backdrop-blur-3xl p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              className="bg-gradient-to-br from-[#16162a] to-[#0a0a14] border-2 border-[#00f5ff]/50 rounded-[2.5rem] p-12 max-w-lg w-full text-center shadow-[0_0_80px_rgba(0,245,255,0.2)]"
-            >
-              <div className="relative mb-8">
-                <motion.div
-                  animate={{
-                    rotateY: [0, 180, 0],
-                    x: [-20, 20, -20]
-                  }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                  className="w-24 h-40 mx-auto rounded-2xl border-4 border-[#00f5ff] bg-[#1a0f2e] flex items-center justify-center p-2 shadow-[0_0_30px_rgba(0,245,255,0.3)]"
-                >
-                  <div className="w-full h-1 bg-[#00f5ff]/30 rounded-full" />
-                </motion.div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex gap-4">
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-                    className="w-32 h-32 border-2 border-dashed border-[#00f5ff]/20 rounded-full"
-                  />
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50" />
+            <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 50 }} className="fixed inset-x-4 bottom-4 sm:inset-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-sm z-50">
+              <div className="bg-[#0a0015] border border-[#00FFFF]/30 rounded-2xl p-6 shadow-2xl text-center">
+                <motion.div animate={{ rotateY: [0, 180, 0], x: [-10, 10, -10] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} className="w-16 h-24 mx-auto mb-4 rounded-xl border-4 border-[#00FFFF] bg-white/5" />
+                <h2 className="font-display font-bold text-2xl text-white mb-2">Pass the <span className="text-[#00FFFF]">Phone</span></h2>
+                <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-4">
+                  <p className="text-white/40 text-sm mb-1">Next up:</p>
+                  <p className="font-display font-bold text-2xl text-[#00FFFF]">{passPhoneTarget}</p>
                 </div>
+                <p className="text-white/30 text-xs mb-6">Make sure no one else can see the screen!</p>
+                <motion.button whileTap={{ scale: 0.98 }} onClick={() => { setShowPassPhone(false); nextAction(); }} className="w-full py-4 rounded-xl bg-[#00FFFF] text-black font-display font-bold flex items-center justify-center gap-2">I'm Ready <ArrowRight className="w-5 h-5" /></motion.button>
               </div>
-
-              <h2 className="font-display text-4xl font-black text-white mb-4 tracking-tighter">
-                PASS THE <span className="text-[#00f5ff]">PHONE</span>
-              </h2>
-
-              <div className="bg-white/5 rounded-2xl p-6 mb-8 border border-white/10">
-                <p className="text-white/70 text-lg mb-2">Next up:</p>
-                <p className="text-3xl font-black text-[#39ff14] glow-text">
-                  {(() => {
-                    // Determine who is next based on phase
-                    if (phase === "clue-1" || phase === "clue-2") {
-                      // After submitting clue, first guesser is up
-                      // Calculate actual player index: skip the signal giver
-                      const firstGuesserActualIndex = 0 >= signalGiverIndex ? 1 : 0;
-                      return players[firstGuesserActualIndex]?.name || "Next Player";
-                    } else if (phase === "guess-1" || phase === "guess-2") {
-                      // During guessing, show who guesses next
-                      const nextGuesserIndex = currentGuesserIndex + 1;
-                      const totalGuessers = playerCount - 1;
-                      if (nextGuesserIndex < totalGuessers) {
-                        // More guessers remaining
-                        const actualNextIndex = nextGuesserIndex >= signalGiverIndex ? nextGuesserIndex + 1 : nextGuesserIndex;
-                        return players[actualNextIndex]?.name || "Next Player";
-                      } else if (phase === "guess-1") {
-                        // After all guess-1, signal giver gives clue 2
-                        return signalGiver?.name || "Signal Giver";
-                      } else {
-                        // After guess-2, going to reveal (no specific player)
-                        return "Everyone";
-                      }
-                    } else if (phase === "leaderboard") {
-                      // After leaderboard, next signal giver takes over
-                      return nextSignalGiver?.name || "Next Player";
-                    }
-                    return nextSignalGiver?.name || "Next Player";
-                  })()}
-                </p>
-              </div>
-
-              <p className="text-white/40 text-sm mb-10 leading-relaxed">
-                Make sure the previous player can't see the screen! <br />
-                Tap the button when you're ready to start.
-              </p>
-
-              <Button
-                onClick={() => {
-                  setShowPassPhone(false);
-                  nextAction();
-                }}
-                className="w-full py-8 text-2xl font-black bg-gradient-to-r from-[#00f5ff] to-[#39ff14] hover:opacity-90 text-[#0a0a14] rounded-2xl shadow-[0_10px_40px_rgba(0,245,255,0.3)] group"
-              >
-                I AM READY
-                <ArrowRight className="w-6 h-6 ml-2 group-hover:translate-x-2 transition-transform" />
-              </Button>
             </motion.div>
-          </motion.div>
+          </>
         )}
+      </AnimatePresence>
 
+      {/* ERROR MODAL */}
+      <AnimatePresence>
         {errorMessage && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
-            onClick={() => setErrorMessage(null)}
-          >
-            <motion.div
-              initial={{ scale: 0.8, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.8, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-gradient-to-br from-[#ff006e]/20 to-[#1a0f2e] border-2 border-[#ff006e] rounded-3xl p-8 max-w-md mx-4 shadow-2xl"
-              style={{ boxShadow: "0 0 60px rgba(255, 0, 110, 0.4)" }}
-            >
-              <div className="flex items-start gap-4">
-                <div className="flex-1">
-                  <h3 className="font-display text-2xl font-bold text-white mb-2">Oops!</h3>
-                  <p className="text-white/80">{errorMessage}</p>
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setErrorMessage(null)} className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50" />
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm mx-4 z-50">
+              <div className="bg-[#0a0015] border border-[#ff006e]/30 rounded-2xl p-5">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-[#ff006e]/20 flex items-center justify-center"><X className="w-5 h-5 text-[#ff006e]" /></div>
+                  <div><h3 className="font-display font-bold text-white">Oops!</h3><p className="text-white/60 text-sm">{errorMessage}</p></div>
                 </div>
-                <button
-                  onClick={() => setErrorMessage(null)}
-                  className="text-white/70 hover:text-white transition-colors"
-                >
-                  <X className="w-6 h-6" />
-                </button>
+                <button onClick={() => setErrorMessage(null)} className="w-full py-3 rounded-xl bg-[#ff006e] text-white font-bold">Got it</button>
               </div>
-              <Button
-                onClick={() => setErrorMessage(null)}
-                className="w-full mt-6 bg-[#ff006e] hover:bg-[#ff006e]/80 text-white font-bold py-3"
-              >
-                Got it!
-              </Button>
             </motion.div>
-          </motion.div>
+          </>
         )}
       </AnimatePresence>
     </div>

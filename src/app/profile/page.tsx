@@ -1,225 +1,245 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { Button } from "@/components/ui/button";
+import { AppShell } from "@/components/AppShell";
 import {
-  Trophy,
-  Target,
-  TrendingUp,
-  Clock,
-  Gamepad2,
-  Medal,
-  Star,
-  Edit,
-  Settings,
-  Crown,
+  Trophy, TrendingUp, Clock, Gamepad2, Settings, LogOut, ChevronRight, Loader2, Medal, User, Crown, Zap, Target
 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { AuthModal } from "@/components/AuthModal";
 
-const mockUser = {
-  username: "GameMaster99",
-  email: "player@example.com",
-  avatar: "#00BFFF",
-  joinDate: "December 2024",
-  rank: "Gold",
-  elo: 1450,
-};
-
-const mockStats = {
-  gamesPlayed: 127,
-  wins: 68,
-  losses: 59,
-  winRate: 53.5,
-  hoursPlayed: 42,
-  currentStreak: 5,
-  bestStreak: 12,
-};
-
-const mockGameStats = [
-  { game: "Lyric Legends", played: 45, wins: 28, color: "#8338ec" },
-  { game: "Dynamic Decks", played: 52, wins: 25, color: "#ff006e" },
-  { game: "Shade Signals", played: 30, wins: 15, color: "#00f5ff" },
+const mockStats = [
+  { label: "Games", value: 127, icon: Gamepad2, color: "#00f5ff" },
+  { label: "Wins", value: 68, icon: Trophy, color: "#32CD32" },
+  { label: "Win Rate", value: "54%", icon: Target, color: "#ff006e" },
+  { label: "Hours", value: 42, icon: Clock, color: "#8338ec" },
 ];
-
-const mockAchievements = [
-  { id: 1, name: "First Win", description: "Win your first game", icon: Trophy, unlocked: true },
-  { id: 2, name: "Streak Master", description: "Win 10 games in a row", icon: TrendingUp, unlocked: true },
-  { id: 3, name: "Lyric Legend", description: "Play 50 Lyric Legends games", icon: Target, unlocked: false },
-  { id: 4, name: "Deck Master", description: "Win 25 Dynamic Decks games", icon: Crown, unlocked: false },
-];
-
-const rankColors: Record<string, string> = {
-  Bronze: "#CD7F32",
-  Silver: "#C0C0C0",
-  Gold: "#FFD700",
-  Platinum: "#00BFFF",
-  Diamond: "#9370DB",
-};
 
 export default function ProfilePage() {
-  return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-1 pt-24 pb-16 px-4 bg-[#0a0a14]">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-[#16162a] border border-white/10 rounded-2xl p-8 mb-8"
-          >
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-              <div className="flex items-center gap-6">
-                <div
-                  className="w-24 h-24 rounded-2xl flex items-center justify-center text-4xl font-bold text-black"
-                  style={{ backgroundColor: mockUser.avatar }}
-                >
-                  {mockUser.username.charAt(0)}
-                </div>
-                <div>
-                  <div className="flex items-center gap-3">
-                    <h1 className="font-display text-3xl font-bold text-white">
-                      {mockUser.username}
-                    </h1>
-                    <div
-                      className="px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1"
-                      style={{ backgroundColor: `${rankColors[mockUser.rank]}22`, color: rankColors[mockUser.rank] }}
-                    >
-                      <Medal className="w-3 h-3" />
-                      {mockUser.rank}
-                    </div>
-                  </div>
-                  <p className="text-gray-400 mt-1">Member since {mockUser.joinDate}</p>
-                  <p className="text-gray-500 text-sm mt-1">ELO: {mockUser.elo}</p>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <Button variant="outline" className="border-white/10 text-gray-300 hover:bg-white/5">
-                  <Edit className="w-4 h-4 mr-2" />
-                  Edit Profile
-                </Button>
-                <Button variant="outline" className="border-white/10 text-gray-300 hover:bg-white/5">
-                  <Settings className="w-4 h-4 mr-2" />
-                  Settings
-                </Button>
-              </div>
-            </div>
-          </motion.div>
+  const router = useRouter();
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isPro, setIsPro] = useState(false);
 
-          <div className="grid md:grid-cols-4 gap-4 mb-8">
-            {[
-              { label: "Games Played", value: mockStats.gamesPlayed, icon: Gamepad2, color: "#00BFFF" },
-              { label: "Total Wins", value: mockStats.wins, icon: Trophy, color: "#32CD32" },
-              { label: "Win Rate", value: `${mockStats.winRate}%`, icon: TrendingUp, color: "#FF4500" },
-              { label: "Hours Played", value: mockStats.hoursPlayed, icon: Clock, color: "#9370DB" },
-            ].map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-[#16162a] border border-white/10 rounded-xl p-6"
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
-                </div>
-                <p className="font-display text-3xl font-bold text-white">{stat.value}</p>
-                <p className="text-gray-400 text-sm">{stat.label}</p>
-              </motion.div>
-            ))}
-          </div>
+  useEffect(() => {
+    const fetchUser = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+      setLoading(false);
 
-          <div className="grid md:grid-cols-2 gap-8">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-              className="bg-[#16162a] border border-white/10 rounded-2xl p-6"
-            >
-              <h2 className="font-display text-xl font-bold text-white mb-6 flex items-center gap-2">
-                <Target className="w-5 h-5 text-[#00BFFF]" />
-                Game Statistics
-              </h2>
-              <div className="space-y-4">
-                {mockGameStats.map((game) => (
-                  <div key={game.game} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-300">{game.game}</span>
-                      <span className="text-gray-400 text-sm">
-                        {game.wins}/{game.played} wins
-                      </span>
-                    </div>
-                    <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all"
-                        style={{
-                          width: `${(game.wins / game.played) * 100}%`,
-                          backgroundColor: game.color,
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
+      if (user) {
+        // Fetch Pro status
+        supabase
+          .from("profiles")
+          .select("is_pro")
+          .eq("id", user.id)
+          .single()
+          .then(({ data }) => {
+            setIsPro(data?.is_pro || false);
+          });
+      }
+    };
 
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
-              className="bg-[#16162a] border border-white/10 rounded-2xl p-6"
-            >
-              <h2 className="font-display text-xl font-bold text-white mb-6 flex items-center gap-2">
-                <Star className="w-5 h-5 text-[#FFD700]" />
-                Achievements
-              </h2>
-              <div className="grid grid-cols-2 gap-4">
-                {mockAchievements.map((achievement) => (
-                  <div
-                    key={achievement.id}
-                    className={`p-4 rounded-xl border ${achievement.unlocked
-                      ? "border-[#FFD700]/30 bg-[#FFD700]/10"
-                      : "border-white/10 bg-white/5 opacity-50"
-                      }`}
-                  >
-                    <achievement.icon
-                      className={`w-6 h-6 mb-2 ${achievement.unlocked ? "text-[#FFD700]" : "text-gray-500"
-                        }`}
-                    />
-                    <p className="font-display font-bold text-white text-sm">{achievement.name}</p>
-                    <p className="text-gray-400 text-xs mt-1">{achievement.description}</p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          </div>
+    fetchUser();
+  }, [router]);
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="mt-8 bg-gradient-to-r from-[#9370DB]/20 to-[#00BFFF]/20 border border-white/10 rounded-2xl p-6"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <span className="text-xs font-bold text-[#FFD700] bg-[#FFD700]/20 px-2 py-1 rounded-full">
-                  [PREMIUM_FEATURE]
-                </span>
-                <h3 className="font-display text-xl font-bold text-white mt-2">
-                  Unlock Premium Features
-                </h3>
-                <p className="text-gray-400 mt-1">
-                  Get custom avatars, exclusive games, and more!
-                </p>
-              </div>
-              <Button className="bg-gradient-to-r from-[#9370DB] to-[#00BFFF] text-white font-bold">
-                Upgrade Now
-              </Button>
-            </div>
-          </motion.div>
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    const supabase = createClient();
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      toast.error(error.message);
+      setLoggingOut(false);
+    } else {
+      toast.success("Logged out successfully");
+      router.push("/");
+      router.refresh();
+    }
+  };
+
+  if (loading) {
+    return (
+      <AppShell>
+        <div className="flex items-center justify-center h-[60vh]">
+          <Loader2 className="w-8 h-8 animate-spin text-[#00f5ff]" />
         </div>
-      </main>
-      <Footer />
-    </div>
+      </AppShell>
+    );
+  }
+
+  // Not logged in - show login prompt
+  if (!user) {
+    return (
+      <AppShell>
+        <div className="min-h-screen px-4 pt-6 max-w-md mx-auto flex flex-col justify-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="widget-card !p-8 text-center flex flex-col items-center gap-6 relative overflow-hidden"
+          >
+            {/* Glow effects */}
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-[#ff006e]/30 blur-3xl rounded-full" />
+            <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-[#8338ec]/30 blur-3xl rounded-full" />
+
+            <div className="relative z-10 w-24 h-24 rounded-full bg-gradient-to-tr from-[#ff006e] to-[#8338ec] flex items-center justify-center shadow-2xl shadow-purple-500/30">
+              <Medal className="w-12 h-12 text-white" />
+            </div>
+
+            <div className="relative z-10">
+              <h2 className="font-display text-3xl font-bold text-white mb-2 leading-tight">Join the<br />Arena</h2>
+              <p className="text-white/50 text-sm max-w-[200px] mx-auto">Track stats, unlock achievements, and dominate the leaderboard.</p>
+            </div>
+
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowAuthModal(true)}
+              className="relative z-10 w-full py-4 rounded-xl bg-gradient-to-r from-[#ff006e] to-[#8338ec] text-white font-bold uppercase tracking-wider shadow-lg shadow-purple-500/25"
+            >
+              Sign In / Sign Up
+            </motion.button>
+          </motion.div>
+
+          <AuthModal
+            isOpen={showAuthModal}
+            onClose={() => setShowAuthModal(false)}
+            initialMode="login"
+          />
+        </div>
+      </AppShell>
+    );
+  }
+
+  // Extract user info
+  const username = user?.user_metadata?.username || user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Player";
+  const avatarUrl = user?.user_metadata?.avatar_url;
+
+  return (
+    <AppShell>
+      <div className="min-h-screen pb-24 px-4 pt-6 max-w-md mx-auto">
+
+        {/* HEADER - Centered like Arcade */}
+        <header className="text-center mb-6">
+          <h1 className="font-display font-bold text-xl uppercase tracking-wider text-white">Profile</h1>
+          <p className="text-xs text-white/50 font-medium">Player Stats</p>
+        </header>
+
+        {/* PROFILE CARD - With glows */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          className="widget-card !p-6 mb-6 flex flex-col items-center relative overflow-hidden"
+        >
+          {/* Background glows */}
+          <div className="absolute -top-16 -right-16 w-32 h-32 bg-[#00f5ff]/20 blur-3xl rounded-full" />
+          <div className="absolute -bottom-16 -left-16 w-32 h-32 bg-[#ff006e]/20 blur-3xl rounded-full" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#8338ec]/10 blur-3xl rounded-full" />
+
+          <div className="relative z-10 w-24 h-24 rounded-full p-1 bg-gradient-to-tr from-[#00f5ff] via-[#8338ec] to-[#ff006e] mb-4 shadow-lg" style={{ boxShadow: '0 0 40px rgba(131, 56, 236, 0.4)' }}>
+            <div className="w-full h-full rounded-full bg-[#0a0015] overflow-hidden flex items-center justify-center">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt={username} className="w-full h-full object-cover" />
+              ) : (
+                <div className="text-4xl font-display font-bold text-white">{username.charAt(0).toUpperCase()}</div>
+              )}
+            </div>
+            {/* Online Indicator with glow */}
+            <div className="absolute bottom-1 right-1 w-5 h-5 rounded-full bg-[#00f5ff] border-4 border-[#0a0015]" style={{ boxShadow: '0 0 10px rgba(0, 245, 255, 0.8)' }} />
+          </div>
+
+          <h2 className="relative z-10 font-display text-2xl font-bold text-white mb-2">{username}</h2>
+
+          {isPro ? (
+            <div className="relative z-10 px-4 py-1.5 rounded-full bg-gradient-to-r from-amber-400/20 to-orange-500/20 border border-amber-400/40 flex items-center gap-2" style={{ boxShadow: '0 0 20px rgba(251, 191, 36, 0.3)' }}>
+              <Crown className="w-4 h-4 text-amber-400 fill-amber-400" />
+              <span className="text-xs font-bold text-amber-400 uppercase tracking-wide">PRO MEMBER</span>
+            </div>
+          ) : (
+            <div className="relative z-10 px-3 py-1 rounded-full bg-white/5 border border-white/10">
+              <span className="text-xs text-white/40 font-bold uppercase tracking-widest">Level 1 Rookie</span>
+            </div>
+          )}
+        </motion.div>
+
+        {/* STATS GRID - With colors and glows */}
+        <div className="grid grid-cols-2 gap-3 mb-6">
+          {mockStats.map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: i * 0.05 }}
+              className="widget-card !p-4 flex flex-col items-center justify-center relative overflow-hidden"
+              style={{
+                background: `linear-gradient(135deg, ${stat.color}10, transparent 60%)`,
+                borderColor: `${stat.color}30`
+              }}
+            >
+              {/* Subtle glow */}
+              <div className="absolute top-0 right-0 w-16 h-16 blur-2xl rounded-full" style={{ backgroundColor: `${stat.color}20` }} />
+
+              <stat.icon className="w-6 h-6 mb-2 relative z-10" style={{ color: stat.color, filter: `drop-shadow(0 0 8px ${stat.color})` }} />
+              <div className="font-display font-bold text-xl text-white relative z-10">{stat.value}</div>
+              <div className="text-[10px] text-white/40 uppercase font-bold tracking-wider relative z-10">{stat.label}</div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* ACHIEVEMENTS TEASER */}
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="widget-card !p-4 mb-6 relative overflow-hidden"
+          style={{ borderColor: '#FFD700' + '30' }}
+        >
+          <div className="absolute -right-8 -top-8 w-24 h-24 bg-amber-400/10 blur-2xl rounded-full" />
+          <div className="flex items-center justify-between relative z-10">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-amber-400/20 flex items-center justify-center" style={{ boxShadow: '0 0 15px rgba(251, 191, 36, 0.3)' }}>
+                <Zap className="w-5 h-5 text-amber-400" style={{ filter: 'drop-shadow(0 0 6px #fbbf24)' }} />
+              </div>
+              <div>
+                <h4 className="font-bold text-sm text-white">Achievements</h4>
+                <p className="text-[10px] text-white/40">3/24 Unlocked</p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-amber-400/60" />
+          </div>
+        </motion.div>
+
+        {/* ACTIONS */}
+        <div className="space-y-3">
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            className="w-full widget-card !p-4 flex items-center justify-between bg-white/5 border-white/10 hover:bg-white/10"
+          >
+            <div className="flex items-center gap-3">
+              <Settings className="w-5 h-5 text-white/50" />
+              <span className="text-sm font-bold text-white">Settings</span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-white/20" />
+          </motion.button>
+
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            onClick={handleLogout}
+            className="w-full widget-card !p-4 flex items-center justify-between bg-red-500/10 border-red-500/20 hover:bg-red-500/20"
+          >
+            <div className="flex items-center gap-3">
+              {loggingOut ? <Loader2 className="w-5 h-5 text-red-500 animate-spin" /> : <LogOut className="w-5 h-5 text-red-500" />}
+              <span className="text-sm font-bold text-red-500">Log Out</span>
+            </div>
+          </motion.button>
+        </div>
+      </div>
+    </AppShell>
   );
 }

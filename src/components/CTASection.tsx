@@ -47,27 +47,27 @@ export function CTASection() {
             <span className="block text-gradient-neon">DOMINATE?</span>
           </motion.h2>
 
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
-              className="text-base md:text-xl lg:text-2xl xl:text-3xl text-white/80 mb-8 md:mb-12 max-w-3xl mx-auto font-space font-medium leading-relaxed px-4 opacity-90"
-            >
-              Start playing your favorite games with friends online{" "}
-              <span className="text-[#39ff14] font-bold drop-shadow-[0_0_10px_rgba(57,255,20,0.8)]">
-                instantly
-              </span>{" "}
-              — no setup required.
-            </motion.p>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+            className="text-base md:text-xl lg:text-2xl xl:text-3xl text-white/80 mb-8 md:mb-12 max-w-3xl mx-auto font-space font-medium leading-relaxed px-4 opacity-90"
+          >
+            Start playing your favorite games with friends online{" "}
+            <span className="text-[#39ff14] font-bold drop-shadow-[0_0_10px_rgba(57,255,20,0.8)]">
+              instantly
+            </span>{" "}
+            — no setup required.
+          </motion.p>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.6 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 px-4"
-            >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.6 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 px-4"
+          >
             <Link href="/games" className="w-full sm:w-auto">
               <motion.div
                 whileHover={{ scale: 1.05 }}
@@ -95,11 +95,11 @@ export function CTASection() {
           >
             <motion.div whileHover={{ scale: 1.1 }} className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-[#39ff14] animate-pulse" />
-              <span className="text-[10px] md:text-sm font-display font-bold">NO CREDIT CARD</span>
+              <span className="text-[10px] md:text-sm font-display font-bold">MOBILE FRIENDLY</span>
             </motion.div>
             <motion.div whileHover={{ scale: 1.1 }} className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-[#00f5ff] animate-pulse" />
-              <span className="text-[10px] md:text-sm font-display font-bold">FREE FOREVER</span>
+              <span className="text-[10px] md:text-sm font-display font-bold">PLAY WITH FRIENDS</span>
             </motion.div>
             <motion.div whileHover={{ scale: 1.1 }} className="flex items-center gap-2">
               <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-[#ff006e] animate-pulse" />

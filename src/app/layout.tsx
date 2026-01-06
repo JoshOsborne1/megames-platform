@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import { Toaster } from "sonner";
 import { VisualEditsMessenger } from "orchids-visual-edits";
+import { Providers } from "@/components/Providers";
 
 export const viewport: Viewport = {
   themeColor: "#0a0015",
@@ -35,8 +35,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        {children}
-        <Toaster position="top-right" richColors />
+        <Providers>
+          {children}
+        </Providers>
         <VisualEditsMessenger />
       </body>
     </html>

@@ -1,75 +1,135 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
-import { GameCard } from "@/components/GameCard";
-import { Droplet, Mic2, ShieldAlert } from "lucide-react";
-
-const games = [
-  {
-    id: "lyric-legends",
-    name: "Lyric Legends",
-    description: "The ultimate karaoke race! Be the fastest to sing a lyric containing the prompt word. 2-10 players – pure musical chaos.",
-    icon: <Mic2 className="w-full h-full" />,
-    players: "2-10",
-    rules: "Race to sing lyrics! Get a word prompt, be first to sing a real lyric containing it. Fastest singer scores the point.",
-    color: "#8338ec",
-  },
-  {
-    id: "dynamic-decks",
-    name: "Dynamic Decks",
-    description: "The ultimate word race! Describe the target without saying the forbidden words. 2-10 players – local swap & play chaos.",
-    icon: <ShieldAlert className="w-full h-full" />,
-    players: "2-10",
-    rules: "Describe the target word without using forbidden words. 60 seconds per turn. Pass the device and take turns as clue-giver!",
-    color: "#ff006e",
-  },
-  {
-    id: "shade-signals",
-    name: "Shade Signals",
-    description: "Guess the shade with clever signals! 2-10 players – endless rainbow chaos, perfect for online duels, big parties, or local swap & play.",
-    icon: <Droplet className="w-full h-full" />,
-    players: "2-10",
-    rules: "Signal-giver picks a color, gives 1-word clue. Guessers place markers. Give 2-3 word clue to refine. Closest guess wins!",
-    color: "#00f5ff",
-  },
-];
+import { AppShell } from "@/components/AppShell";
+import { Trophy } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { GAMES, GameConfig } from "@/config/games";
+import { GamePreviewModal } from "@/components/GamePreviewModal";
+import { AuthModal } from "@/components/AuthModal";
+import { createClient } from "@/lib/supabase/client";
+import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { useHaptic } from "@/hooks/useHaptic";
+import { QuizProBanner } from "@/components/QuizProBanner";
 
 export default function GamesPage() {
-  return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-1 pt-24 pb-16 px-4 bg-[#0a0a14]">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-12"
-          >
-            <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
-              Game <span className="text-gradient">Library</span>
-            </h1>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-              Browse our collection of digital board games. More games added regularly!
-            </p>
-          </motion.div>
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const mode = searchParams.get("mode"); // "local" or "online" from home page
+  const [selectedGame, setSelectedGame] = useState<GameConfig | null>(null);
+  const [user, setUser] = useState<SupabaseUser | null>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const { trigger } = useHaptic();
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {games.map((game, index) => (
-              <motion.div
-                key={game.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+    });
+  }, []);
+
+  const handleGameSelect = (game: GameConfig) => {
+    trigger();
+
+    // If user came from "Play Local" on home page, skip modal and go directly
+    if (mode === "local") {
+      router.push(`${game.route}?mode=local`);
+      return;
+    }
+
+    // Otherwise show the modal for selection
+    setSelectedGame(game);
+  };
+
+  return (
+    <AppShell>
+      <div className="min-h-screen pb-24 px-4 pt-6 max-w-md mx-auto">
+        {/* HEADER - Centered, no icon */}
+        <header className="text-center mb-6">
+          <h1 className="font-display font-bold text-xl uppercase tracking-wider text-white">Arcade</h1>
+          <p className="text-xs text-white/50 font-medium">
+            {mode === "local" ? "Select a game to play locally" : "All Games"}
+          </p>
+        </header>
+
+        {/* GAMES GRID */}
+        <div className="grid grid-cols-1 gap-4">
+          {GAMES.map((game, index) => (
+            <motion.div
+              key={game.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => handleGameSelect(game)}
+              className="widget-card !p-4 flex items-center gap-3 group"
+              style={{
+                borderColor: `${game.color}40`,
+                background: `linear-gradient(135deg, ${game.color}08, transparent 60%)`
+              }}
+            >
+              {/* Icon Container - reduced glow */}
+              <div
+                className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0"
+                style={{
+                  backgroundColor: `${game.color}15`,
+                  border: `1px solid ${game.color}20`
+                }}
               >
-                <GameCard {...game} />
+                <game.icon
+                  className="w-7 h-7"
+                  style={{ color: game.color }}
+                />
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <h3 className="font-display font-bold text-lg text-white mb-0.5 truncate">
+                  {game.name}
+                </h3>
+                <p className="text-[11px] text-white/50 font-medium line-clamp-1">
+                  {game.description}
+                </p>
+              </div>
+
+              {/* Arrow indicator */}
+              <motion.div
+                whileHover={{ x: 5 }}
+                className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-white/5"
+              >
+                <Trophy
+                  className="w-4 h-4 text-white/30"
+                />
               </motion.div>
-            ))}
-          </div>
+            </motion.div>
+          ))}
         </div>
-      </main>
-      <Footer />
-    </div>
+
+        {/* COMING SOON */}
+        <div className="mt-8 mb-8 text-center">
+          <p className="text-[10px] text-white/30 font-bold uppercase tracking-widest">More Games Coming Soon</p>
+        </div>
+
+        {/* PRO BANNER */}
+        <div className="mb-8">
+          <QuizProBanner compact onSubscribeClick={() => { }} />
+        </div>
+
+        {/* MODALS */}
+        <GamePreviewModal
+          game={selectedGame}
+          isOpen={!!selectedGame}
+          onClose={() => setSelectedGame(null)}
+          onPlayLocal={() => selectedGame && router.push(`${selectedGame.route}?mode=local`)}
+          onPlayOnline={() => selectedGame && (user ? router.push(`${selectedGame.route}?mode=online`) : setShowAuthModal(true))}
+        />
+
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          initialMode="signup"
+        />
+      </div>
+    </AppShell>
   );
 }
