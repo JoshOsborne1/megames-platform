@@ -316,7 +316,19 @@ function ShadeSignalsContent() {
           {showPlayersModal && (
             <>
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowPlayersModal(false)} className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50" />
-              <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 50 }} className="fixed inset-x-4 bottom-4 sm:inset-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-sm z-50">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="fixed z-50"
+                style={{
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                  width: 'calc(100% - 2rem)',
+                  maxWidth: '24rem',
+                }}
+              >
                 <div className="bg-[#0a0015] border border-white/10 rounded-2xl p-5 shadow-2xl">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2 text-[#00FFFF]">
@@ -599,7 +611,19 @@ function ShadeSignalsContent() {
         {showPassPhone && (
           <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50" />
-            <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 50 }} className="fixed inset-x-4 bottom-4 sm:inset-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-sm z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="fixed z-50"
+              style={{
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 'calc(100% - 2rem)',
+                maxWidth: '24rem',
+              }}
+            >
               <div className="bg-[#0a0015] border border-[#00FFFF]/30 rounded-2xl p-6 shadow-2xl text-center">
                 <motion.div animate={{ rotateY: [0, 180, 0], x: [-10, 10, -10] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} className="w-16 h-24 mx-auto mb-4 rounded-xl border-4 border-[#00FFFF] bg-white/5" />
                 <h2 className="font-display font-bold text-2xl text-white mb-2">Pass the <span className="text-[#00FFFF]">Phone</span></h2>
@@ -620,7 +644,19 @@ function ShadeSignalsContent() {
         {errorMessage && (
           <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setErrorMessage(null)} className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50" />
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-sm mx-4 z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="fixed z-50"
+              style={{
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 'calc(100% - 2rem)',
+                maxWidth: '24rem',
+              }}
+            >
               <div className="bg-[#0a0015] border border-[#ff006e]/30 rounded-2xl p-5">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-lg bg-[#ff006e]/20 flex items-center justify-center"><X className="w-5 h-5 text-[#ff006e]" /></div>

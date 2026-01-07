@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useFullscreen } from "@/hooks/use-fullscreen";
 import { createClient } from "@/lib/supabase/client";
-import { AuthModal } from "@/components/AuthModal";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 export function Header() {
@@ -18,8 +17,6 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
-  const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState<"login" | "signup">("login");
   const { isFullscreen, toggleFullscreen } = useFullscreen();
 
   useEffect(() => {
@@ -44,18 +41,6 @@ export function Header() {
 
     return () => subscription.unsubscribe();
   }, []);
-
-  const openLoginModal = () => {
-    setAuthModalMode("login");
-    setAuthModalOpen(true);
-    setMobileMenuOpen(false);
-  };
-
-  const openSignupModal = () => {
-    setAuthModalMode("signup");
-    setAuthModalOpen(true);
-    setMobileMenuOpen(false);
-  };
 
   const navLinks = [
     { href: "/", label: "Home", icon: Star },
@@ -92,15 +77,15 @@ export function Header() {
                 transition={{ duration: 0.5 }}
               >
                 <Image
-                  src="/logo-icon.svg"
-                  alt="Megames"
-                  width={50}
+                  src="/logo.svg"
+                  alt="PartyPack"
+                  width={40}
                   height={50}
-                  className="w-12 h-12 drop-shadow-[0_0_15px_rgba(255,0,110,0.6)]"
+                  className="h-12 w-auto drop-shadow-[0_0_15px_rgba(255,0,110,0.6)]"
                 />
               </motion.div>
               <span className="font-display text-2xl font-black text-gradient-neon hidden min-[450px]:block tracking-wider">
-                MEGAMES
+                PARTYPACK
               </span>
             </Link>
 
@@ -194,13 +179,14 @@ export function Header() {
                   ) : (
                     <>
                       <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="hidden sm:block">
-                        <Button
-                          variant="outline"
-                          onClick={openLoginModal}
-                          className="border-[#8338ec] text-white hover:bg-[#8338ec]/20 hover:border-[#ff006e] font-display font-semibold text-sm md:text-base px-3 md:px-4 py-2 touch-manipulation"
-                        >
-                          Login
-                        </Button>
+                        <Link href="/login">
+                          <Button
+                            variant="outline"
+                            className="border-[#8338ec] text-white hover:bg-[#8338ec]/20 hover:border-[#ff006e] font-display font-semibold text-sm md:text-base px-3 md:px-4 py-2 touch-manipulation"
+                          >
+                            Login
+                          </Button>
+                        </Link>
                       </motion.div>
 
                       <motion.div
@@ -208,16 +194,17 @@ export function Header() {
                         whileTap={{ scale: 0.95 }}
                         className="hidden sm:block"
                       >
-                        <Button
-                          onClick={openSignupModal}
-                          className="relative font-display font-bold text-sm md:text-base px-3 md:px-4 py-2 bg-gradient-to-r from-[#ff006e] via-[#8338ec] to-[#00f5ff] text-white overflow-hidden group touch-manipulation"
-                        >
-                          <span className="absolute inset-0 bg-gradient-to-r from-[#00f5ff] via-[#fb00ff] to-[#ff006e] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                          <span className="relative flex items-center gap-2">
-                            <Zap className="w-4 h-4" />
-                            Sign Up
-                          </span>
-                        </Button>
+                        <Link href="/signup">
+                          <Button
+                            className="relative font-display font-bold text-sm md:text-base px-3 md:px-4 py-2 bg-gradient-to-r from-[#ff006e] via-[#8338ec] to-[#00f5ff] text-white overflow-hidden group touch-manipulation"
+                          >
+                            <span className="absolute inset-0 bg-gradient-to-r from-[#00f5ff] via-[#fb00ff] to-[#ff006e] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <span className="relative flex items-center gap-2">
+                              <Zap className="w-4 h-4" />
+                              Sign Up
+                            </span>
+                          </Button>
+                        </Link>
                       </motion.div>
                     </>
                   )}
@@ -274,19 +261,21 @@ export function Header() {
                         </Link>
                       ) : (
                         <>
-                          <Button
-                            variant="outline"
-                            onClick={openLoginModal}
-                            className="flex-1 border-[#8338ec] text-white font-display py-4 touch-manipulation min-h-[44px]"
-                          >
-                            Login
-                          </Button>
-                          <Button
-                            onClick={openSignupModal}
-                            className="flex-1 bg-gradient-to-r from-[#ff006e] to-[#8338ec] text-white font-display font-bold py-4 touch-manipulation min-h-[44px]"
-                          >
-                            Sign Up
-                          </Button>
+                          <Link href="/login" className="flex-1" onClick={() => setMobileMenuOpen(false)}>
+                            <Button
+                              variant="outline"
+                              className="w-full border-[#8338ec] text-white font-display py-4 touch-manipulation min-h-[44px]"
+                            >
+                              Login
+                            </Button>
+                          </Link>
+                          <Link href="/signup" className="flex-1" onClick={() => setMobileMenuOpen(false)}>
+                            <Button
+                              className="w-full bg-gradient-to-r from-[#ff006e] to-[#8338ec] text-white font-display font-bold py-4 touch-manipulation min-h-[44px]"
+                            >
+                              Sign Up
+                            </Button>
+                          </Link>
                         </>
                       )}
                     </div>
@@ -297,13 +286,6 @@ export function Header() {
           </AnimatePresence>
         </nav>
       </header>
-
-      {/* Auth Modal */}
-      <AuthModal
-        isOpen={authModalOpen}
-        onClose={() => setAuthModalOpen(false)}
-        initialMode={authModalMode}
-      />
     </>
   );
 }

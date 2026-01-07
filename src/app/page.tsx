@@ -4,10 +4,9 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { AppShell } from "@/components/AppShell";
 import { QuizProBanner } from "@/components/QuizProBanner";
-import { AuthModal } from "@/components/AuthModal";
 import { GamePreviewModal } from "@/components/GamePreviewModal";
 import {
-  Wifi, User, ChevronRight, Zap, Crown, Globe, Gamepad2, Smartphone, Loader2
+  Users, ChevronRight, Globe, Gamepad2, Loader2
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
@@ -20,8 +19,6 @@ export default function HomePage() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [isPro, setIsPro] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authMode, setAuthMode] = useState<"login" | "signup">("signup");
   const [selectedGame, setSelectedGame] = useState<GameConfig | null>(null);
   const { trigger } = useHaptic();
   const router = useRouter();
@@ -51,10 +48,7 @@ export default function HomePage() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const openAuth = (mode: "login" | "signup") => {
-    setAuthMode(mode);
-    setShowAuthModal(true);
-  };
+
 
   const handleGameSelect = (game: GameConfig) => {
     trigger();
@@ -81,11 +75,7 @@ export default function HomePage() {
     <AppShell>
       <div className="min-h-screen pb-24 px-4 pt-6 max-w-md mx-auto">
 
-        {/* HEADER - Clean, minimal */}
-        <header className="text-center mb-6">
-          <h1 className="font-display font-bold text-xl uppercase tracking-wider text-white">Megames</h1>
-          <p className="text-xs text-white/50 font-medium">Your Party Game Hub</p>
-        </header>
+
 
         {/* FEATURED SECTION - Above play buttons */}
         <div className="mb-6">
@@ -139,7 +129,20 @@ export default function HomePage() {
                   >
                     {game.name}
                   </h4>
+                  {game.slogan && (
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-white/90 shadow-black drop-shadow-md mb-1 block">
+                      {game.slogan}
+                    </span>
+                  )}
                   <p className="text-xs text-white/70 line-clamp-1">{game.description}</p>
+
+                  {/* Player Count - Bottom Right Absolute */}
+                  <div className="absolute bottom-5 right-5">
+                    <div className="flex items-center gap-1 bg-black/40 rounded-full px-2 py-1 backdrop-blur-md border border-white/10 shadow-lg">
+                      <Users className="w-3 h-3 text-white" />
+                      <span className="text-[10px] font-bold text-white">{game.playerCount}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -151,7 +154,7 @@ export default function HomePage() {
           {/* ONLINE WIDGET */}
           <motion.div
             whileTap={{ scale: 0.96 }}
-            onClick={() => user ? router.push("/multiplayer") : openAuth("signup")}
+            onClick={() => user ? router.push("/multiplayer") : router.push("/login")}
             className="widget-card aspect-square flex flex-col justify-between bg-gradient-to-br from-[#8338ec]/20 to-[#8338ec]/5 border-[#8338ec]/30 group"
           >
             <div className="flex justify-between items-start">
@@ -203,7 +206,7 @@ export default function HomePage() {
                   boxShadow: `0 0 20px ${game.color}10`
                 }}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 w-full">
                   <div
                     className="w-11 h-11 rounded-xl flex items-center justify-center"
                     style={{
@@ -220,15 +223,31 @@ export default function HomePage() {
                       }}
                     />
                   </div>
-                  <div>
-                    <h4 className="font-bold text-sm text-white">{game.name}</h4>
-                    <p className="text-[10px] text-white/40">{game.description}</p>
+                  <div className="flex-1 min-w-0 mr-2">
+                    <h4 className="font-bold text-sm text-white mb-0.5">{game.name}</h4>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-white/40 line-clamp-1 truncate">
+                        {game.slogan && (
+                          <span className="font-bold uppercase text-[9px] mr-1.5 tracking-wide" style={{ color: game.color }}>
+                            {game.slogan}
+                          </span>
+                        )}
+                        {game.description}
+                      </span>
+                    </div>
                   </div>
+
+                  {/* Player Count - Right Side */}
+                  <div className="flex items-center gap-1 text-[10px] text-white/60 bg-white/5 px-2 py-1 rounded-lg border border-white/5 shrink-0">
+                    <span>{game.playerCount}</span>
+                    <Users className="w-3 h-3" />
+                  </div>
+
+                  <ChevronRight
+                    className="w-4 h-4 transition-colors"
+                    style={{ color: `${game.color}60` }}
+                  />
                 </div>
-                <ChevronRight
-                  className="w-4 h-4 transition-colors"
-                  style={{ color: `${game.color}60` }}
-                />
               </motion.div>
             ))}
           </div>
@@ -246,15 +265,9 @@ export default function HomePage() {
           isOpen={!!selectedGame}
           onClose={() => setSelectedGame(null)}
           onPlayLocal={() => selectedGame && router.push(`${selectedGame.route}?mode=local`)}
-          onPlayOnline={() => selectedGame && (user ? router.push(`/multiplayer?game=${selectedGame.id}`) : openAuth("signup"))}
-        />
-
-        <AuthModal
-          isOpen={showAuthModal}
-          onClose={() => setShowAuthModal(false)}
-          initialMode={authMode}
+          onPlayOnline={() => selectedGame && (user ? router.push(`/multiplayer?game=${selectedGame.id}`) : router.push("/login"))}
         />
       </div>
-    </AppShell>
+    </AppShell >
   );
 }

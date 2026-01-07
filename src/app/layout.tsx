@@ -13,17 +13,17 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Megames - All Your Favorite Board Games in One Digital Deck",
+  title: "PartyPack - All Your Favorite Party Games in One App",
   description: "Play classic board games online with friends. No cards needed - just fun!",
   icons: {
-    icon: "/logo-icon.svg",
-    apple: "/logo-icon.svg",
+    icon: "/logo.svg",
+    apple: "/logo.svg",
   },
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "Megames",
+    title: "PartyPack",
   },
 };
 
@@ -33,7 +33,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
         <Providers>
           {children}

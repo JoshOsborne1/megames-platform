@@ -1,14 +1,14 @@
 {
-  "name": "Megames",
-  "short_name": "Megames",
-  "description": "All Your Favorite Board Games in One Digital Deck",
+  "name": "PartyPack",
+  "short_name": "PartyPack",
+  "description": "All Your Favorite Party Games in One App",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0b",
   "theme_color": "#00f5ff",
   "icons": [
     {
-      "src": "/logo-icon.svg",
+      "src": "/logo.svg",
       "sizes": "any",
       "type": "image/svg+xml"
     }

@@ -8,7 +8,6 @@ import { Trophy } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { GAMES, GameConfig } from "@/config/games";
 import { GamePreviewModal } from "@/components/GamePreviewModal";
-import { AuthModal } from "@/components/AuthModal";
 import { createClient } from "@/lib/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { useHaptic } from "@/hooks/useHaptic";
@@ -20,7 +19,6 @@ function GamesContent() {
   const mode = searchParams.get("mode"); // "local" or "online" from home page
   const [selectedGame, setSelectedGame] = useState<GameConfig | null>(null);
   const [user, setUser] = useState<SupabaseUser | null>(null);
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const { trigger } = useHaptic();
 
   useEffect(() => {
@@ -122,13 +120,7 @@ function GamesContent() {
           isOpen={!!selectedGame}
           onClose={() => setSelectedGame(null)}
           onPlayLocal={() => selectedGame && router.push(`${selectedGame.route}?mode=local`)}
-          onPlayOnline={() => selectedGame && (user ? router.push(`${selectedGame.route}?mode=online`) : setShowAuthModal(true))}
-        />
-
-        <AuthModal
-          isOpen={showAuthModal}
-          onClose={() => setShowAuthModal(false)}
-          initialMode="signup"
+          onPlayOnline={() => selectedGame && (user ? router.push(`${selectedGame.route}?mode=online`) : router.push("/login"))}
         />
       </div>
     </AppShell>

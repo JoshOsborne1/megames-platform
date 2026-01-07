@@ -26,12 +26,12 @@ export const FREE_LIMITS: GameLimits = {
 };
 
 export const PRO_LIMITS: GameLimits = {
-    dynamicDecks: 250,
-    shadeSignals: 75,
-    lyricLegends: 250,
-    quizQuarter: 150, // "3 Quiz Packs" - assuming ~50 per pack
-    localPlayers: 8,
-    multiplayerPlayers: 6,
+    dynamicDecks: 500,
+    shadeSignals: 9999, // Unlimited
+    lyricLegends: 500,
+    quizQuarter: 150, // 3 Quiz Packs
+    localPlayers: 10,
+    multiplayerPlayers: 10,
     fullDeckAccess: 1,
     quizPacks: 3,
 };
@@ -73,47 +73,55 @@ export const SUBSCRIPTION_PLANS: PricingTier[] = [
     {
         id: "gamepro_weekly",
         label: "Weekly",
-        price: 2.99,
+        price: 3.99,
         currency: "GBP",
         period: "week",
         description: "Perfect for a weekend of fun",
         features: [
-            "Up to 8 player local lobbies",
-            "Up to 6 player multiplayer lobbies",
-            "75 Shade Signal colours",
-            "250 Lyric Legend words",
-            "250 Dynamic Decks cards",
-            "1 Monthly Full Deck Access",
-            "3 Monthly Quiz Packs",
+            "Up to 10 player local lobbies",
+            "Up to 10 player multiplayer lobbies",
+            "Unlimited Shade Signal colours",
+            "500 Lyric Legend words",
+            "500 Dynamic Deck cards per deck",
+            "3 Quiz Packs (selected on purchase)",
+            "50% off all full pack purchases",
         ]
     },
     {
         id: "gamepro_monthly",
         label: "Monthly",
-        price: 7.99,
+        price: 11.99,
         currency: "GBP",
         period: "month",
         description: "Best value for regular players",
         features: [
-            "All Weekly features included",
-            "Monthly rotation of Full Deck",
-            "Monthly rotation of Quiz Packs",
+            "Up to 10 player local lobbies",
+            "Up to 10 player multiplayer lobbies",
+            "Unlimited Shade Signal colours",
+            "500 Lyric Legend words",
+            "500 Dynamic Deck cards per deck",
+            "3 Quiz Packs (changes monthly)",
+            "50% off all full pack purchases",
         ],
         highlight: true
     },
     {
         id: "gamepro_yearly",
         label: "Yearly",
-        price: 18.99,
+        price: 27.99,
         currency: "GBP",
         period: "year",
-        description: "Massive discount for year-round fun",
+        description: "Massive savings for year-round fun",
         features: [
-            "All Monthly features included",
-            "Get 2 months free",
-            "Priority support", // Added filler
+            "Up to 10 player local lobbies",
+            "Up to 10 player multiplayer lobbies",
+            "Unlimited Shade Signal colours",
+            "500 Lyric Legend words",
+            "500 Dynamic Deck cards per deck",
+            "3 Quiz Packs (changes monthly)",
+            "50% off all full pack purchases",
         ],
-        savings: "Save 80% vs Weekly"
+        savings: "Save 80%"
     }
 ];
 

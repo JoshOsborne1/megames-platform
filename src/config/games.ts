@@ -16,6 +16,7 @@ export interface GameConfig {
     isHot?: boolean;
     playerCount?: string;
     duration?: string;
+    slogan?: string;
     tags?: string[];
 }
 
@@ -30,7 +31,8 @@ export const GAMES: GameConfig[] = [
         route: "/games/dynamic-decks",
         isHot: true,
         playerCount: "2-8",
-        duration: "15-30 min",
+        duration: "15-30m",
+        slogan: "Words Unleashed",
         tags: ["Party", "Card Games", "No Setup"],
     },
     {
@@ -42,7 +44,8 @@ export const GAMES: GameConfig[] = [
         color: "#FF00FF", // Neon Magenta (more vibrant)
         route: "/games/lyric-legends",
         playerCount: "2-10",
-        duration: "10-20 min",
+        duration: "20-45m",
+        slogan: "Sing to Win",
         tags: ["Music", "Karaoke", "Party"],
     },
     {
@@ -53,8 +56,8 @@ export const GAMES: GameConfig[] = [
         icon: Eye,
         color: "#00FFFF", // Bright Cyan
         route: "/games/shade-signals",
-        playerCount: "3-10",
-        duration: "20-40 min",
+        playerCount: "2-10",
+        slogan: "Find the Hue",
         tags: ["Deduction", "Colors", "Teams"],
     }
 ];

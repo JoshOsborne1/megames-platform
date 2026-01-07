@@ -101,7 +101,7 @@ export function FeaturesSection() {
             className="font-display text-5xl md:text-7xl font-black text-white mb-6 tracking-tight"
           >
             <span className="block">WHY CHOOSE</span>
-            <span className="block text-gradient-neon glitch">MEGAMES?</span>
+            <span className="block text-gradient-neon glitch">PARTYPACK?</span>
           </motion.h2>
 
           <motion.p

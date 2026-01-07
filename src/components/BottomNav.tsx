@@ -82,7 +82,10 @@ export function BottomNav({ hidden = false }: BottomNavProps) {
                                         {active && (
                                             <motion.div
                                                 layoutId="navGlow"
-                                                className="absolute inset-0 bg-white/10 rounded-xl blur-sm"
+                                                className="absolute inset-[-8px] rounded-full opacity-60"
+                                                style={{
+                                                    background: 'radial-gradient(circle, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0.08) 40%, transparent 70%)',
+                                                }}
                                                 transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                             />
                                         )}

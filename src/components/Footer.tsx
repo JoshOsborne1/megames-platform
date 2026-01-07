@@ -59,14 +59,14 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-2 md:gap-3 mb-4 md:group">
               <motion.div whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}>
                 <Image
-                  src="/logo-icon.svg"
-                  alt="Megames"
-                  width={40}
+                  src="/logo.svg"
+                  alt="PartyPack"
+                  width={34}
                   height={40}
-                  className="w-10 h-10 md:w-12 md:h-12 drop-shadow-[0_0_15px_rgba(255,0,110,0.6)]"
+                  className="w-8 h-10 md:w-10 md:h-12 drop-shadow-[0_0_15px_rgba(255,0,110,0.6)]"
                 />
               </motion.div>
-              <span className="font-display text-xl md:text-2xl font-black text-gradient-neon uppercase tracking-tight">Megames</span>
+              <span className="font-display text-xl md:text-2xl font-black text-gradient-neon uppercase tracking-tight">PartyPack</span>
             </Link>
             <p className="text-white/60 text-xs md:text-sm font-space mb-6 leading-relaxed max-w-sm">
               All your favorite board games in one digital deck. Play with friends, no cards needed!
@@ -139,7 +139,7 @@ export function Footer() {
           className="pt-6 md:pt-8 border-t border-[#8338ec]/20 flex flex-col md:flex-row items-center justify-between gap-4"
         >
           <p className="text-white/40 text-[10px] md:text-sm font-display font-bold uppercase tracking-widest">
-            © 2025 MEGAMES. ALL RIGHTS RESERVED.
+            © 2025 PARTYPACK. ALL RIGHTS RESERVED.
           </p>
           <motion.p
             whileHover={{ scale: 1.05 }}

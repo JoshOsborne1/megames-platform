@@ -1,63 +1,23 @@
-<svg width="400" height="120" viewBox="0 0 400 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390.11 481.94">
   <defs>
-    <linearGradient id="cardGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#ff006e;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#8338ec;stop-opacity:1" />
+    <!-- Brand Gradient for Swoosh: Pink -> Purple -->
+    <linearGradient id="swooshGradient" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ff006e" />
+      <stop offset="100%" stop-color="#8338ec" />
     </linearGradient>
-    <linearGradient id="cardGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#8338ec;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#00f5ff;stop-opacity:1" />
-    </linearGradient>
-    <linearGradient id="cardGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#00f5ff;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#fb00ff;stop-opacity:1" />
-    </linearGradient>
-    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" style="stop-color:#ff006e;stop-opacity:1" />
-      <stop offset="35%" style="stop-color:#8338ec;stop-opacity:1" />
-      <stop offset="70%" style="stop-color:#00f5ff;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#fb00ff;stop-opacity:1" />
-    </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-      <feMerge>
-        <feMergeNode in="coloredBlur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
   </defs>
-  
-  <!-- Card 1 (back) -->
-  <g transform="translate(20, 15) rotate(-15)">
-    <rect width="50" height="70" rx="6" fill="url(#cardGradient1)" opacity="0.8" filter="url(#glow)"/>
-    <circle cx="25" cy="20" r="8" fill="white" opacity="0.3"/>
-    <rect x="10" y="35" width="30" height="4" rx="2" fill="white" opacity="0.3"/>
-    <rect x="10" y="45" width="20" height="4" rx="2" fill="white" opacity="0.3"/>
-  </g>
-  
-  <!-- Card 2 (middle) -->
-  <g transform="translate(45, 10) rotate(-5)">
-    <rect width="50" height="70" rx="6" fill="url(#cardGradient2)" opacity="0.9" filter="url(#glow)"/>
-    <path d="M 15 20 L 25 30 L 35 20 Z" fill="white" opacity="0.4"/>
-    <rect x="10" y="40" width="30" height="5" rx="2" fill="white" opacity="0.4"/>
-    <circle cx="25" cy="55" r="6" fill="white" opacity="0.4"/>
-  </g>
-  
-  <!-- Card 3 (front) -->
-  <g transform="translate(75, 8)">
-    <rect width="50" height="70" rx="6" fill="url(#cardGradient3)" filter="url(#glow)"/>
-    <polygon points="25,15 30,25 40,25 32,32 35,42 25,36 15,42 18,32 10,25 20,25" fill="white" opacity="0.5"/>
-    <rect x="15" y="50" width="20" height="6" rx="3" fill="white" opacity="0.5"/>
-    <rect x="10" y="62" width="30" height="4" rx="2" fill="white" opacity="0.5"/>
-  </g>
-  
-  <!-- Text -->
-  <g transform="translate(145, 0)">
-    <text x="0" y="55" font-family="Orbitron, sans-serif" font-size="48" font-weight="900" fill="url(#textGradient)" filter="url(#glow)">
-      MEGAMES
-    </text>
-    <text x="2" y="75" font-family="Space Grotesk, sans-serif" font-size="12" font-weight="600" fill="#00f5ff" opacity="0.8">
-      PLAY WITHOUT LIMITS
-    </text>
+  <g id="Layer_3" data-name="Layer 3">
+    <!-- Back Frame: White -->
+    <path d="M72,401.16l19-21v51c0,3.24,1.56,5.59,4.79,5.92l195.14,20.14c4.85,.5,9.07-3.31,9.07-8.18V210.16s23.31-19.55,38.21-42.66V452.39s1,29.55-29.55,29.55c-2.36,0-190.58-21.67-217.66-24.78-4.1-.47-6.4-.98-10-3-4.89-2.75-9-7.3-9-15v-38Z" fill="#ffffff"/>
+    
+    <!-- Swoosh: Brand Gradient -->
+    <path d="M0,480.16c3-2,3.28-153.28,223.44-280.28C350.07,126.85,390.11,6.39,390.11,6.39c0,0-9.5,140.78-181,238C52.11,333.39,0,480.16,0,480.16Z" fill="url(#swooshGradient)"/>
+    
+    <!-- Highlights: White Opacity -->
+    <path d="M256.11,38.39s33,6,33,55V44.13c0-4.7-4.03-8.38-8.71-7.95l-24.29,2.21Z" fill="#ffffff" opacity="0.4"/>
+    <path d="M101.11,385.39v32.24c0,6.02,4.61,11.05,10.61,11.56l60.39,5.2s-69-8-71-49Z" fill="#ffffff" opacity="0.4"/>
+    
+    <!-- Front Frame: White -->
+    <path d="M91.11,58.04v244.34s-14.11,15.78-19,22V45.39s-1-23,19-24c10.91-.55,193-20,193-20,28-1,56-13,54,57l-.11,40.78c.43-.15-20,26-38,43l.11-104.3c0-4.4-2.01-8.64-5.63-11.14-1.93-1.33-4.37-2.33-7.37-2.33-11.76,0-141.99,14.81-183.42,19.56-7.17,.82-12.58,6.89-12.58,14.1Z" fill="#ffffff"/>
   </g>
 </svg>

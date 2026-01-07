@@ -69,11 +69,11 @@ export function AppHeader({ title, showBack = false }: AppHeaderProps) {
                         <Link href="/" className="flex items-center gap-2">
                             <motion.div style={{ opacity: logoOpacity }}>
                                 <Image
-                                    src="/logo-icon.svg"
-                                    alt="Megames"
-                                    width={32}
+                                    src="/logo.svg"
+                                    alt="PartyPack"
+                                    width={26}
                                     height={32}
-                                    className="w-8 h-8 drop-shadow-[0_0_10px_rgba(255,0,110,0.5)]"
+                                    className="h-8 w-auto drop-shadow-[0_0_10px_rgba(255,0,110,0.5)]"
                                 />
                             </motion.div>
                         </Link>
@@ -92,7 +92,7 @@ export function AppHeader({ title, showBack = false }: AppHeaderProps) {
                                 className="font-display text-lg font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60"
                                 style={{ opacity: logoOpacity }}
                             >
-                                MEGAMES
+                                PARTYPACK
                             </motion.span>
                         </Link>
                     )}

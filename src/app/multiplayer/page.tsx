@@ -8,7 +8,6 @@ import { Suspense } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { GAMES, GameConfig } from "@/config/games";
-import { AuthModal } from "@/components/AuthModal";
 import { WatchAdButton } from "@/components/games/shared";
 import { useRoom } from "@/context/RoomContext";
 import {
@@ -39,7 +38,6 @@ function MultiplayerContent() {
 
     const [user, setUser] = useState<SupabaseUser | null>(null);
     const [loading, setLoading] = useState(true);
-    const [showAuthModal, setShowAuthModal] = useState(false);
 
     // Local UI state
     const [view, setView] = useState<LobbyView>("main");
@@ -56,7 +54,7 @@ function MultiplayerContent() {
             setLoading(false);
 
             if (!user) {
-                setShowAuthModal(true);
+                router.push("/login");
             }
         });
     }, []);
@@ -169,18 +167,12 @@ function MultiplayerContent() {
 
                         <motion.button
                             whileTap={{ scale: 0.95 }}
-                            onClick={() => setShowAuthModal(true)}
+                            onClick={() => router.push("/login")}
                             className="relative z-10 w-full py-4 rounded-xl bg-gradient-to-r from-[#8338ec] to-[#00f5ff] text-white font-bold uppercase tracking-wider"
                         >
                             Sign In to Continue
                         </motion.button>
                     </motion.div>
-
-                    <AuthModal
-                        isOpen={showAuthModal}
-                        onClose={() => router.push("/")}
-                        initialMode="login"
-                    />
                 </div>
             </AppShell>
         );
@@ -560,11 +552,7 @@ function MultiplayerContent() {
                 </AnimatePresence>
             </div>
 
-            <AuthModal
-                isOpen={showAuthModal}
-                onClose={() => router.push("/")}
-                initialMode="login"
-            />
+
         </AppShell>
     );
 }

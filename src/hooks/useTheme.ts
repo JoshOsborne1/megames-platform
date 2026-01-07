@@ -10,7 +10,7 @@ export function useTheme() {
     setMounted(true);
     // Force dark mode
     document.documentElement.classList.remove("light");
-    localStorage.removeItem("megames-theme");
+    localStorage.removeItem("partypack-theme");
   }, []);
 
   const toggleTheme = () => {

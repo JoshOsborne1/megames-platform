@@ -10,7 +10,7 @@ function DynamicDecksContent() {
   const mode = searchParams.get("mode");
 
   return (
-    <div className="min-h-screen bg-[#0f0a1e] text-white flex flex-col p-4 font-space overflow-hidden select-none relative">
+    <div className="min-h-screen bg-[#0f0a1e] text-white flex flex-col p-4 font-space overflow-hidden select-none relative touch-manipulation">
       <DynamicDecksHub mode={mode as "local" | "online"} />
     </div>
   );

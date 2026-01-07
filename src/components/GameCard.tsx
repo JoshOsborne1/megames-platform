@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface GameCardProps {
@@ -11,11 +11,12 @@ interface GameCardProps {
   description: string;
   icon: React.ReactNode;
   players: string;
+  slogan?: string;
   color?: string;
   className?: string;
 }
 
-export function GameCard({ id, name, description, icon, players, color, className }: GameCardProps) {
+export function GameCard({ id, name, description, icon, players, slogan, color, className }: GameCardProps) {
   return (
     <Link href={`/games/${id}`} className={cn("block h-full group", className)}>
       <motion.div
@@ -53,11 +54,22 @@ export function GameCard({ id, name, description, icon, players, color, classNam
           <p className="text-gray-400 text-sm line-clamp-2 mb-3">
             {description}
           </p>
-          <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-gray-300">
-            {players} Players
+
+          {/* Player count with icon + Slogan */}
+          <div className="flex items-center justify-between">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-gray-300">
+              <span>{players}</span>
+              <Users className="w-3.5 h-3.5" />
+            </div>
+            {slogan && (
+              <span className="text-[10px] uppercase tracking-wider font-medium italic" style={{ color: color }}>
+                {slogan}
+              </span>
+            )}
           </div>
         </div>
       </motion.div>
     </Link>
   );
 }
+

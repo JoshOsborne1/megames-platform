@@ -428,10 +428,17 @@ export default function LyricLegendsGame({ mode = "local" }: { mode?: "local" | 
               className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50"
             />
             <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 50 }}
-              className="fixed inset-x-4 bottom-4 sm:inset-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-sm z-50"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="fixed z-50"
+              style={{
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 'calc(100% - 2rem)',
+                maxWidth: '24rem',
+              }}
             >
               <div className="bg-[#0a0015] border border-white/10 rounded-2xl p-5 shadow-2xl">
                 <div className="flex items-center justify-between mb-4">

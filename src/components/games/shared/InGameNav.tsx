@@ -150,41 +150,50 @@ export function InGameNav({
             {/* Confirmation Dialog */}
             <AnimatePresence>
                 {confirmTarget && (
-                    <div className="fixed inset-0 flex items-center justify-center p-4 z-[100]">
+                    <>
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setConfirmTarget(null)}
-                            className="absolute inset-0 bg-black/80 backdrop-blur-md"
+                            className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100]"
                         />
                         <motion.div
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
-                            className="relative bg-[#1a142e] border-2 border-white/10 p-8 rounded-3xl max-w-sm w-full shadow-2xl"
+                            className="fixed z-[100]"
+                            style={{
+                                top: '50%',
+                                left: '50%',
+                                transform: 'translate(-50%, -50%)',
+                                width: 'calc(100% - 2rem)',
+                                maxWidth: '24rem',
+                            }}
                         >
-                            <h3 className="font-display font-black text-2xl text-white mb-3 text-center">Leave Game?</h3>
-                            <p className="text-white/60 text-center mb-6 font-space">
-                                Your current progress will be lost. Are you sure?
-                            </p>
-                            <div className="grid grid-cols-2 gap-3">
-                                <button
-                                    onClick={() => setConfirmTarget(null)}
-                                    className="py-3 px-4 rounded-xl bg-white/10 text-white font-display font-bold hover:bg-white/20 transition-colors"
-                                >
-                                    Stay
-                                </button>
-                                <button
-                                    onClick={confirmNavigation}
-                                    className="py-3 px-4 rounded-xl font-display font-bold text-white transition-colors"
-                                    style={{ backgroundColor: accentColor }}
-                                >
-                                    Leave
-                                </button>
+                            <div className="bg-[#1a142e] border-2 border-white/10 p-8 rounded-3xl shadow-2xl">
+                                <h3 className="font-display font-black text-2xl text-white mb-3 text-center">Leave Game?</h3>
+                                <p className="text-white/60 text-center mb-6 font-space">
+                                    Your current progress will be lost. Are you sure?
+                                </p>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button
+                                        onClick={() => setConfirmTarget(null)}
+                                        className="py-3 px-4 rounded-xl bg-white/10 text-white font-display font-bold hover:bg-white/20 transition-colors"
+                                    >
+                                        Stay
+                                    </button>
+                                    <button
+                                        onClick={confirmNavigation}
+                                        className="py-3 px-4 rounded-xl font-display font-bold text-white transition-colors"
+                                        style={{ backgroundColor: accentColor }}
+                                    >
+                                        Leave
+                                    </button>
+                                </div>
                             </div>
                         </motion.div>
-                    </div>
+                    </>
                 )}
             </AnimatePresence>
         </>

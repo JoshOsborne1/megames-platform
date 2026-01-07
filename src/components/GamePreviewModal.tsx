@@ -35,13 +35,22 @@ export function GamePreviewModal({
                     />
 
                     {/* Modal Content */}
-                    <div className="fixed inset-0 flex items-end sm:items-center justify-center z-50 pointer-events-none p-4">
+                    <div
+                        className="fixed z-50 pointer-events-none"
+                        style={{
+                            top: '50%',
+                            left: '50%',
+                            transform: 'translate(-50%, -50%)',
+                            width: 'calc(100% - 2rem)',
+                            maxWidth: '28rem',
+                        }}
+                    >
                         <motion.div
-                            initial={{ y: 100, opacity: 0 }}
+                            initial={{ y: 50, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
-                            exit={{ y: 100, opacity: 0 }}
+                            exit={{ y: 50, opacity: 0 }}
                             transition={{ type: "spring", damping: 30, stiffness: 400 }}
-                            className="bg-[#0a0015] border border-white/10 rounded-[2rem] w-full max-w-md overflow-hidden shadow-2xl pointer-events-auto relative"
+                            className="bg-[#0a0015] border border-white/10 rounded-[2rem] w-full overflow-hidden shadow-2xl pointer-events-auto relative max-h-[85vh] overflow-y-auto"
                         >
                             {/* Close Button */}
                             <button

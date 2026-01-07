@@ -1,6 +1,15 @@
 -- Multiplayer Rooms Schema
 -- Run this in Supabase SQL Editor to add real-time multiplayer support
 
+-- Required helper function (if not already present)
+CREATE OR REPLACE FUNCTION public.update_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
 -- Rooms table
 CREATE TABLE IF NOT EXISTS public.rooms (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
