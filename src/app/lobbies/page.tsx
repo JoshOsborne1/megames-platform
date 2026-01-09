@@ -58,7 +58,7 @@ export default function LobbiesPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 pt-24 pb-16 px-4 bg-[#0a0a14]">
+      <main className="flex-1 pt-24 pb-16 px-4">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -2,6 +2,7 @@ import {
     Mic2,
     ShieldAlert,
     Eye,
+    Brain,
     LucideIcon
 } from "lucide-react";
 
@@ -29,7 +30,6 @@ export const GAMES: GameConfig[] = [
         icon: ShieldAlert,
         color: "#ff006e", // Red - matches in-game accent
         route: "/games/dynamic-decks",
-        isHot: true,
         playerCount: "2-8",
         duration: "15-30m",
         slogan: "Words Unleashed",
@@ -59,5 +59,19 @@ export const GAMES: GameConfig[] = [
         playerCount: "2-10",
         slogan: "Find the Hue",
         tags: ["Deduction", "Colors", "Teams"],
+    },
+    {
+        id: "quiz-quarter",
+        name: "Quiz Quarter",
+        description: "Test your knowledge across categories.",
+        fullDescription: "Challenge yourself with timed trivia across Geography, History, Sports, Music, and more! Unlock packs, chase streaks, and compete with friends.",
+        icon: Brain,
+        color: "#22C55E", // Green
+        route: "/games/quiz-quarter",
+        isHot: true,
+        playerCount: "1-8",
+        duration: "5-20m",
+        slogan: "Know It All",
+        tags: ["Trivia", "Knowledge", "Solo/Party"],
     }
 ];

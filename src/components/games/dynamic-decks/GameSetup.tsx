@@ -156,16 +156,9 @@ export function GameSetup({ onStart }: GameSetupProps) {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed z-50"
-              style={{
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: 'calc(100% - 2rem)',
-                maxWidth: '24rem',
-              }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
             >
-              <div className="bg-[#0a0015] border border-white/10 rounded-2xl p-5 shadow-2xl">
+              <div className="bg-[#0a0015] border border-white/10 rounded-2xl p-5 shadow-2xl w-full max-w-sm pointer-events-auto">
                 {/* Modal Header */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2 text-[#ff006e]">

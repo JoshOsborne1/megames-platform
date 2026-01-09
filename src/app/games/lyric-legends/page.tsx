@@ -10,7 +10,7 @@ function LyricLegendsContent() {
   const mode = searchParams.get("mode");
 
   return (
-    <main className="bg-[#0f0a1e]">
+    <main>
       <LyricLegendsGame mode={mode as "local" | "online"} />
     </main>
   );
@@ -18,8 +18,9 @@ function LyricLegendsContent() {
 
 export default function LyricLegendsPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0f0a1e] flex items-center justify-center text-white">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white">Loading...</div>}>
       <LyricLegendsContent />
     </Suspense>
   );
 }
+

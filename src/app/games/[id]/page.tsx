@@ -48,7 +48,7 @@ export default function GameDetailPage() {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
-        <main className="flex-1 pt-24 pb-16 px-4 bg-[#0a0a14] flex items-center justify-center">
+        <main className="flex-1 pt-24 pb-16 px-4 flex items-center justify-center">
           <div className="text-center">
             <h1 className="font-display text-3xl font-bold text-white mb-4">Game Not Found</h1>
             <Link href="/games">
@@ -66,7 +66,7 @@ export default function GameDetailPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 pt-24 pb-16 px-4 bg-[#0a0a14]">
+      <main className="flex-1 pt-24 pb-16 px-4">
         <div className="max-w-6xl mx-auto">
           <Link
             href="/games"

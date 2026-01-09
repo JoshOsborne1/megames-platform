@@ -97,7 +97,7 @@ export default function LobbyPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a14]">
+    <div className="min-h-screen flex flex-col">
       <Header />
       <main className="flex-1 pt-20 pb-8 px-4">
         <div className="max-w-6xl mx-auto">
@@ -155,8 +155,8 @@ export default function LobbyPage() {
                     <Button
                       onClick={toggleReady}
                       className={`${isReady
-                          ? "bg-[#32CD32] hover:bg-[#32CD32]/90"
-                          : "bg-white/10 hover:bg-white/20"
+                        ? "bg-[#32CD32] hover:bg-[#32CD32]/90"
+                        : "bg-white/10 hover:bg-white/20"
                         } text-white font-semibold`}
                     >
                       {isReady ? (
@@ -182,8 +182,8 @@ export default function LobbyPage() {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: index * 0.1 }}
                       className={`relative p-4 rounded-xl border-2 transition-all ${player.isReady || player.isHost
-                          ? "border-[#32CD32]/50 bg-[#32CD32]/10"
-                          : "border-white/10 bg-white/5"
+                        ? "border-[#32CD32]/50 bg-[#32CD32]/10"
+                        : "border-white/10 bg-white/5"
                         }`}
                     >
                       {player.isHost && (
@@ -252,15 +252,15 @@ export default function LobbyPage() {
                   <div
                     key={msg.id}
                     className={`${msg.player === "You"
-                        ? "text-right"
-                        : "text-left"
+                      ? "text-right"
+                      : "text-left"
                       }`}
                   >
                     <span className="text-xs text-gray-500">{msg.player}</span>
                     <div
                       className={`inline-block px-3 py-2 rounded-lg mt-1 max-w-[80%] ${msg.player === "You"
-                          ? "bg-[#00BFFF] text-black"
-                          : "bg-white/10 text-white"
+                        ? "bg-[#00BFFF] text-black"
+                        : "bg-white/10 text-white"
                         }`}
                     >
                       {msg.message}

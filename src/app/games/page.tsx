@@ -4,10 +4,9 @@ import { useState, useEffect, Suspense } from "react";
 
 import { motion } from "framer-motion";
 import { AppShell } from "@/components/AppShell";
-import { Trophy } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { GAMES, GameConfig } from "@/config/games";
-import { GamePreviewModal } from "@/components/GamePreviewModal";
 import { createClient } from "@/lib/supabase/client";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { useHaptic } from "@/hooks/useHaptic";
@@ -17,7 +16,6 @@ function GamesContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const mode = searchParams.get("mode"); // "local" or "online" from home page
-  const [selectedGame, setSelectedGame] = useState<GameConfig | null>(null);
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const { trigger } = useHaptic();
 
@@ -30,15 +28,8 @@ function GamesContent() {
 
   const handleGameSelect = (game: GameConfig) => {
     trigger();
-
-    // If user came from "Play Local" on home page, skip modal and go directly
-    if (mode === "local") {
-      router.push(`${game.route}?mode=local`);
-      return;
-    }
-
-    // Otherwise show the modal for selection
-    setSelectedGame(game);
+    // Go directly to the game in local mode
+    router.push(`${game.route}?mode=local`);
   };
 
   return (
@@ -48,12 +39,12 @@ function GamesContent() {
         <header className="text-center mb-6">
           <h1 className="font-display font-bold text-xl uppercase tracking-wider text-white">Arcade</h1>
           <p className="text-xs text-white/50 font-medium">
-            {mode === "local" ? "Select a game to play locally" : "All Games"}
+            Select a game to play
           </p>
         </header>
 
         {/* GAMES GRID */}
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-3">
           {GAMES.map((game, index) => (
             <motion.div
               key={game.id}
@@ -62,44 +53,46 @@ function GamesContent() {
               transition={{ delay: index * 0.1 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleGameSelect(game)}
-              className="widget-card !p-4 flex items-center gap-3 group"
+              className="widget-card !p-3 flex items-center gap-3 group !rounded-2xl"
               style={{
                 borderColor: `${game.color}40`,
                 background: `linear-gradient(135deg, ${game.color}08, transparent 60%)`
               }}
             >
-              {/* Icon Container - reduced glow */}
+              {/* Icon Container */}
               <div
-                className="w-14 h-14 rounded-xl flex items-center justify-center shrink-0"
+                className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
                 style={{
                   backgroundColor: `${game.color}15`,
                   border: `1px solid ${game.color}20`
                 }}
               >
                 <game.icon
-                  className="w-7 h-7"
+                  className="w-6 h-6"
                   style={{ color: game.color }}
                 />
               </div>
 
               <div className="flex-1 min-w-0">
-                <h3 className="font-display font-bold text-lg text-white mb-0.5 truncate">
-                  {game.name}
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-display font-bold text-base text-white truncate">
+                    {game.name}
+                  </h3>
+                  {game.isHot && (
+                    <span className="px-1.5 py-0.5 text-[9px] font-bold uppercase rounded bg-gradient-to-r from-orange-500 to-red-500 text-white">
+                      New
+                    </span>
+                  )}
+                </div>
                 <p className="text-[11px] text-white/50 font-medium line-clamp-1">
                   {game.description}
                 </p>
               </div>
 
               {/* Arrow indicator */}
-              <motion.div
-                whileHover={{ x: 5 }}
-                className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-white/5"
-              >
-                <Trophy
-                  className="w-4 h-4 text-white/30"
-                />
-              </motion.div>
+              <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-white/5">
+                <ChevronRight className="w-4 h-4 text-white/30" />
+              </div>
             </motion.div>
           ))}
         </div>
@@ -113,15 +106,6 @@ function GamesContent() {
         <div className="mb-8">
           <QuizProBanner compact onSubscribeClick={() => { }} />
         </div>
-
-        {/* MODALS */}
-        <GamePreviewModal
-          game={selectedGame}
-          isOpen={!!selectedGame}
-          onClose={() => setSelectedGame(null)}
-          onPlayLocal={() => selectedGame && router.push(`${selectedGame.route}?mode=local`)}
-          onPlayOnline={() => selectedGame && (user ? router.push(`${selectedGame.route}?mode=online`) : router.push("/login"))}
-        />
       </div>
     </AppShell>
   );
@@ -129,8 +113,9 @@ function GamesContent() {
 
 export default function GamesPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0f0a1e] flex items-center justify-center text-white">Loading Arcade...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white">Loading Arcade...</div>}>
       <GamesContent />
     </Suspense>
   );
 }
+

@@ -27,12 +27,15 @@ export function useAppShell() {
 
 interface AppShellProps {
     children: ReactNode;
+    hideNav?: boolean;
 }
 
-export function AppShell({ children }: AppShellProps) {
-    const [isFullscreen, setFullscreen] = useState(false);
+export function AppShell({ children, hideNav = false }: AppShellProps) {
+    const [isFullscreen, setFullscreen] = useState(hideNav);
     const [headerTitle, setHeaderTitle] = useState("");
     const [showBackButton, setShowBackButton] = useState(false);
+
+    const shouldHideNav = isFullscreen || hideNav;
 
     return (
         <AppShellContext.Provider
@@ -45,15 +48,15 @@ export function AppShell({ children }: AppShellProps) {
                 setShowBackButton,
             }}
         >
-            <div className="min-h-screen flex flex-col bg-[#0a0a14] relative">
+            <div className="min-h-screen flex flex-col relative">
                 {/* Animated Background */}
                 <AnimatedBackground />
 
                 {/* Minimal App Header */}
-                {!isFullscreen && <AppHeader title={headerTitle} showBack={showBackButton} />}
+                {!shouldHideNav && <AppHeader title={headerTitle} showBack={showBackButton} />}
 
                 {/* Main Content */}
-                <main className={`flex-1 relative z-10 ${!isFullscreen ? "pt-14 pb-20" : ""}`}>
+                <main className={`flex-1 relative z-10 ${!shouldHideNav ? "pt-14 pb-20" : ""}`}>
                     {children}
                 </main>
 
@@ -61,8 +64,9 @@ export function AppShell({ children }: AppShellProps) {
                 <RoomBanner />
 
                 {/* Bottom Navigation */}
-                <BottomNav hidden={isFullscreen} />
+                <BottomNav hidden={shouldHideNav} />
             </div>
         </AppShellContext.Provider>
     );
 }
+

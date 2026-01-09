@@ -56,7 +56,7 @@ export default function CreateLobbyPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <main className="flex-1 pt-24 pb-16 px-4 bg-[#0a0a14]">
+      <main className="flex-1 pt-24 pb-16 px-4">
         <div className="max-w-2xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -91,8 +91,8 @@ export default function CreateLobbyPage() {
                         setMaxPlayers(Math.min(maxPlayers, game.maxPlayers));
                       }}
                       className={`p-4 rounded-xl border-2 transition-all ${selectedGame === game.id
-                          ? "border-white/40 bg-white/10"
-                          : "border-white/10 bg-white/5 hover:border-white/20"
+                        ? "border-white/40 bg-white/10"
+                        : "border-white/10 bg-white/5 hover:border-white/20"
                         }`}
                     >
                       <div

@@ -559,7 +559,7 @@ function MultiplayerContent() {
 
 export default function MultiplayerPage() {
     return (
-        <Suspense fallback={<div className="min-h-screen bg-[#0a051a] flex items-center justify-center text-white">Loading Multiplayer...</div>}>
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white">Loading Multiplayer...</div>}>
             <MultiplayerContent />
         </Suspense>
     );

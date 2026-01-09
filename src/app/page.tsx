@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { AppShell } from "@/components/AppShell";
 import { QuizProBanner } from "@/components/QuizProBanner";
-import { GamePreviewModal } from "@/components/GamePreviewModal";
 import {
   Users, ChevronRight, Globe, Gamepad2, Loader2
 } from "lucide-react";
@@ -19,7 +18,6 @@ export default function HomePage() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [isPro, setIsPro] = useState(false);
-  const [selectedGame, setSelectedGame] = useState<GameConfig | null>(null);
   const { trigger } = useHaptic();
   const router = useRouter();
 
@@ -52,7 +50,8 @@ export default function HomePage() {
 
   const handleGameSelect = (game: GameConfig) => {
     trigger();
-    setSelectedGame(game);
+    // Go directly to the game in local mode
+    router.push(`${game.route}?mode=local`);
   };
 
   const username = user?.user_metadata?.username || user?.email?.split("@")[0] || "Player";
@@ -259,14 +258,7 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* MODALS */}
-        <GamePreviewModal
-          game={selectedGame}
-          isOpen={!!selectedGame}
-          onClose={() => setSelectedGame(null)}
-          onPlayLocal={() => selectedGame && router.push(`${selectedGame.route}?mode=local`)}
-          onPlayOnline={() => selectedGame && (user ? router.push(`/multiplayer?game=${selectedGame.id}`) : router.push("/login"))}
-        />
+
       </div>
     </AppShell >
   );

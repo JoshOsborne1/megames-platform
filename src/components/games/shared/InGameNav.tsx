@@ -162,16 +162,9 @@ export function InGameNav({
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
-                            className="fixed z-[100]"
-                            style={{
-                                top: '50%',
-                                left: '50%',
-                                transform: 'translate(-50%, -50%)',
-                                width: 'calc(100% - 2rem)',
-                                maxWidth: '24rem',
-                            }}
+                            className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none"
                         >
-                            <div className="bg-[#1a142e] border-2 border-white/10 p-8 rounded-3xl shadow-2xl">
+                            <div className="bg-[#1a142e] border-2 border-white/10 p-8 rounded-3xl shadow-2xl w-full max-w-sm pointer-events-auto">
                                 <h3 className="font-display font-black text-2xl text-white mb-3 text-center">Leave Game?</h3>
                                 <p className="text-white/60 text-center mb-6 font-space">
                                     Your current progress will be lost. Are you sure?

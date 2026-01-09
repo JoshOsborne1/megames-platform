@@ -10,7 +10,7 @@ function DynamicDecksContent() {
   const mode = searchParams.get("mode");
 
   return (
-    <div className="min-h-screen bg-[#0f0a1e] text-white flex flex-col p-4 font-space overflow-hidden select-none relative touch-manipulation">
+    <div className="min-h-screen text-white flex flex-col p-4 font-space overflow-hidden select-none relative touch-manipulation">
       <DynamicDecksHub mode={mode as "local" | "online"} />
     </div>
   );
@@ -18,8 +18,9 @@ function DynamicDecksContent() {
 
 export default function DynamicDecksPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0f0a1e] flex items-center justify-center text-white">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white">Loading...</div>}>
       <DynamicDecksContent />
     </Suspense>
   );
 }
+
