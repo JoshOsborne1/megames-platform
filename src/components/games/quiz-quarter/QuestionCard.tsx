@@ -225,7 +225,7 @@ export function QuestionCard({
                         </button>
                     ) : (
                         <WatchAdButton
-                            variant="inline"
+                            variant="compact"
                             label="Watch Ad to Skip"
                             onReward={onSkip}
                         />

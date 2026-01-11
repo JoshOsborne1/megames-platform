@@ -27,8 +27,10 @@ export function DeckSelector({ selectedDeckId, onDeckChange }: DeckSelectorProps
 
     useEffect(() => {
         const idx = decks.findIndex(d => d.id === selectedDeckId);
-        if (idx !== -1 && idx !== currentIndex) setCurrentIndex(idx);
-    }, [selectedDeckId, decks, currentIndex]);
+        if (idx !== -1) setCurrentIndex(idx);
+        // Only sync when selectedDeckId changes externally, not when currentIndex changes
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedDeckId]);
 
     const currentDeck = decks[currentIndex];
     const IconComponent = ICON_MAP[currentDeck.icon] || Zap;
@@ -56,8 +58,8 @@ export function DeckSelector({ selectedDeckId, onDeckChange }: DeckSelectorProps
                             key={deck.id}
                             onClick={() => navigateTo(index)}
                             className={`flex-1 p-3 rounded-xl flex flex-col items-center gap-1.5 transition-all border ${isActive
-                                    ? "bg-white/10 border-white/30"
-                                    : "bg-white/5 border-white/10 hover:bg-white/10"
+                                ? "bg-white/10 border-white/30"
+                                : "bg-white/5 border-white/10 hover:bg-white/10"
                                 }`}
                             style={{ borderColor: isActive ? deck.accentColor : undefined }}
                         >

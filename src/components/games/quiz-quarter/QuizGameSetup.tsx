@@ -145,8 +145,8 @@ export function QuizGameSetup({ onStart, onBack }: QuizGameSetupProps) {
                 <button
                     onClick={() => { trigger(); setGameMode("solo"); }}
                     className={`p-5 rounded-2xl border-2 transition-all text-left relative overflow-hidden ${gameMode === "solo"
-                            ? "border-[#22C55E] bg-[#22C55E]/10"
-                            : "border-white/10 bg-white/5 hover:bg-white/10"
+                        ? "border-[#22C55E] bg-[#22C55E]/10"
+                        : "border-white/10 bg-white/5 hover:bg-white/10"
                         }`}
                 >
                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${gameMode === "solo" ? "bg-[#22C55E]/20" : "bg-white/10"
@@ -172,8 +172,8 @@ export function QuizGameSetup({ onStart, onBack }: QuizGameSetupProps) {
                 <button
                     onClick={() => { trigger(); setGameMode("party"); }}
                     className={`p-5 rounded-2xl border-2 transition-all text-left relative overflow-hidden ${gameMode === "party"
-                            ? "border-[#ff006e] bg-[#ff006e]/10"
-                            : "border-white/10 bg-white/5 hover:bg-white/10"
+                        ? "border-[#ff006e] bg-[#ff006e]/10"
+                        : "border-white/10 bg-white/5 hover:bg-white/10"
                         }`}
                 >
                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${gameMode === "party" ? "bg-[#ff006e]/20" : "bg-white/10"
@@ -236,8 +236,8 @@ export function QuizGameSetup({ onStart, onBack }: QuizGameSetupProps) {
                                 key={pack.id}
                                 onClick={() => togglePack(pack.id)}
                                 className={`flex items-center gap-2 px-3 py-2 rounded-full transition-all ${isSelected
-                                        ? "bg-white/15 border border-white/30"
-                                        : "bg-white/5 border border-white/10 opacity-50"
+                                    ? "bg-white/15 border border-white/30"
+                                    : "bg-white/5 border border-white/10 opacity-50"
                                     }`}
                             >
                                 <PackIcon
@@ -263,8 +263,8 @@ export function QuizGameSetup({ onStart, onBack }: QuizGameSetupProps) {
                             key={opt.id}
                             onClick={() => { trigger(); setDifficulty(opt.id); }}
                             className={`flex-1 py-3 rounded-xl border transition-all text-center ${difficulty === opt.id
-                                    ? "border-white/30 bg-white/10"
-                                    : "border-white/10 bg-white/5 hover:bg-white/10"
+                                ? "border-white/30 bg-white/10"
+                                : "border-white/10 bg-white/5 hover:bg-white/10"
                                 }`}
                             style={{ borderColor: difficulty === opt.id ? opt.color : undefined }}
                         >
@@ -361,7 +361,7 @@ export function QuizGameSetup({ onStart, onBack }: QuizGameSetupProps) {
                                             type="text"
                                             value={newPlayerName}
                                             onChange={(e) => setNewPlayerName(e.target.value)}
-                                            onKeyPress={(e) => e.key === "Enter" && addPlayer()}
+                                            onKeyDown={(e) => e.key === "Enter" && addPlayer()}
                                             placeholder="Add player..."
                                             maxLength={15}
                                             className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm outline-none"

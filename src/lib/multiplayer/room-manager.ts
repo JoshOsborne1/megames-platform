@@ -17,7 +17,7 @@ export function generateRoomCode(): string {
 
 // Generate a random player ID
 export function generatePlayerId(): string {
-    return `player_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `player_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
 }
 
 export class RoomManager {
@@ -105,7 +105,8 @@ export class RoomManager {
             const players: RoomPlayer[] = [];
 
             Object.entries(presenceState).forEach(([key, presences]) => {
-                const presence = (presences as PresenceState[])[0];
+                // Supabase presence includes extra fields like presence_ref, cast through unknown
+                const presence = (presences as unknown as PresenceState[])[0];
                 if (presence) {
                     players.push({
                         id: key,

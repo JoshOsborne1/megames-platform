@@ -22,7 +22,7 @@ export function WatchAdButton({
 
     const handleWatch = () => {
         setIsWatching(true);
-        // Simulate 3s ad
+        // Simulate ad viewing delay (2 seconds)
         setTimeout(() => {
             setIsWatching(false);
             setRewarded(true);

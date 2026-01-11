@@ -3,13 +3,14 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ColorSpectrum } from "@/components/games/shade-signals/ColorSpectrum";
-import { createInitialPlayers, InGameNav, type Player, WatchAdButton } from "@/components/games/shared";
-import { X, Trophy, ArrowRight, Palette, Users, Droplet, ChevronRight, Plus, Trash2, Minus, Check, Users2, Crown } from "lucide-react";
+import { InGameNav, WatchAdButton, PlayersModal } from "@/components/games/shared";
+import { usePlayerSetup } from "@/hooks/usePlayerSetup";
+import { X, Trophy, ArrowRight, Palette, Users, Droplet, ChevronRight, Plus, Minus, Users2, Crown } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense } from "react";
 import type { ColorWithPosition } from "@/lib/games/shade-signals/types";
-import { generateColorOptions, calculateHSVDistance, calculateScore, hsvToPosition } from "@/lib/games/shade-signals/colorUtils";
+import { generateColorOptions, calculateHSVDistance, calculateScore } from "@/lib/games/shade-signals/colorUtils";
 import { FORBIDDEN_COLOR_WORDS } from "@/lib/games/shade-signals/clueWords";
 import { useRoom } from "@/context/RoomContext";
 
@@ -48,9 +49,22 @@ function ShadeSignalsContent() {
   // Check if we're coming from a multiplayer room
   const isFromRoom = mode === "online" && roomCode && room.isActive;
 
+  // Use shared player management hook
+  const {
+    players: sharedPlayers,
+    newPlayerName,
+    setNewPlayerName,
+    addPlayer,
+    removePlayer,
+    updatePlayerName,
+    canStart,
+    canAddMore,
+    canRemove,
+    setPlayers: setSharedPlayers,
+  } = usePlayerSetup({ minPlayers: 2, maxPlayers: 10 });
+
   const [phase, setPhase] = useState<GamePhase>("setup");
   const [gameMode, setGameMode] = useState<GameMode>("qm");
-  const [sharedPlayers, setSharedPlayers] = useState<Player[]>(createInitialPlayers());
   const [players, setPlayers] = useState<GamePlayer[]>([]);
   const [currentRound, setCurrentRound] = useState(1);
   const [totalRounds, setTotalRounds] = useState(4);
@@ -66,7 +80,6 @@ function ShadeSignalsContent() {
   const [passPhoneTarget, setPassPhoneTarget] = useState("");
   const [nextAction, setNextAction] = useState<() => void>(() => { });
   const [showPlayersModal, setShowPlayersModal] = useState(false);
-  const [newPlayerName, setNewPlayerName] = useState("");
 
   const playerCount = sharedPlayers.length;
 
@@ -196,16 +209,6 @@ function ShadeSignalsContent() {
     }
   };
 
-  // Player management
-  const addPlayer = () => {
-    if (!newPlayerName.trim() || sharedPlayers.length >= 10) return;
-    setSharedPlayers([...sharedPlayers, { id: `player-${Date.now()}`, name: newPlayerName.trim() }]);
-    setNewPlayerName("");
-  };
-  const removePlayer = (id: string) => setSharedPlayers(sharedPlayers.filter(p => p.id !== id));
-  const updatePlayerName = (id: string, name: string) => setSharedPlayers(sharedPlayers.map(p => p.id === id ? { ...p, name } : p));
-  const canStart = sharedPlayers.length >= 2 && sharedPlayers.every(p => p.name.trim());
-
   // SETUP SCREEN
   if (phase === "setup") {
     // If online mode without room, redirect to multiplayer
@@ -312,54 +315,19 @@ function ShadeSignalsContent() {
         </div>
 
         {/* Players Modal */}
-        <AnimatePresence>
-          {showPlayersModal && (
-            <>
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setShowPlayersModal(false)} className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50" />
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="fixed z-50"
-                style={{
-                  top: '50%',
-                  left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  width: 'calc(100% - 2rem)',
-                  maxWidth: '24rem',
-                }}
-              >
-                <div className="bg-[#0a0015] border border-white/10 rounded-2xl p-5 shadow-2xl">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2 text-[#00FFFF]">
-                      <Users className="w-5 h-5" />
-                      <h3 className="font-display font-bold text-lg">Players</h3>
-                    </div>
-                    <button onClick={() => setShowPlayersModal(false)} className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50"><X className="w-4 h-4" /></button>
-                  </div>
-                  <div className="space-y-2 mb-4 max-h-48 overflow-y-auto">
-                    {sharedPlayers.map((player, i) => (
-                      <div key={player.id} className="flex items-center gap-2 p-2 bg-white/5 border border-white/10 rounded-lg">
-                        <span className="w-6 h-6 rounded bg-white/10 flex items-center justify-center text-xs text-white/50">{i + 1}</span>
-                        <input type="text" value={player.name} onChange={(e) => updatePlayerName(player.id, e.target.value)} className="flex-1 bg-transparent outline-none text-white text-sm min-w-0" placeholder={`Player ${i + 1}`} />
-                        <button onClick={() => removePlayer(player.id)} disabled={sharedPlayers.length <= 2} className="p-1.5 text-white/20 hover:text-red-500 disabled:opacity-0"><Trash2 className="w-3.5 h-3.5" /></button>
-                      </div>
-                    ))}
-                  </div>
-                  {sharedPlayers.length < 10 && (
-                    <div className="flex gap-2 mb-4">
-                      <input type="text" value={newPlayerName} onChange={(e) => setNewPlayerName(e.target.value)} onKeyPress={(e) => e.key === "Enter" && addPlayer()} placeholder="Add player..." maxLength={15} className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm outline-none" />
-                      <button onClick={addPlayer} disabled={!newPlayerName.trim()} className="px-3 bg-[#00FFFF]/20 text-[#00FFFF] hover:bg-[#00FFFF]/30 rounded-lg disabled:opacity-30"><Plus className="w-4 h-4" /></button>
-                    </div>
-                  )}
-                  <button onClick={() => setShowPlayersModal(false)} className="w-full py-3 rounded-xl bg-[#00FFFF] text-black font-bold flex items-center justify-center gap-2">
-                    <Check className="w-4 h-4" /> Done ({sharedPlayers.length} players)
-                  </button>
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+        <PlayersModal
+          isOpen={showPlayersModal}
+          onClose={() => setShowPlayersModal(false)}
+          players={sharedPlayers}
+          newPlayerName={newPlayerName}
+          onNewPlayerNameChange={setNewPlayerName}
+          onAddPlayer={addPlayer}
+          onRemovePlayer={removePlayer}
+          onUpdatePlayerName={updatePlayerName}
+          canAddMore={canAddMore}
+          canRemove={canRemove}
+          accentColor="#00FFFF"
+        />
       </div>
     );
   }
@@ -370,7 +338,7 @@ function ShadeSignalsContent() {
 
   return (
     <div className="min-h-screen bg-[#0a0015] text-white">
-      <InGameNav gameName="Shade Signals" accentColor="#00FFFF" gameIcon={<Droplet className="w-full h-full" />} showConfirmation={phase !== "finished"} onConfirmLeave={() => { setSharedPlayers(createInitialPlayers()); setPhase("setup"); }} />
+      <InGameNav gameName="Shade Signals" accentColor="#00FFFF" gameIcon={<Droplet className="w-full h-full" />} showConfirmation={phase !== "finished"} onConfirmLeave={() => { setSharedPlayers([]); setPhase("setup"); }} />
 
       <div className="max-w-lg mx-auto px-4 pb-8">
         {/* Round Info */}
@@ -600,7 +568,7 @@ function ShadeSignalsContent() {
                   </div>
                 ))}
               </div>
-              <button onClick={() => { setSharedPlayers(createInitialPlayers()); setPhase("setup"); }} className="w-full py-4 rounded-xl bg-white text-black font-display font-bold">Play Again</button>
+              <button onClick={() => { setSharedPlayers([]); setPhase("setup"); }} className="w-full py-4 rounded-xl bg-white text-black font-display font-bold">Play Again</button>
             </motion.div>
           )}
         </AnimatePresence>

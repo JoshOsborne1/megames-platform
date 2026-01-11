@@ -16,7 +16,7 @@ function SimulatedPlayer({
     roomCode: string;
     onClose: () => void;
 }) {
-    const [playerName] = useState(`Bot_${Math.random().toString(36).substr(2, 4)}`);
+    const [playerName] = useState(`Bot_${Math.random().toString(36).substring(2, 6)}`);
 
     const {
         isConnected,
@@ -318,8 +318,8 @@ export default function MultiplayerTestPage() {
                                         <div
                                             key={player.id}
                                             className={`flex items-center gap-3 p-3 rounded-xl ${player.id === playerId
-                                                    ? "bg-[#00f5ff]/10 border border-[#00f5ff]/30"
-                                                    : "bg-white/5"
+                                                ? "bg-[#00f5ff]/10 border border-[#00f5ff]/30"
+                                                : "bg-white/5"
                                                 }`}
                                         >
                                             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#ff006e] to-[#8338ec] flex items-center justify-center font-bold text-sm">

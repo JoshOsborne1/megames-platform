@@ -42,7 +42,7 @@ export function PlayerManager({
     const [newPlayerName, setNewPlayerName] = useState("");
 
     const generatePlayerId = () => {
-        return `player-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        return `player-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
     };
 
     const addPlayer = () => {
@@ -144,7 +144,7 @@ export function PlayerManager({
                     type="text"
                     value={newPlayerName}
                     onChange={(e) => setNewPlayerName(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && addPlayer()}
+                    onKeyDown={(e) => e.key === "Enter" && addPlayer()}
                     placeholder="Add player name..."
                     maxLength={20}
                     className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white font-space outline-none transition-colors focus:border-white/30"

@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trophy, Play, SkipForward, Check, Mic2, X, Plus, Trash2, Users, ChevronRight } from "lucide-react";
+import { Trophy, Play, SkipForward, Check, Mic2, Users, ChevronRight } from "lucide-react";
 import { LYRIC_WORDS } from "@/lib/games/lyric-legends/data";
-import { createInitialPlayers, InGameNav, type Player as SharedPlayer, WatchAdButton } from "./shared";
+import { InGameNav, WatchAdButton, PlayersModal } from "./shared";
+import { usePlayerSetup } from "@/hooks/usePlayerSetup";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import confetti from "canvas-confetti";
@@ -27,14 +28,25 @@ export default function LyricLegendsGame({ mode = "local" }: { mode?: "local" | 
   // Check if we're coming from a multiplayer room
   const isFromRoom = mode === "online" && roomCode && room.isActive;
 
+  // Use shared player management hook with room-based initial players
+  const initialPlayers = isFromRoom && room.players.length > 0
+    ? room.players.map(p => ({ id: p.id, name: p.name }))
+    : [];
+
+  const {
+    players: sharedPlayers,
+    newPlayerName,
+    setNewPlayerName,
+    addPlayer,
+    removePlayer,
+    updatePlayerName,
+    canStart,
+    canAddMore,
+    canRemove,
+    setPlayers: setSharedPlayers,
+  } = usePlayerSetup({ minPlayers: 2, maxPlayers: 10, initialPlayers });
+
   const [gameState, setGameState] = useState<GameState>(isFromRoom ? "ready" : "setup");
-  const [sharedPlayers, setSharedPlayers] = useState<SharedPlayer[]>(() => {
-    // If from room, use room players
-    if (isFromRoom && room.players.length > 0) {
-      return room.players.map(p => ({ id: p.id, name: p.name }));
-    }
-    return createInitialPlayers();
-  });
   const [players, setPlayers] = useState<GamePlayer[]>(() => {
     // If from room, initialize game players
     if (isFromRoom && room.players.length > 0) {
@@ -47,7 +59,6 @@ export default function LyricLegendsGame({ mode = "local" }: { mode?: "local" | 
   const [roundCount, setRoundCount] = useState(0);
   const [usedWords, setUsedWords] = useState<Set<string>>(new Set());
   const [showPlayersModal, setShowPlayersModal] = useState(false);
-  const [newPlayerName, setNewPlayerName] = useState("");
 
   const MAX_ROUNDS = 10;
   const WINNING_SCORE = 100;
@@ -112,17 +123,6 @@ export default function LyricLegendsGame({ mode = "local" }: { mode?: "local" | 
     setGameState("ready");
     setUsedWords(new Set());
   };
-
-  // Player management
-  const addPlayer = () => {
-    if (!newPlayerName.trim() || sharedPlayers.length >= 10) return;
-    setSharedPlayers([...sharedPlayers, { id: `player-${Date.now()}`, name: newPlayerName.trim() }]);
-    setNewPlayerName("");
-  };
-
-  const removePlayer = (id: string) => setSharedPlayers(sharedPlayers.filter(p => p.id !== id));
-  const updatePlayerName = (id: string, name: string) => setSharedPlayers(sharedPlayers.map(p => p.id === id ? { ...p, name } : p));
-  const canStart = sharedPlayers.length >= 2 && sharedPlayers.every(p => p.name.trim());
 
   // Handle leaving - if from room, go back to multiplayer room, otherwise local setup
   const handleLeave = () => {
@@ -417,94 +417,19 @@ export default function LyricLegendsGame({ mode = "local" }: { mode?: "local" | 
       </div>
 
       {/* PLAYERS MODAL */}
-      <AnimatePresence>
-        {showPlayersModal && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowPlayersModal(false)}
-              className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed z-50"
-              style={{
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: 'calc(100% - 2rem)',
-                maxWidth: '24rem',
-              }}
-            >
-              <div className="bg-[#0a0015] border border-white/10 rounded-2xl p-5 shadow-2xl">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2 text-[#FF00FF]">
-                    <Users className="w-5 h-5" />
-                    <h3 className="font-display font-bold text-lg">Players</h3>
-                  </div>
-                  <button onClick={() => setShowPlayersModal(false)} className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-white/50">
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <div className="space-y-2 mb-4 max-h-48 overflow-y-auto">
-                  {sharedPlayers.map((player, i) => (
-                    <div key={player.id} className="flex items-center gap-2 p-2 bg-white/5 border border-white/10 rounded-lg">
-                      <span className="w-6 h-6 rounded bg-white/10 flex items-center justify-center text-xs text-white/50">{i + 1}</span>
-                      <input
-                        type="text"
-                        value={player.name}
-                        onChange={(e) => updatePlayerName(player.id, e.target.value)}
-                        className="flex-1 bg-transparent outline-none text-white text-sm min-w-0"
-                        placeholder={`Player ${i + 1}`}
-                      />
-                      <button
-                        onClick={() => removePlayer(player.id)}
-                        disabled={sharedPlayers.length <= 2}
-                        className="p-1.5 text-white/20 hover:text-red-500 disabled:opacity-0"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-
-                {sharedPlayers.length < 10 && (
-                  <div className="flex gap-2 mb-4">
-                    <input
-                      type="text"
-                      value={newPlayerName}
-                      onChange={(e) => setNewPlayerName(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && addPlayer()}
-                      placeholder="Add player..."
-                      maxLength={15}
-                      className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white text-sm outline-none"
-                    />
-                    <button
-                      onClick={addPlayer}
-                      disabled={!newPlayerName.trim()}
-                      className="px-3 bg-[#FF00FF]/20 text-[#FF00FF] hover:bg-[#FF00FF]/30 rounded-lg disabled:opacity-30"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
-                )}
-
-                <button
-                  onClick={() => setShowPlayersModal(false)}
-                  className="w-full py-3 rounded-xl bg-[#FF00FF] text-white font-bold flex items-center justify-center gap-2"
-                >
-                  <Check className="w-4 h-4" /> Done ({sharedPlayers.length} players)
-                </button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      <PlayersModal
+        isOpen={showPlayersModal}
+        onClose={() => setShowPlayersModal(false)}
+        players={sharedPlayers}
+        newPlayerName={newPlayerName}
+        onNewPlayerNameChange={setNewPlayerName}
+        onAddPlayer={addPlayer}
+        onRemovePlayer={removePlayer}
+        onUpdatePlayerName={updatePlayerName}
+        canAddMore={canAddMore}
+        canRemove={canRemove}
+        accentColor="#FF00FF"
+      />
     </div>
   );
 }
