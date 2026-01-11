@@ -19,6 +19,7 @@ import { InGameNav } from "../shared";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRoom } from "@/context/RoomContext";
 import { Timer, Trophy, ArrowRight, Check, X, Zap, ShieldAlert, Smile, Brain, Flame, Crown, ChevronRight } from "lucide-react";
+import { useAppShell } from "@/components/AppShell";
 
 const DIFFICULTY_OPTIONS: { id: Difficulty; label: string; icon: React.ReactNode; multiplier: string; color: string }[] = [
   { id: "easy", label: "Easy", icon: <Smile className="w-5 h-5" />, multiplier: "1x", color: "#00f5ff" },
@@ -31,12 +32,18 @@ export function DynamicDecksHub({ mode = "local" }: { mode?: "local" | "online" 
   const searchParams = useSearchParams();
   const roomCode = searchParams.get("room");
   const { room } = useRoom();
+  const { setFullscreen } = useAppShell();
 
   // Check if we're coming from a multiplayer room
   const isFromRoom = mode === "online" && roomCode && room.isActive;
 
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("easy");
+
+  // Control bottom nav visibility based on game state
+  useEffect(() => {
+    setFullscreen(!!gameState);
+  }, [gameState, setFullscreen]);
 
   const startNewGame = (players: string[], rounds: number, deckId: string, gameMode: GameMode) => {
     const initialState = createInitialState(players, "easy", rounds, deckId, gameMode);
@@ -109,7 +116,7 @@ export function DynamicDecksHub({ mode = "local" }: { mode?: "local" | "online" 
       return null;
     }
     return (
-      <div className="flex-1 flex items-center justify-center min-h-screen">
+      <div className="min-h-screen pb-24">
         <GameSetup onStart={startNewGame} />
       </div>
     );

@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ColorSpectrum } from "@/components/games/shade-signals/ColorSpectrum";
-import { InGameNav, WatchAdButton, PlayersModal } from "@/components/games/shared";
+import { InGameNav, WatchAdButton, PlayersModal, InfoButton, GameModeSelector } from "@/components/games/shared";
 import { usePlayerSetup } from "@/hooks/usePlayerSetup";
 import { X, Trophy, ArrowRight, Palette, Users, Droplet, ChevronRight, Plus, Minus, Users2, Crown } from "lucide-react";
 import Link from "next/link";
@@ -13,6 +13,7 @@ import type { ColorWithPosition } from "@/lib/games/shade-signals/types";
 import { generateColorOptions, calculateHSVDistance, calculateScore } from "@/lib/games/shade-signals/colorUtils";
 import { FORBIDDEN_COLOR_WORDS } from "@/lib/games/shade-signals/clueWords";
 import { useRoom } from "@/context/RoomContext";
+import { useAppShell, AppShell } from "@/components/AppShell";
 
 type GamePhase = "setup" | "signal-pick" | "clue-1" | "guess-1" | "clue-2" | "guess-2" | "reveal" | "leaderboard" | "finished";
 type GameMode = "classic" | "qm"; // Classic: giver -> single guesser, QM: giver -> all guess
@@ -45,6 +46,7 @@ function ShadeSignalsContent() {
   const roomCode = searchParams.get("room");
   const router = useRouter();
   const { room } = useRoom();
+  const { setFullscreen } = useAppShell();
 
   // Check if we're coming from a multiplayer room
   const isFromRoom = mode === "online" && roomCode && room.isActive;
@@ -82,6 +84,11 @@ function ShadeSignalsContent() {
   const [showPlayersModal, setShowPlayersModal] = useState(false);
 
   const playerCount = sharedPlayers.length;
+
+  // Control bottom nav visibility based on phase
+  useEffect(() => {
+    setFullscreen(phase !== "setup");
+  }, [phase, setFullscreen]);
 
   // In QM mode: all players except giver guess. In Classic: only one guesser per round
   const getGuesserIndex = (guesserIdx: number) => {
@@ -218,7 +225,7 @@ function ShadeSignalsContent() {
     }
 
     return (
-      <div className="min-h-screen bg-[#0a0015] text-white">
+      <div className="min-h-screen text-white pb-24">
         <div className="max-w-md mx-auto px-4 pb-8">
           <div className="text-center pt-4 mb-6">
             <Link href="/games" className="inline-block mb-3">
@@ -228,41 +235,36 @@ function ShadeSignalsContent() {
             <p className="text-white/40 text-sm">Guess the color from cryptic clues</p>
           </div>
 
-          {/* Game Info */}
-          <div className="p-4 rounded-xl bg-[#00FFFF]/10 border border-[#00FFFF]/30 mb-4">
-            <div className="flex items-center gap-3 mb-2">
-              <Palette className="w-5 h-5 text-[#00FFFF]" />
-              <h4 className="font-display font-bold text-white">How to Play</h4>
-            </div>
-            <p className="text-white/60 text-sm leading-relaxed">
-              The Signal-Giver picks a secret color and gives word clues. Guessers try to match the exact shade on the color wheel!
-            </p>
-          </div>
+          {/* How to Play - Collapsible */}
+          <InfoButton
+            title="How to Play"
+            content="The Signal-Giver picks a secret color and gives word clues. Guessers try to match the exact shade on the color wheel!"
+            icon={<Palette className="w-4 h-4 text-[#00FFFF]" />}
+            accentColor="#00FFFF"
+          />
 
-          {/* Game Mode Selection */}
-          <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-4">
-            <p className="text-white/40 text-xs uppercase tracking-wider mb-3">Game Mode</p>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                onClick={() => setGameMode("qm")}
-                className={`p-3 rounded-xl border transition-all flex flex-col items-center gap-1 ${gameMode === "qm" ? "bg-[#8338ec]/20 border-[#8338ec] text-[#8338ec]" : "bg-white/5 border-white/10 text-white/50"
-                  }`}
-              >
-                <Crown className="w-5 h-5" />
-                <span className="font-bold text-sm">QM Mode</span>
-                <span className="text-[10px] opacity-70">All guess</span>
-              </button>
-              <button
-                onClick={() => setGameMode("classic")}
-                className={`p-3 rounded-xl border transition-all flex flex-col items-center gap-1 ${gameMode === "classic" ? "bg-[#8338ec]/20 border-[#8338ec] text-[#8338ec]" : "bg-white/5 border-white/10 text-white/50"
-                  }`}
-              >
-                <Users2 className="w-5 h-5" />
-                <span className="font-bold text-sm">Classic</span>
-                <span className="text-[10px] opacity-70">1v1 turns</span>
-              </button>
-            </div>
-          </div>
+          {/* Game Mode Selection with Info */}
+          <GameModeSelector
+            modes={[
+              {
+                id: "qm",
+                label: "Quiz Master",
+                shortDescription: "All guess",
+                fullDescription: "One player gives clues and everyone else guesses. Great for larger groups where one person wants to host!",
+                icon: <Crown className="w-5 h-5" />,
+              },
+              {
+                id: "classic",
+                label: "Classic",
+                shortDescription: "1v1 turns",
+                fullDescription: "Players take turns giving clues and guessing in pairs. More balanced and competitive!",
+                icon: <Users2 className="w-5 h-5" />,
+              },
+            ]}
+            selectedMode={gameMode}
+            onModeChange={(mode) => setGameMode(mode as GameMode)}
+            accentColor="#8338ec"
+          />
 
           {/* Players Button */}
           <button
@@ -337,7 +339,7 @@ function ShadeSignalsContent() {
   const currentPlayer = phase.includes("guess") ? players[getGuesserIndex(currentGuesserIndex)] : null;
 
   return (
-    <div className="min-h-screen bg-[#0a0015] text-white">
+    <div className="min-h-screen text-white">
       <InGameNav gameName="Shade Signals" accentColor="#00FFFF" gameIcon={<Droplet className="w-full h-full" />} showConfirmation={phase !== "finished"} onConfirmLeave={() => { setSharedPlayers([]); setPhase("setup"); }} />
 
       <div className="max-w-lg mx-auto px-4 pb-8">
@@ -642,8 +644,10 @@ function ShadeSignalsContent() {
 
 export default function ShadeSignalsGame() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0a0015] flex items-center justify-center text-white">Loading...</div>}>
-      <ShadeSignalsContent />
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-white">Loading...</div>}>
+      <AppShell>
+        <ShadeSignalsContent />
+      </AppShell>
     </Suspense>
   );
 }

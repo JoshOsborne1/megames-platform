@@ -10,6 +10,7 @@ import { LucideIcon } from "lucide-react";
 import { GameSettings, GameMode, MixedDifficulty, GAME_CONFIG } from "@/lib/games/quiz-quarter/types";
 import { PACKS, getDecksByPack, getQuestionsByDeck } from "@/lib/games/quiz-quarter/data";
 import { useHaptic } from "@/hooks/useHaptic";
+import { InfoButton } from "../shared";
 import Link from "next/link";
 
 // Icon mapping for packs
@@ -131,13 +132,21 @@ export function QuizGameSetup({ onStart, onBack }: QuizGameSetupProps) {
     return (
         <div className="w-full max-w-md mx-auto px-4 pb-8">
             {/* Header */}
-            <div className="text-center pt-4 mb-6">
+            <div className="text-center pt-4 mb-4">
                 <Link href="/games" className="inline-block mb-3">
                     <span className="text-white/40 text-sm hover:text-white/60 transition-colors">← Back</span>
                 </Link>
                 <h1 className="font-display font-bold text-2xl text-white">Quiz Quarter</h1>
                 <p className="text-white/40 text-sm">Test your knowledge</p>
             </div>
+
+            {/* How to Play - Collapsible */}
+            <InfoButton
+                title="How to Play"
+                content="Answer trivia questions from various categories. In Practice mode, learn at your own pace. In Challenge mode, compete against friends with timed rounds!"
+                icon={<Brain className="w-4 h-4 text-[#22C55E]" />}
+                accentColor="#22C55E"
+            />
 
             {/* MODE SELECTOR - Big beautiful cards */}
             <div className="grid grid-cols-2 gap-3 mb-6">

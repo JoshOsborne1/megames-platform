@@ -17,25 +17,28 @@ interface AppShellContextType {
 
 const AppShellContext = createContext<AppShellContextType | undefined>(undefined);
 
-export function useAppShell() {
+// Safe hook that returns no-ops when outside provider (for standalone game pages)
+export function useAppShell(): AppShellContextType {
     const context = useContext(AppShellContext);
     if (!context) {
-        throw new Error("useAppShell must be used within AppShell");
+        // Return no-op functions for pages that don't use AppShell
+        return {
+            isFullscreen: true,
+            setFullscreen: () => { },
+            headerTitle: "",
+            setHeaderTitle: () => { },
+            showBackButton: false,
+            setShowBackButton: () => { },
+        };
     }
     return context;
 }
 
-interface AppShellProps {
-    children: ReactNode;
-    hideNav?: boolean;
-}
-
-export function AppShell({ children, hideNav = false }: AppShellProps) {
-    const [isFullscreen, setFullscreen] = useState(hideNav);
+// Standalone provider for use in global Providers
+export function AppShellProvider({ children }: { children: ReactNode }) {
+    const [isFullscreen, setFullscreen] = useState(false);
     const [headerTitle, setHeaderTitle] = useState("");
     const [showBackButton, setShowBackButton] = useState(false);
-
-    const shouldHideNav = isFullscreen || hideNav;
 
     return (
         <AppShellContext.Provider
@@ -48,25 +51,39 @@ export function AppShell({ children, hideNav = false }: AppShellProps) {
                 setShowBackButton,
             }}
         >
-            <div className="min-h-screen flex flex-col relative">
-                {/* Animated Background */}
-                <AnimatedBackground />
-
-                {/* Minimal App Header */}
-                {!shouldHideNav && <AppHeader title={headerTitle} showBack={showBackButton} />}
-
-                {/* Main Content */}
-                <main className={`flex-1 relative z-10 ${!shouldHideNav ? "pt-14 pb-20" : ""}`}>
-                    {children}
-                </main>
-
-                {/* Room Banner - Shows when in active room */}
-                <RoomBanner />
-
-                {/* Bottom Navigation */}
-                <BottomNav hidden={shouldHideNav} />
-            </div>
+            {children}
         </AppShellContext.Provider>
     );
 }
 
+interface AppShellProps {
+    children: ReactNode;
+    hideNav?: boolean;
+}
+
+export function AppShell({ children, hideNav = false }: AppShellProps) {
+    const { isFullscreen } = useAppShell();
+
+    const shouldHideNav = isFullscreen || hideNav;
+
+    return (
+        <div className="min-h-screen flex flex-col relative">
+            {/* Animated Background */}
+            <AnimatedBackground />
+
+            {/* Minimal App Header */}
+            {!shouldHideNav && <AppHeader title="" showBack={false} />}
+
+            {/* Main Content */}
+            <main className={`flex-1 relative z-10 ${!shouldHideNav ? "pt-14 pb-20" : ""}`}>
+                {children}
+            </main>
+
+            {/* Room Banner - Shows when in active room */}
+            <RoomBanner />
+
+            {/* Bottom Navigation */}
+            <BottomNav hidden={shouldHideNav} />
+        </div>
+    );
+}

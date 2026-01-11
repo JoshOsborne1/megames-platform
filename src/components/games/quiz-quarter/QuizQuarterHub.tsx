@@ -25,6 +25,7 @@ import { QuizGameSetup } from "./QuizGameSetup";
 import { QuestionCard } from "./QuestionCard";
 import { AnswerReveal } from "./AnswerReveal";
 import { ResultsSummary } from "./ResultsSummary";
+import { useAppShell } from "@/components/AppShell";
 
 interface QuizQuarterHubProps {
     mode?: "local" | "online";
@@ -33,12 +34,18 @@ interface QuizQuarterHubProps {
 export function QuizQuarterHub({ mode = "local" }: QuizQuarterHubProps) {
     const router = useRouter();
     const { trigger } = useHaptic();
+    const { setFullscreen } = useAppShell();
 
     const [gameState, setGameState] = useState<GameState | null>(null);
     const [countdown, setCountdown] = useState<number>(0);
     const [isTimerRunning, setIsTimerRunning] = useState(false);
     const [wasSkipped, setWasSkipped] = useState(false);
     const [freeSkipsRemaining, setFreeSkipsRemaining] = useState(GAME_CONFIG.freeSkipsPerSession);
+
+    // Control bottom nav visibility based on game state
+    useEffect(() => {
+        setFullscreen(!!gameState);
+    }, [gameState, setFullscreen]);
 
     // TODO: Get this from user subscription context
     const isPremium = false;
@@ -201,7 +208,7 @@ export function QuizQuarterHub({ mode = "local" }: QuizQuarterHubProps) {
         // Setup phase
         if (!gameState) {
             return (
-                <div className="flex-1 flex items-center justify-center min-h-screen">
+                <div className="min-h-screen pb-24">
                     <QuizGameSetup
                         onStart={startNewGame}
                         onBack={handleLeave}
@@ -216,7 +223,7 @@ export function QuizQuarterHub({ mode = "local" }: QuizQuarterHubProps) {
         // Countdown phase (timed mode only)
         if (gameState.phase === "countdown" && countdown > 0 && isTimedMode) {
             return (
-                <div className="flex-1 flex items-center justify-center min-h-screen">
+                <div className="flex-1 flex items-center justify-center min-h-screen pt-16">
                     <motion.div
                         key={countdown}
                         initial={{ scale: 0.5, opacity: 0 }}
@@ -280,7 +287,7 @@ export function QuizQuarterHub({ mode = "local" }: QuizQuarterHubProps) {
         if (gameState.phase === "round-summary") {
             const currentPlayer = gameState.players[gameState.currentPlayerIndex];
             return (
-                <div className="flex-1 flex flex-col items-center justify-center p-6 min-h-screen">
+                <div className="flex-1 flex flex-col items-center justify-center p-6 min-h-screen pt-16">
                     <motion.div
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}

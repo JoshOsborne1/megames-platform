@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Minus, Plus, Users, Users2, Crown, ChevronRight } from "lucide-react";
-import { WatchAdButton, PlayersModal } from "../shared";
+import { Minus, Plus, Users, Users2, Crown, ChevronRight, ShieldAlert } from "lucide-react";
+import { WatchAdButton, PlayersModal, InfoButton, GameModeSelector } from "../shared";
 import { DeckSelector } from "./DeckSelector";
 import { GameMode } from "@/lib/games/dynamic-decks/types";
 import { usePlayerSetup } from "@/hooks/usePlayerSetup";
@@ -13,9 +13,22 @@ interface GameSetupProps {
   onStart: (players: string[], rounds: number, deckId: string, gameMode: GameMode) => void;
 }
 
-const GAME_MODES: { id: GameMode; label: string; icon: React.ReactNode; description: string }[] = [
-  { id: "classic", label: "Classic", icon: <Users2 className="w-4 h-4" />, description: "1v1 turns" },
-  { id: "question-master", label: "QM Mode", icon: <Crown className="w-4 h-4" />, description: "1 vs all" },
+// Game mode options with full descriptions
+const DYNAMIC_DECKS_MODES = [
+  {
+    id: "classic",
+    label: "Classic",
+    shortDescription: "1v1 turns",
+    fullDescription: "Players take turns in pairs. One gives clues while another guesses, then swap roles. Balanced and competitive!",
+    icon: <Users2 className="w-5 h-5" />,
+  },
+  {
+    id: "question-master",
+    label: "Quiz Master",
+    shortDescription: "1 vs all",
+    fullDescription: "One player becomes the Quiz Master who reads cards to everyone. Others compete to answer first. Perfect for parties!",
+    icon: <Crown className="w-5 h-5" />,
+  },
 ];
 
 export function GameSetup({ onStart }: GameSetupProps) {
@@ -45,7 +58,7 @@ export function GameSetup({ onStart }: GameSetupProps) {
   return (
     <div className="w-full max-w-md mx-auto px-4 pb-8">
       {/* Header */}
-      <div className="text-center pt-4 mb-6">
+      <div className="text-center pt-4 mb-4">
         <Link href="/games" className="inline-block mb-3">
           <span className="text-white/40 text-sm hover:text-white/60 transition-colors">← Back</span>
         </Link>
@@ -53,8 +66,16 @@ export function GameSetup({ onStart }: GameSetupProps) {
         <p className="text-white/40 text-sm">Choose your deck to begin</p>
       </div>
 
+      {/* How to Play - Collapsible */}
+      <InfoButton
+        title="How to Play"
+        content="Draw cards with words or phrases. Give creative clues to help your teammate guess without using forbidden words. Score points for each correct guess!"
+        icon={<ShieldAlert className="w-4 h-4 text-[#ff006e]" />}
+        accentColor="#ff006e"
+      />
+
       {/* DECK SELECTION - Main Focus */}
-      <div className="mb-6">
+      <div className="mb-4">
         <DeckSelector
           selectedDeckId={selectedDeckId}
           onDeckChange={setSelectedDeckId}
@@ -62,8 +83,16 @@ export function GameSetup({ onStart }: GameSetupProps) {
         />
       </div>
 
-      {/* Settings Bar - Compact row */}
-      <div className="flex items-center gap-2 mb-6">
+      {/* Game Mode Selection with Info */}
+      <GameModeSelector
+        modes={DYNAMIC_DECKS_MODES}
+        selectedMode={selectedGameMode}
+        onModeChange={(mode) => setSelectedGameMode(mode as GameMode)}
+        accentColor="#8338ec"
+      />
+
+      {/* Settings Row */}
+      <div className="flex items-center gap-2 mb-4">
         {/* Players Button - Opens Modal */}
         <button
           onClick={() => setShowPlayersModal(true)}
@@ -76,24 +105,6 @@ export function GameSetup({ onStart }: GameSetupProps) {
           <ChevronRight className="w-4 h-4 text-white/30" />
         </button>
 
-        {/* Game Mode Toggle */}
-        <div className="flex rounded-xl overflow-hidden border border-white/10">
-          {GAME_MODES.map(mode => (
-            <button
-              key={mode.id}
-              onClick={() => setSelectedGameMode(mode.id)}
-              className={`px-3 py-3 flex items-center gap-1.5 transition-all ${selectedGameMode === mode.id
-                ? "bg-[#8338ec]/20 text-[#8338ec]"
-                : "bg-white/5 text-white/50 hover:text-white/70"
-                }`}
-              title={mode.description}
-            >
-              {mode.icon}
-              <span className="text-xs font-medium hidden sm:inline">{mode.label}</span>
-            </button>
-          ))}
-        </div>
-
         {/* Rounds Stepper */}
         <div className="flex items-center gap-1 p-1 rounded-xl bg-white/5 border border-white/10">
           <button
@@ -103,7 +114,7 @@ export function GameSetup({ onStart }: GameSetupProps) {
           >
             <Minus className="w-3 h-3" />
           </button>
-          <span className="w-6 text-center text-sm font-bold text-[#00f5ff]">{rounds}</span>
+          <span className="w-8 text-center text-sm font-bold text-[#00f5ff]">{rounds}</span>
           <button
             onClick={() => setRounds(Math.min(10, rounds + 1))}
             disabled={rounds >= 10}

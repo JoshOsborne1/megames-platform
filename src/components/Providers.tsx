@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react";
 import { RoomProvider } from "@/context/RoomContext";
+import { AppShellProvider } from "./AppShell";
 
 interface ProvidersProps {
     children: ReactNode;
@@ -10,7 +11,9 @@ interface ProvidersProps {
 export function Providers({ children }: ProvidersProps) {
     return (
         <RoomProvider>
-            {children}
+            <AppShellProvider>
+                {children}
+            </AppShellProvider>
         </RoomProvider>
     );
 }

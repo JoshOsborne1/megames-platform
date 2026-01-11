@@ -1,7 +1,7 @@
 "use client";
 
 import LyricLegendsGame from "@/components/games/LyricLegends";
-
+import { AppShell } from "@/components/AppShell";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -10,9 +10,9 @@ function LyricLegendsContent() {
   const mode = searchParams.get("mode");
 
   return (
-    <main>
+    <AppShell>
       <LyricLegendsGame mode={mode as "local" | "online"} />
-    </main>
+    </AppShell>
   );
 }
 
@@ -23,4 +23,3 @@ export default function LyricLegendsPage() {
     </Suspense>
   );
 }
-

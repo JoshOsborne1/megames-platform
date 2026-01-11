@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Play, SkipForward, Check, Mic2, Users, ChevronRight } from "lucide-react";
 import { LYRIC_WORDS } from "@/lib/games/lyric-legends/data";
-import { InGameNav, WatchAdButton, PlayersModal } from "./shared";
+import { InGameNav, WatchAdButton, PlayersModal, InfoButton } from "./shared";
 import { usePlayerSetup } from "@/hooks/usePlayerSetup";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import confetti from "canvas-confetti";
 import { useRoom } from "@/context/RoomContext";
+import { useAppShell } from "@/components/AppShell";
 
 type GameState = "setup" | "ready" | "countdown" | "round" | "winner-selection" | "leaderboard" | "game-over";
 
@@ -24,6 +25,7 @@ export default function LyricLegendsGame({ mode = "local" }: { mode?: "local" | 
   const searchParams = useSearchParams();
   const roomCode = searchParams.get("room");
   const { room } = useRoom();
+  const { setFullscreen } = useAppShell();
 
   // Check if we're coming from a multiplayer room
   const isFromRoom = mode === "online" && roomCode && room.isActive;
@@ -62,6 +64,11 @@ export default function LyricLegendsGame({ mode = "local" }: { mode?: "local" | 
 
   const MAX_ROUNDS = 10;
   const WINNING_SCORE = 100;
+
+  // Control bottom nav visibility based on game state
+  useEffect(() => {
+    setFullscreen(gameState !== "setup");
+  }, [gameState, setFullscreen]);
 
   const getNewWord = () => {
     let availableWords = LYRIC_WORDS.filter(w => !usedWords.has(w));
@@ -140,7 +147,7 @@ export default function LyricLegendsGame({ mode = "local" }: { mode?: "local" | 
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0015] text-white">
+    <div className={`min-h-screen text-white ${gameState === "setup" ? "pb-24" : ""}`}>
       {/* In-Game Navigation */}
       {gameState !== "setup" && (
         <InGameNav
@@ -164,7 +171,7 @@ export default function LyricLegendsGame({ mode = "local" }: { mode?: "local" | 
               className="pt-4"
             >
               {/* Header */}
-              <div className="text-center mb-6">
+              <div className="text-center mb-4">
                 <Link href="/games" className="inline-block mb-3">
                   <span className="text-white/40 text-sm hover:text-white/60 transition-colors">← Back</span>
                 </Link>
@@ -172,21 +179,13 @@ export default function LyricLegendsGame({ mode = "local" }: { mode?: "local" | 
                 <p className="text-white/40 text-sm">Be the fastest to sing a lyric!</p>
               </div>
 
-              {/* Game Info Card */}
-              <div className="p-4 rounded-xl bg-[#FF00FF]/10 border border-[#FF00FF]/30 mb-6">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 rounded-lg bg-[#FF00FF]/20 flex items-center justify-center">
-                    <Mic2 className="w-5 h-5 text-[#FF00FF]" />
-                  </div>
-                  <div>
-                    <h4 className="font-display font-bold text-white">How to Play</h4>
-                    <p className="text-white/40 text-xs">First to 100 points wins!</p>
-                  </div>
-                </div>
-                <p className="text-white/60 text-sm leading-relaxed">
-                  A word will appear on screen. Be the first to sing a real song lyric containing that word to score 10 points!
-                </p>
-              </div>
+              {/* How to Play - Collapsible */}
+              <InfoButton
+                title="How to Play"
+                content="A word will appear on screen. Be the first to sing a real song lyric containing that word to score 10 points! First to 100 points wins."
+                icon={<Mic2 className="w-4 h-4 text-[#FF00FF]" />}
+                accentColor="#FF00FF"
+              />
 
               {/* Players Button */}
               <button

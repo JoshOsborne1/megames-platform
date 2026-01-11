@@ -182,7 +182,7 @@ export default function MultiplayerTestPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0f0a1e] text-white p-6">
+        <div className="min-h-screen text-white p-6">
             <div className="max-w-6xl mx-auto">
                 {/* Header */}
                 <div className="flex items-center gap-3 mb-8">

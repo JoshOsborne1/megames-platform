@@ -3,12 +3,17 @@
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { QuizQuarterHub } from "@/components/games/quiz-quarter/QuizQuarterHub";
+import { AppShell } from "@/components/AppShell";
 
 function QuizQuarterContent() {
     const searchParams = useSearchParams();
     const mode = (searchParams.get("mode") as "local" | "online") ?? "local";
 
-    return <QuizQuarterHub mode={mode} />;
+    return (
+        <AppShell>
+            <QuizQuarterHub mode={mode} />
+        </AppShell>
+    );
 }
 
 export default function QuizQuarterPage() {

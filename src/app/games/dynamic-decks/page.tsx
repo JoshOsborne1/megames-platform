@@ -1,7 +1,7 @@
 "use client";
 
 import { DynamicDecksHub } from "@/components/games/dynamic-decks/DynamicDecksHub";
-
+import { AppShell } from "@/components/AppShell";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -10,9 +10,11 @@ function DynamicDecksContent() {
   const mode = searchParams.get("mode");
 
   return (
-    <div className="min-h-screen text-white flex flex-col p-4 font-space overflow-hidden select-none relative touch-manipulation">
-      <DynamicDecksHub mode={mode as "local" | "online"} />
-    </div>
+    <AppShell>
+      <div className="text-white flex flex-col font-space overflow-hidden select-none relative touch-manipulation">
+        <DynamicDecksHub mode={mode as "local" | "online"} />
+      </div>
+    </AppShell>
   );
 }
 
@@ -23,4 +25,3 @@ export default function DynamicDecksPage() {
     </Suspense>
   );
 }
-
