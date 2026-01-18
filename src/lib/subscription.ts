@@ -71,12 +71,12 @@ export interface PricingTier {
 
 export const SUBSCRIPTION_PLANS: PricingTier[] = [
     {
-        id: "gamepro_weekly",
+        id: "partypro_weekly",
         label: "Weekly",
-        price: 3.99,
+        price: 2.99,
         currency: "GBP",
         period: "week",
-        description: "Perfect for a weekend of fun",
+        description: "Unlock the full party experience for a weekend of epic game nights with friends.",
         features: [
             "Up to 10 player local lobbies",
             "Up to 10 player multiplayer lobbies",
@@ -85,15 +85,16 @@ export const SUBSCRIPTION_PLANS: PricingTier[] = [
             "500 Dynamic Deck cards per deck",
             "3 Quiz Packs (selected on purchase)",
             "50% off all full pack purchases",
+            "50% off Day Passes",
         ]
     },
     {
-        id: "gamepro_monthly",
+        id: "partypro_monthly",
         label: "Monthly",
-        price: 11.99,
+        price: 8.99,
         currency: "GBP",
         period: "month",
-        description: "Best value for regular players",
+        description: "The ultimate choice for game enthusiasts. Fresh quiz packs every month keep the fun going!",
         features: [
             "Up to 10 player local lobbies",
             "Up to 10 player multiplayer lobbies",
@@ -102,16 +103,17 @@ export const SUBSCRIPTION_PLANS: PricingTier[] = [
             "500 Dynamic Deck cards per deck",
             "3 Quiz Packs (changes monthly)",
             "50% off all full pack purchases",
+            "50% off Day Passes",
         ],
         highlight: true
     },
     {
-        id: "gamepro_yearly",
+        id: "partypro_yearly",
         label: "Yearly",
         price: 27.99,
         currency: "GBP",
         period: "year",
-        description: "Massive savings for year-round fun",
+        description: "Unbeatable value! A full year of unlimited party games at a fraction of the cost.",
         features: [
             "Up to 10 player local lobbies",
             "Up to 10 player multiplayer lobbies",
@@ -120,6 +122,7 @@ export const SUBSCRIPTION_PLANS: PricingTier[] = [
             "500 Dynamic Deck cards per deck",
             "3 Quiz Packs (changes monthly)",
             "50% off all full pack purchases",
+            "50% off Day Passes",
         ],
         savings: "Save 80%"
     }
@@ -127,30 +130,28 @@ export const SUBSCRIPTION_PLANS: PricingTier[] = [
 
 export const ONE_TIME_PASSES: PricingTier[] = [
     {
-        id: "gamenight_group",
-        label: "GameNight - Group",
+        id: "partypack_standard",
+        label: "PartyPack - Standard",
         price: 4.99,
         currency: "GBP",
         period: "day",
-        description: "24h Pass for a standard group",
+        description: "Everything you need for one amazing game night. No commitment, full fun!",
         features: [
             "Full deck & game access",
             "Up to 6 player lobbies (Local & Multi)",
-            "Random Icon unlock",
             "+10% cards retention after expiry"
         ]
     },
     {
-        id: "gamenight_mega",
-        label: "GameNight - Mega",
+        id: "partypack_party",
+        label: "PartyPack - Party",
         price: 6.99,
         currency: "GBP",
         period: "day",
-        description: "24h Pass for a large party",
+        description: "Go big! 24 hours of unlimited access for your whole crew. Perfect for house parties.",
         features: [
             "Full deck & game access",
             "Up to 10 player lobbies (Local & Multi)",
-            "Random Icon & Title unlock",
             "+10% cards retention after expiry",
             "20% off next purchase"
         ],
@@ -175,15 +176,15 @@ export const QUIZPRO_BENEFITS = [
     { icon: "help-circle", text: "3 Quiz Packs (Monthly)" },
 ];
 
-export type SubscriptionTier = "free" | "gamepro" | "mega" | "group";
+export type SubscriptionTier = "free" | "partypro" | "party" | "standard";
 
 export function getLimits(tier: SubscriptionTier | null | undefined): GameLimits {
     switch (tier) {
-        case "gamepro":
+        case "partypro":
             return PRO_LIMITS;
-        case "mega":
+        case "party":
             return UNLIMITED_LIMITS;
-        case "group":
+        case "standard":
             return { ...UNLIMITED_LIMITS, localPlayers: 6, multiplayerPlayers: 6 };
         default:
             return FREE_LIMITS;

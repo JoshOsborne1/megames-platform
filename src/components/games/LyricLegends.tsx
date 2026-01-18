@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Play, SkipForward, Check, Mic2, Users, ChevronRight } from "lucide-react";
 import { LYRIC_WORDS } from "@/lib/games/lyric-legends/data";
-import { InGameNav, WatchAdButton, PlayersModal, InfoButton } from "./shared";
+import { InGameNav, WatchAdButton, PlayersModal, InfoButton, UniversalGameSetup, type GameStartConfig } from "./shared";
 import { usePlayerSetup } from "@/hooks/usePlayerSetup";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -165,62 +165,37 @@ export default function LyricLegendsGame({ mode = "local" }: { mode?: "local" | 
           {gameState === "setup" && (
             <motion.div
               key="setup"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="pt-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             >
-              {/* Header */}
-              <div className="text-center mb-4">
-                <Link href="/games" className="inline-block mb-3">
-                  <span className="text-white/40 text-sm hover:text-white/60 transition-colors">← Back</span>
-                </Link>
-                <h1 className="font-display font-bold text-2xl text-white">Lyric Legends</h1>
-                <p className="text-white/40 text-sm">Be the fastest to sing a lyric!</p>
-              </div>
-
-              {/* How to Play - Collapsible */}
-              <InfoButton
-                title="How to Play"
-                content="A word will appear on screen. Be the first to sing a real song lyric containing that word to score 10 points! First to 100 points wins."
-                icon={<Mic2 className="w-4 h-4 text-[#FF00FF]" />}
+              <UniversalGameSetup
+                gameName="Lyric Legends"
+                gameId="lyric-legends"
                 accentColor="#FF00FF"
-              />
-
-              {/* Players Button */}
-              <button
-                onClick={() => setShowPlayersModal(true)}
-                className="w-full p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors flex items-center justify-between mb-6"
+                minPlayers={2}
+                maxPlayers={10}
+                showRounds={false}
+                showTimer={false}
+                rulesContent="A word will appear on screen. Be the first to sing a real song lyric containing that word to score 10 points! First to 100 points wins."
+                onStartGame={(config) => {
+                  const gamePlayers: GamePlayer[] = config.players.map(p => ({ 
+                    id: p.id, 
+                    name: p.name, 
+                    score: 0 
+                  }));
+                  setPlayers(gamePlayers);
+                  setSharedPlayers(config.players);
+                  setGameState("ready");
+                }}
               >
-                <div className="flex items-center gap-2">
-                  <Users className="w-4 h-4 text-[#FF00FF]" />
-                  <span className="text-sm text-white font-medium">{sharedPlayers.length} Players</span>
-                </div>
-                <ChevronRight className="w-4 h-4 text-white/30" />
-              </button>
-
-              <div className="mb-6">
                 <WatchAdButton
                   variant="card"
                   label="More Words"
                   description="Unlock +10% more lyric challenges"
                   onReward={() => { }}
                 />
-              </div>
-
-              {/* Start Button */}
-              <motion.button
-                whileTap={{ scale: 0.98 }}
-                onClick={startGame}
-                disabled={!canStart}
-                className="w-full py-4 rounded-xl bg-[#FF00FF] text-white font-display font-bold text-lg disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                Start Game <ChevronRight className="w-5 h-5" />
-              </motion.button>
-
-              {!canStart && (
-                <p className="text-center text-white/30 text-xs mt-2">Need at least 2 players with names</p>
-              )}
+              </UniversalGameSetup>
             </motion.div>
           )}
 

@@ -24,6 +24,7 @@ export function ColorSpectrum({
   disabled = false
 }: ColorSpectrumProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const zoomCanvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 350, height: 350 });
   const [brightness, setBrightness] = useState(0.8);
@@ -98,6 +99,71 @@ export function ColorSpectrum({
     setPendingColor(null);
     setHoverColor(null);
   }, [disabled]);
+
+  // Global touch/mouse move handlers for smooth dragging
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleGlobalMove = (e: TouchEvent | MouseEvent) => {
+      e.preventDefault();
+      const canvas = canvasRef.current;
+      if (!canvas || disabled) return;
+
+      let clientX: number, clientY: number;
+      if ('touches' in e) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+
+      const rect = canvas.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+      const color = getConstrainedColor(x, y);
+      setPendingColor(color);
+    };
+
+    const handleGlobalEnd = (e: TouchEvent | MouseEvent) => {
+      const canvas = canvasRef.current;
+      if (!canvas) {
+        setIsDragging(false);
+        return;
+      }
+
+      let clientX: number, clientY: number;
+      if ('changedTouches' in e) {
+        const touchEvent = e as TouchEvent;
+        clientX = touchEvent.changedTouches[0].clientX;
+        clientY = touchEvent.changedTouches[0].clientY;
+      } else {
+        const mouseEvent = e as MouseEvent;
+        clientX = mouseEvent.clientX;
+        clientY = mouseEvent.clientY;
+      }
+
+      const rect = canvas.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+      const color = getConstrainedColor(x, y);
+      setPendingColor(color);
+      setIsDragging(false);
+    };
+
+    // Add global listeners with passive: false for proper preventDefault
+    document.addEventListener('touchmove', handleGlobalMove, { passive: false });
+    document.addEventListener('touchend', handleGlobalEnd, { passive: false });
+    document.addEventListener('mousemove', handleGlobalMove);
+    document.addEventListener('mouseup', handleGlobalEnd);
+
+    return () => {
+      document.removeEventListener('touchmove', handleGlobalMove);
+      document.removeEventListener('touchend', handleGlobalEnd);
+      document.removeEventListener('mousemove', handleGlobalMove);
+      document.removeEventListener('mouseup', handleGlobalEnd);
+    };
+  }, [isDragging, disabled, getConstrainedColor]);
 
   // Draw main canvas
   useEffect(() => {

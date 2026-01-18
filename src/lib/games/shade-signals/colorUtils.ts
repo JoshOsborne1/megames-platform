@@ -38,9 +38,10 @@ export function rgbToHex(r: number, g: number, b: number): string {
 
 export function generateVibrantColor(): ColorWithPosition {
   const h = Math.random() * 360;
-  const s = 0.3 + Math.random() * 0.7;
-  // Make v compatible with the 0.05 step slider
-  const v = Math.round((0.4 + Math.random() * 0.6) / 0.05) * 0.05;
+  // Higher saturation minimum for more vibrant colors
+  const s = 0.55 + Math.random() * 0.45;
+  // Better value range for visible colors (not too dark, not too washed out)
+  const v = Math.round((0.55 + Math.random() * 0.4) / 0.05) * 0.05;
 
   const hsv: HSVColor = { h, s, v };
   const rgb = hsvToRgb(h, s, v);
@@ -55,11 +56,41 @@ export function generateVibrantColor(): ColorWithPosition {
   };
 }
 
+/**
+ * Generate color options with guaranteed visual distinction
+ * Colors will have at least 60° hue separation for easy differentiation
+ */
 export function generateColorOptions(count: number = 4): ColorWithPosition[] {
   const colors: ColorWithPosition[] = [];
+  const minHueSeparation = 360 / count; // At least 90° apart for 4 colors
+
+  // Start with a random hue
+  const startHue = Math.random() * 360;
+
   for (let i = 0; i < count; i++) {
-    colors.push(generateVibrantColor());
+    // Distribute hues evenly with some randomness
+    const baseHue = (startHue + i * minHueSeparation) % 360;
+    // Add some variation (±15°) to make it less predictable
+    const hueVariation = (Math.random() - 0.5) * 30;
+    const h = (baseHue + hueVariation + 360) % 360;
+
+    // Vary saturation and value for each color
+    const s = 0.6 + Math.random() * 0.35;
+    const v = Math.round((0.55 + Math.random() * 0.4) / 0.05) * 0.05;
+
+    const hsv: HSVColor = { h, s, v };
+    const rgb = hsvToRgb(h, s, v);
+    const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+
+    colors.push({
+      hsv,
+      rgb,
+      hex,
+      x: 0,
+      y: 0,
+    });
   }
+
   return colors;
 }
 

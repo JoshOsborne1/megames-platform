@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { AppShell } from "@/components/AppShell";
 import { QuizProBanner } from "@/components/QuizProBanner";
+import { InstallPrompt } from "@/components/InstallPrompt";
 import {
   Users, ChevronRight, Globe, Gamepad2, Loader2
 } from "lucide-react";
@@ -72,6 +73,9 @@ export default function HomePage() {
 
   return (
     <AppShell>
+      {/* Install Prompt for non-PWA users */}
+      <InstallPrompt />
+
       <div className="min-h-screen pb-24 px-4 pt-6 max-w-md mx-auto">
 
 

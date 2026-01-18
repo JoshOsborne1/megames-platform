@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ColorSpectrum } from "@/components/games/shade-signals/ColorSpectrum";
-import { InGameNav, WatchAdButton, PlayersModal, InfoButton, GameModeSelector } from "@/components/games/shared";
+import { InGameNav, WatchAdButton, PlayersModal, InfoButton, GameModeSelector, Modal } from "@/components/games/shared";
 import { usePlayerSetup } from "@/hooks/usePlayerSetup";
-import { X, Trophy, ArrowRight, Palette, Users, Droplet, ChevronRight, Plus, Minus, Users2, Crown } from "lucide-react";
+import { X, Trophy, ArrowRight, Palette, Users, Droplet, ChevronRight, Plus, Minus, Users2, Crown, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense } from "react";
@@ -82,6 +82,8 @@ function ShadeSignalsContent() {
   const [passPhoneTarget, setPassPhoneTarget] = useState("");
   const [nextAction, setNextAction] = useState<() => void>(() => { });
   const [showPlayersModal, setShowPlayersModal] = useState(false);
+  const [freeRerollsRemaining, setFreeRerollsRemaining] = useState(1);
+  const [adRerollAvailable, setAdRerollAvailable] = useState(true);
 
   const playerCount = sharedPlayers.length;
 
@@ -124,6 +126,23 @@ function ShadeSignalsContent() {
     setTargetColor(null);
     setPlayers(playerList.map(p => ({ ...p, markers: [] })));
     setCurrentGuesserIndex(0);
+    setFreeRerollsRemaining(1); // Reset free reroll for new round
+    setAdRerollAvailable(true);
+  };
+
+  const handleReroll = () => {
+    if (freeRerollsRemaining > 0) {
+      setColorOptions(generateColorOptions(4));
+      setTargetColor(null);
+      setFreeRerollsRemaining(prev => prev - 1);
+    }
+  };
+
+  const handleAdReroll = () => {
+    // This would trigger an ad in production
+    setColorOptions(generateColorOptions(4));
+    setTargetColor(null);
+    setAdRerollAvailable(false);
   };
 
   const triggerPassPhone = (targetName: string, action: () => void) => {
@@ -360,7 +379,33 @@ function ShadeSignalsContent() {
           {/* SIGNAL PICK */}
           {phase === "signal-pick" && (
             <motion.div key="signal-pick" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
-              <h2 className="text-center font-display font-bold text-xl text-white mb-6">Pick your secret color</h2>
+              <h2 className="text-center font-display font-bold text-xl text-white mb-4">Pick your secret color</h2>
+
+              {/* Reroll Buttons */}
+              <div className="flex gap-2 justify-center mb-4">
+                {freeRerollsRemaining > 0 ? (
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleReroll}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 border border-white/20 text-white text-sm font-medium hover:bg-white/20 transition-colors"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Free Reroll ({freeRerollsRemaining})
+                  </motion.button>
+                ) : adRerollAvailable ? (
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleAdReroll}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#8338ec]/30 to-[#ff006e]/30 border border-[#8338ec]/40 text-white text-sm font-medium hover:from-[#8338ec]/40 hover:to-[#ff006e]/40 transition-colors"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Watch Ad to Reroll
+                  </motion.button>
+                ) : (
+                  <span className="text-white/30 text-xs">No rerolls remaining</span>
+                )}
+              </div>
+
               <div className="grid grid-cols-2 gap-3 mb-6">
                 {colorOptions.map((color, i) => (
                   <motion.button key={i} whileTap={{ scale: 0.95 }} onClick={() => setTargetColor(color)} className={`aspect-square rounded-xl border-4 transition-all ${targetColor?.hex === color.hex ? 'border-white scale-105' : 'border-white/20'}`} style={{ backgroundColor: color.hex }} />
@@ -577,67 +622,29 @@ function ShadeSignalsContent() {
       </div>
 
       {/* PASS PHONE MODAL */}
-      <AnimatePresence>
-        {showPassPhone && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50" />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed z-50"
-              style={{
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: 'calc(100% - 2rem)',
-                maxWidth: '24rem',
-              }}
-            >
-              <div className="bg-[#0a0015] border border-[#00FFFF]/30 rounded-2xl p-6 shadow-2xl text-center">
-                <motion.div animate={{ rotateY: [0, 180, 0], x: [-10, 10, -10] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} className="w-16 h-24 mx-auto mb-4 rounded-xl border-4 border-[#00FFFF] bg-white/5" />
-                <h2 className="font-display font-bold text-2xl text-white mb-2">Pass the <span className="text-[#00FFFF]">Phone</span></h2>
-                <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-4">
-                  <p className="text-white/40 text-sm mb-1">Next up:</p>
-                  <p className="font-display font-bold text-2xl text-[#00FFFF]">{passPhoneTarget}</p>
-                </div>
-                <p className="text-white/30 text-xs mb-6">Make sure no one else can see the screen!</p>
-                <motion.button whileTap={{ scale: 0.98 }} onClick={() => { setShowPassPhone(false); nextAction(); }} className="w-full py-4 rounded-xl bg-[#00FFFF] text-black font-display font-bold flex items-center justify-center gap-2">I'm Ready <ArrowRight className="w-5 h-5" /></motion.button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      <Modal isOpen={showPassPhone} onClose={() => { setShowPassPhone(false); nextAction(); }} closeOnBackdropClick={false}>
+        <div className="p-6 text-center border border-[#00FFFF]/30 rounded-2xl">
+          <motion.div animate={{ rotateY: [0, 180, 0], x: [-10, 10, -10] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} className="w-16 h-24 mx-auto mb-4 rounded-xl border-4 border-[#00FFFF] bg-white/5" />
+          <h2 className="font-display font-bold text-2xl text-white mb-2">Pass the <span className="text-[#00FFFF]">Phone</span></h2>
+          <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-4">
+            <p className="text-white/40 text-sm mb-1">Next up:</p>
+            <p className="font-display font-bold text-2xl text-[#00FFFF]">{passPhoneTarget}</p>
+          </div>
+          <p className="text-white/30 text-xs mb-6">Make sure no one else can see the screen!</p>
+          <motion.button whileTap={{ scale: 0.98 }} onClick={() => { setShowPassPhone(false); nextAction(); }} className="w-full py-4 rounded-xl bg-[#00FFFF] text-black font-display font-bold flex items-center justify-center gap-2">I'm Ready <ArrowRight className="w-5 h-5" /></motion.button>
+        </div>
+      </Modal>
 
       {/* ERROR MODAL */}
-      <AnimatePresence>
-        {errorMessage && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setErrorMessage(null)} className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50" />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="fixed z-50"
-              style={{
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-                width: 'calc(100% - 2rem)',
-                maxWidth: '24rem',
-              }}
-            >
-              <div className="bg-[#0a0015] border border-[#ff006e]/30 rounded-2xl p-5">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg bg-[#ff006e]/20 flex items-center justify-center"><X className="w-5 h-5 text-[#ff006e]" /></div>
-                  <div><h3 className="font-display font-bold text-white">Oops!</h3><p className="text-white/60 text-sm">{errorMessage}</p></div>
-                </div>
-                <button onClick={() => setErrorMessage(null)} className="w-full py-3 rounded-xl bg-[#ff006e] text-white font-bold">Got it</button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      <Modal isOpen={!!errorMessage} onClose={() => setErrorMessage(null)}>
+        <div className="p-5 border border-[#ff006e]/30 rounded-2xl">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-lg bg-[#ff006e]/20 flex items-center justify-center"><X className="w-5 h-5 text-[#ff006e]" /></div>
+            <div><h3 className="font-display font-bold text-white">Oops!</h3><p className="text-white/60 text-sm">{errorMessage}</p></div>
+          </div>
+          <button onClick={() => setErrorMessage(null)} className="w-full py-3 rounded-xl bg-[#ff006e] text-white font-bold">Got it</button>
+        </div>
+      </Modal>
     </div>
   );
 }

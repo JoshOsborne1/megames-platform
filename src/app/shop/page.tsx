@@ -4,9 +4,10 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AppShell } from "@/components/AppShell";
 import { SUBSCRIPTION_PLANS, ONE_TIME_PASSES } from "@/lib/subscription";
+import { redirectToCheckout, isSubscription } from "@/lib/stripe";
 import {
     Crown, Zap, Check, Sparkles, Users, Palette,
-    Music, Layers, HelpCircle, Globe
+    Music, Layers, HelpCircle, Globe, Loader2
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -24,10 +25,22 @@ export default function ShopPage() {
     const [selectedCategory, setSelectedCategory] = useState<"pro" | "passes">("pro");
     const [selectedPlanIndex, setSelectedPlanIndex] = useState(1); // Default to Monthly (highlighted)
     const [selectedPassIndex, setSelectedPassIndex] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleSubscribe = (planId: string) => {
+    const handleSubscribe = async (planId: string) => {
+        setIsLoading(true);
         toast.info("Connecting to secure checkout...");
+        
+        try {
+            const mode = isSubscription(planId) ? 'subscription' : 'payment';
+            await redirectToCheckout(planId, mode);
+        } catch (error) {
+            console.error('Checkout error:', error);
+            toast.error(error instanceof Error ? error.message : "Failed to start checkout. Please try again.");
+            setIsLoading(false);
+        }
     };
+
 
     const currentPlan = SUBSCRIPTION_PLANS[selectedPlanIndex];
     const currentPass = ONE_TIME_PASSES[selectedPassIndex];
@@ -52,7 +65,7 @@ export default function ShopPage() {
                                 }`}
                         >
                             <Crown className="w-3.5 h-3.5" />
-                            GamePro
+                            PartyPro
                         </button>
                         <button
                             onClick={() => setSelectedCategory("passes")}
@@ -92,7 +105,8 @@ export default function ShopPage() {
                                                 <Crown className="w-5 h-5 text-black" />
                                             </div>
                                             <div>
-                                                <h2 className="font-display font-bold text-lg text-white">GamePro</h2>
+                                                <h2 className="font-display font-bold text-lg text-white">PartyPro</h2>
+                                                <p className="text-white/40 text-[10px]">{currentPlan.description}</p>
                                             </div>
                                         </div>
                                         <div className="text-right">
@@ -161,11 +175,16 @@ export default function ShopPage() {
                                     <motion.button
                                         whileTap={{ scale: 0.98 }}
                                         onClick={() => handleSubscribe(currentPlan.id)}
-                                        className="w-full py-3 rounded-xl font-display font-bold text-sm uppercase tracking-wider bg-gradient-to-r from-[#FFD700] to-[#ff006e] text-black flex items-center justify-center gap-2"
+                                        disabled={isLoading}
+                                        className="w-full py-3 rounded-xl font-display font-bold text-sm uppercase tracking-wider bg-gradient-to-r from-[#FFD700] to-[#ff006e] text-black flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                                         style={{ boxShadow: "0 0 20px rgba(255, 215, 0, 0.25)" }}
                                     >
-                                        <Sparkles className="w-4 h-4" />
-                                        Subscribe Now
+                                        {isLoading ? (
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                        ) : (
+                                            <Sparkles className="w-4 h-4" />
+                                        )}
+                                        {isLoading ? "Processing..." : "Subscribe Now"}
                                     </motion.button>
                                 </div>
                             </motion.div>
@@ -221,7 +240,7 @@ export default function ShopPage() {
                                                     : "text-white/50 hover:text-white"
                                                     }`}
                                             >
-                                                {pass.label.replace("GameNight - ", "")}
+                                                {pass.label.replace("PartyPack - ", "")}
                                             </button>
                                         ))}
                                     </div>
@@ -245,7 +264,7 @@ export default function ShopPage() {
                                     <div className="p-2 rounded-lg bg-[#ff006e]/10 border border-[#ff006e]/20 mb-4">
                                         <p className="text-[#ff006e] text-[10px]">
                                             <span className="font-bold">Perfect for: </span>
-                                            {currentPass.id === "gamenight_mega"
+                                            {currentPass.id === "partypack_party"
                                                 ? "Large parties & house parties"
                                                 : "Family game nights & casual gatherings"
                                             }
@@ -256,11 +275,16 @@ export default function ShopPage() {
                                     <motion.button
                                         whileTap={{ scale: 0.98 }}
                                         onClick={() => handleSubscribe(currentPass.id)}
-                                        className="w-full py-3 rounded-xl font-display font-bold text-sm uppercase tracking-wider bg-gradient-to-r from-[#ff006e] to-[#8338ec] text-white flex items-center justify-center gap-2"
+                                        disabled={isLoading}
+                                        className="w-full py-3 rounded-xl font-display font-bold text-sm uppercase tracking-wider bg-gradient-to-r from-[#ff006e] to-[#8338ec] text-white flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                                         style={{ boxShadow: "0 0 20px rgba(255, 0, 110, 0.25)" }}
                                     >
-                                        <Zap className="w-4 h-4" />
-                                        Get Pass
+                                        {isLoading ? (
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                        ) : (
+                                            <Zap className="w-4 h-4" />
+                                        )}
+                                        {isLoading ? "Processing..." : "Get Pass"}
                                     </motion.button>
                                 </div>
                             </motion.div>
