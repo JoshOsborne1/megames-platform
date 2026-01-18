@@ -128,8 +128,8 @@ export default function ProfilePage() {
         if (error) throw error;
         toast.success("Account created! Please check your email.");
       }
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error) {
+      toast.error((error as Error).message);
     } finally {
       setAuthLoading(false);
     }

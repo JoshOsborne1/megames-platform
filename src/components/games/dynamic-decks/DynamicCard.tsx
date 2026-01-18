@@ -56,7 +56,7 @@ export function DynamicCard({ card, difficulty, deckId = "classic" }: DynamicCar
               <span className="font-display font-bold" style={{ color: colors.primary }}>{actualPoints}pts</span>
             </div>
           </div>
-          <p className="text-white text-center text-lg leading-relaxed py-3">"{card.clue}"</p>
+          <p className="text-white text-center text-lg leading-relaxed py-3">&quot;{card.clue}&quot;</p>
           <p className="text-center text-[10px] text-white/40 uppercase tracking-wider">Read this clue to the guessers</p>
         </div>
 
@@ -67,7 +67,7 @@ export function DynamicCard({ card, difficulty, deckId = "classic" }: DynamicCar
               <Sparkles className="w-4 h-4" />
               <span className="text-[10px] font-medium uppercase tracking-wider">The Answer</span>
             </div>
-            <span className="text-[10px] text-[#ff006e] bg-[#ff006e]/10 px-2 py-0.5 rounded uppercase">Don't Say!</span>
+            <span className="text-[10px] text-[#ff006e] bg-[#ff006e]/10 px-2 py-0.5 rounded uppercase">Don&apos;t Say!</span>
           </div>
           <motion.div
             initial={{ scale: 0.95 }}
@@ -76,7 +76,7 @@ export function DynamicCard({ card, difficulty, deckId = "classic" }: DynamicCar
           >
             <p className="font-display font-bold text-[#8338ec] text-xl text-center uppercase">{card.answer}</p>
           </motion.div>
-          <p className="text-center text-[10px] text-white/30 mt-3 italic">This is what they're trying to guess</p>
+          <p className="text-center text-[10px] text-white/30 mt-3 italic">This is what they&apos;re trying to guess</p>
         </div>
       </motion.div>
     );
@@ -125,6 +125,8 @@ export function DynamicCard({ card, difficulty, deckId = "classic" }: DynamicCar
             <motion.div
               key={i}
               initial={{ opacity: 0, x: -5 }}
+              // Sorry, we haven't added help content for this mode yet!
+              // Double check the implementation plan or ask the developer.
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.05 }}
               className="py-2 px-3 bg-[#ff006e]/10 border border-[#ff006e]/20 rounded-lg text-[#ff006e] text-sm font-medium text-center uppercase"

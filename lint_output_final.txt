@@ -1,0 +1,207 @@
+﻿
+> nextjs-new@0.1.0 lint
+> eslint
+
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\next.config.ts
+  2:8  warning  'path' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\app\admin\page.tsx
+   15:5   warning  'Check' is defined but never used                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   17:5   warning  'ChevronRight' is defined but never used                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   18:5   warning  'AlertTriangle' is defined but never used                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+  265:41  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\app\api\checkout\route.ts
+  18:25  warning  'mode' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\app\dev\multiplayer\page.tsx
+    5:26  warning  'RoomPlayer' is defined but never used  @typescript-eslint/no-unused-vars
+  118:39  warning  'data' is defined but never used        @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\app\games\[id]\page.tsx
+  9:24  warning  'Star' is defined but never used        @typescript-eslint/no-unused-vars
+  9:38  warning  'Play' is defined but never used        @typescript-eslint/no-unused-vars
+  9:44  warning  'Plus' is defined but never used        @typescript-eslint/no-unused-vars
+  9:61  warning  'Layers' is defined but never used      @typescript-eslint/no-unused-vars
+  9:69  warning  'Brain' is defined but never used       @typescript-eslint/no-unused-vars
+  9:76  warning  'Swords' is defined but never used      @typescript-eslint/no-unused-vars
+  9:84  warning  'HelpCircle' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\app\games\page.tsx
+  18:9   warning  'mode' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  19:10  warning  'user' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\app\games\shade-signals\page.tsx
+   79:10   warning  'showTarget' is assigned a value but never used                  @typescript-eslint/no-unused-vars
+  119:45   warning  'sigIdx' is assigned a value but never used                      @typescript-eslint/no-unused-vars
+  460:100  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  634:234  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\app\hidden\page.tsx
+    6:10  warning  'Lock' is defined but never used                                 @typescript-eslint/no-unused-vars
+    6:16  warning  'ChevronRight' is defined but never used                         @typescript-eslint/no-unused-vars
+    6:30  warning  'CheckCircle2' is defined but never used                         @typescript-eslint/no-unused-vars
+   76:9   warning  'finalCode' is assigned a value but never used                   @typescript-eslint/no-unused-vars
+  168:22  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  204:17  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  204:58  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\app\lobbies\[code]\page.tsx
+  3:20  warning  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\app\lobbies\create\page.tsx
+  13:18  warning  'Brain' is defined but never used   @typescript-eslint/no-unused-vars
+  13:25  warning  'Swords' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\app\multiplayer\page.tsx
+  14:64  warning  'X' is defined but never used                                                                              @typescript-eslint/no-unused-vars
+  60:8   warning  React Hook useEffect has a missing dependency: 'router'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\app\page.tsx
+  58:9  warning  'username' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\app\profile\page.tsx
+    9:10  warning  'AnimatedBackground' is defined but never used                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   13:28  warning  'ArrowLeft' is defined but never used                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+  131:21  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  347:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\AppHeader.tsx
+  107:37  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\CTASection.tsx
+  5:20  warning  'Zap' is defined but never used         @typescript-eslint/no-unused-vars
+  5:25  warning  'Play' is defined but never used        @typescript-eslint/no-unused-vars
+  5:31  warning  'ArrowRight' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\Footer.tsx
+  6:54  warning  'Sparkles' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\GamesGrid.tsx
+    5:29  warning  'MessageCircle' is defined but never used                        @typescript-eslint/no-unused-vars
+  104:65  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\Header.tsx
+  167:27  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\HeroSection.tsx
+  5:10  warning  'Sparkles' is defined but never used  @typescript-eslint/no-unused-vars
+  5:20  warning  'Users' is defined but never used     @typescript-eslint/no-unused-vars
+  5:32  warning  'Gamepad2' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\QuickPlaySection.tsx
+  6:10  warning  'Button' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\RoomBanner.tsx
+   6:17  warning  'Copy' is defined but never used             @typescript-eslint/no-unused-vars
+  14:12  warning  'copied' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\challenges\ChallengeFour.tsx
+    4:18  warning  'AnimatePresence' is defined but never used                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   39:9   warning  'gridRef' is assigned a value but never used                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+  162:9   warning  The 'handlePointerUp' function makes the dependencies of useEffect Hook (at line 193) change on every render. Move it inside the useEffect callback. Alternatively, wrap the definition of 'handlePointerUp' in its own useCallback() Hook  react-hooks/exhaustive-deps
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\challenges\ChallengeOne.tsx
+  12:44  warning  'completedAnswers' is defined but never used                     @typescript-eslint/no-unused-vars
+  47:21  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  48:68  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\challenges\ChallengeThree.tsx
+   21:9   error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+   72:19  error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  263:66  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\challenges\ChallengeTwo.tsx
+  23:9  error  'currentTiles' is never reassigned. Use 'const' instead  prefer-const
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\games\LyricLegends.tsx
+    5:50  warning  'Users' is defined but never used                                                                              @typescript-eslint/no-unused-vars
+    7:50  warning  'InfoButton' is defined but never used                                                                         @typescript-eslint/no-unused-vars
+    7:87  warning  'GameStartConfig' is defined but never used                                                                    @typescript-eslint/no-unused-vars
+   10:8   warning  'Link' is defined but never used                                                                               @typescript-eslint/no-unused-vars
+   45:5   warning  'canStart' is assigned a value but never used                                                                  @typescript-eslint/no-unused-vars
+   84:9   warning  'startGame' is assigned a value but never used                                                                 @typescript-eslint/no-unused-vars
+  110:6   warning  React Hook useEffect has a missing dependency: 'getNewWord'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\games\dynamic-decks\DynamicCard.tsx
+   59:78   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   59:90   error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+   70:107  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   79:93   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  121:81   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\games\dynamic-decks\DynamicDecksHub.tsx
+   21:10  warning  'Timer' is defined but never used                 @typescript-eslint/no-unused-vars
+  104:9   warning  'handleLeave' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\games\quiz-quarter\QuestionCard.tsx
+  4:30  warning  'Play' is defined but never used         @typescript-eslint/no-unused-vars
+  5:38  warning  'GAME_CONFIG' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\games\quiz-quarter\QuizGameSetup.tsx
+  33:42  warning  'onBack' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\games\quiz-quarter\QuizQuarterHub.tsx
+    5:17  warning  'Infinity' is defined but never used                                                                          @typescript-eslint/no-unused-vars
+   34:34  warning  'mode' is assigned a value but never used                                                                     @typescript-eslint/no-unused-vars
+  111:8   warning  React Hook useEffect has a missing dependency: 'gameState'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\games\shade-signals\ColorSpectrum.tsx
+   27:9   warning  'containerRef' is assigned a value but never used                                                                                                         @typescript-eslint/no-unused-vars
+   96:6   warning  React Hook useEffect has missing dependencies: 'getConstrainedColor', 'pendingColor', and 'showZoom'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  233:15  error    's' is never reassigned. Use 'const' instead                                                                                                              prefer-const
+  298:11  error    'newS' is never reassigned. Use 'const' instead                                                                                                           prefer-const
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\games\shared\InGameNav.tsx
+  7:8  warning  'Link' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\games\shared\UniversalGameSetup.tsx
+   8:40  warning  'STANDARD_GAME_MODES' is defined but never used  @typescript-eslint/no-unused-vars
+  62:3   warning  'gameId' is defined but never used               @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\components\shop\PlanCard.tsx
+  4:27  warning  'Star' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\context\RoomContext.tsx
+  3:37  warning  'useState' is defined but never used    @typescript-eslint/no-unused-vars
+  3:47  warning  'useEffect' is defined but never used   @typescript-eslint/no-unused-vars
+  5:30  warning  'Room' is defined but never used        @typescript-eslint/no-unused-vars
+  5:36  warning  'RoomPlayer' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\hooks\use-fullscreen.ts
+  32:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  33:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  34:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  35:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  36:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  37:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  42:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  43:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  44:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  45:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  46:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  47:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\hooks\useMultiplayerRoom.ts
+  58:8  warning  React Hook useEffect has a missing dependency: 'supabase.auth'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\lib\games\dynamic-decks\gameLogic.ts
+    1:50  warning  'DYNAMIC_CARDS' is defined but never used  @typescript-eslint/no-unused-vars
+  101:69  warning  'deckId' is defined but never used         @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\lib\games\quiz-quarter\data.ts
+  2:40  warning  'Deck' is defined but never used  @typescript-eslint/no-unused-vars
+  2:46  warning  'Pack' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\JT_Os\.gemini\antigravity\playground\partypack\src\lib\games\quiz-quarter\gameLogic.ts
+   5:5   warning  'GamePhase' is defined but never used                 @typescript-eslint/no-unused-vars
+  10:5   warning  'Difficulty' is defined but never used                @typescript-eslint/no-unused-vars
+  11:5   warning  'MixedDifficulty' is defined but never used           @typescript-eslint/no-unused-vars
+  15:5   warning  'GAME_CONFIG' is defined but never used               @typescript-eslint/no-unused-vars
+  17:10  warning  'ALL_QUESTIONS' is defined but never used             @typescript-eslint/no-unused-vars
+  17:45  warning  'getQuestionsByDifficulty' is defined but never used  @typescript-eslint/no-unused-vars
+
+Ô£û 117 problems (32 errors, 85 warnings)
+  3 errors and 0 warnings potentially fixable with the `--fix` option.
+

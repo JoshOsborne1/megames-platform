@@ -20,7 +20,7 @@ export function ChallengeTwo({ onComplete }: ChallengeTwoProps) {
 
   const initPuzzle = useCallback(() => {
     const newTiles = Array.from({ length: TILE_COUNT }, (_, i) => i + 1);
-    let currentTiles = [...newTiles];
+    const currentTiles = [...newTiles];
     let emptyIndex = TILE_COUNT - 1;
 
     // Shuffle with valid moves to ensure solvability

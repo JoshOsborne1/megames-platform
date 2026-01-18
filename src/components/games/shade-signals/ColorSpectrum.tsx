@@ -109,14 +109,8 @@ export function ColorSpectrum({
       const canvas = canvasRef.current;
       if (!canvas || disabled) return;
 
-      let clientX: number, clientY: number;
-      if ('touches' in e) {
-        clientX = e.touches[0].clientX;
-        clientY = e.touches[0].clientY;
-      } else {
-        clientX = e.clientX;
-        clientY = e.clientY;
-      }
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
 
       const rect = canvas.getBoundingClientRect();
       const x = clientX - rect.left;
@@ -263,15 +257,8 @@ export function ColorSpectrum({
     if (!canvas) return;
 
     const rect = canvas.getBoundingClientRect();
-    let clientX: number, clientY: number;
-
-    if ('touches' in e) {
-      clientX = e.touches[0]?.clientX || e.changedTouches[0]?.clientX;
-      clientY = e.touches[0]?.clientY || e.changedTouches[0]?.clientY;
-    } else {
-      clientX = e.clientX;
-      clientY = e.clientY;
-    }
+    const clientX = 'touches' in e ? (e.touches[0]?.clientX || e.changedTouches[0]?.clientX) : e.clientX;
+    const clientY = 'touches' in e ? (e.touches[0]?.clientY || e.changedTouches[0]?.clientY) : e.clientY;
 
     const x = clientX - rect.left;
     const y = clientY - rect.top;

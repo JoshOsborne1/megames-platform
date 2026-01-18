@@ -200,10 +200,8 @@ export default function HiddenPage() {
               <h2 className="font-display text-3xl font-bold text-white mb-2 text-center">
                 Merry Christmas, you&apos;re in!
               </h2>
-              <p className="text-[#fb00ff] font-bold mb-4 text-center px-4 uppercase tracking-wider">
-                "No shortcuts, here&apos;s the real code!"
-              </p>
-              <p className="text-gray-400 mb-8 text-center px-4">Here is your special security code:</p>
+              <p className="text-red-400">Error: &quot;Progress&quot; deleted successfully.</p>
+            <p className="text-gray-500 text-sm mt-2">Wait, was that important? Oops. &quot;Restoring&quot;... failed.</p>
               <div className="text-6xl font-pixel tracking-wider text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] px-8 py-4 rounded-2xl bg-white/5 border-2 border-white/20 relative mb-12">
                 <div className="relative z-10">2437</div>
               </div>

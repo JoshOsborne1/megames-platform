@@ -2,13 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { STRIPE_PRICE_IDS, isSubscription } from '@/lib/stripe';
 
-// Initialize Stripe with secret key (server-side only)
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-    apiVersion: '2025-12-15.clover',
-});
+// Initialize Stripe lazily to avoid build errors if env vars are missing
+const getStripe = () => {
+    if (!process.env.STRIPE_SECRET_KEY) {
+        throw new Error('STRIPE_SECRET_KEY is missing. Please set it in your environment variables.');
+    }
+    return new Stripe(process.env.STRIPE_SECRET_KEY, {
+        apiVersion: '2025-12-15.clover',
+    });
+};
 
 export async function POST(request: NextRequest) {
     try {
+        const stripe = getStripe();
         const { planId, mode } = await request.json();
 
         if (!planId) {

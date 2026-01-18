@@ -18,7 +18,7 @@ import {
 
 interface Card {
   id: number;
-  icon: any;
+  icon: React.ElementType;
   value: string;
   isFlipped: boolean;
   isMatched: boolean;

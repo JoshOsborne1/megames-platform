@@ -1,0 +1,94 @@
+﻿
+> nextjs-new@0.1.0 lint
+> eslint
+
+node.exe : 
+At line:1 char:1
++ & "E:\Program Files\
+nodejs/node.exe" "C:\U
+sers\JT_Os\AppData\Roa
+ming\ ...
++ ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: (:String) [   
+ ], RemoteExceptio    
+n
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+Oops! Something went 
+wrong! :(
+
+ESLint: 9.39.2
+
+TypeError: nextVitals 
+is not iterable
+    at file:///C:/User
+s/JT_Os/.gemini/antigr
+avity/playground/party
+pack/eslint.config.mjs
+?mtime=1768704369717:6
+:6
+    at ModuleJob.run (
+node:internal/modules/
+esm/module_job:377:25)
+    at async onImport.
+tracePromise.__proto__
+ (node:internal/module
+s/esm/loader:671:26)
+    at async 
+dynamicImportConfig (C
+:\Users\JT_Os\.gemini\
+antigravity\playground
+\partypack\node_module
+s\eslint\lib\config\co
+nfig-loader.js:186:17)
+    at async 
+loadConfigFile (C:\Use
+rs\JT_Os\.gemini\antig
+ravity\playground\part
+ypack\node_modules\esl
+int\lib\config\config-
+loader.js:276:9)
+    at async ConfigLoa
+der.calculateConfigArr
+ay (C:\Users\JT_Os\.ge
+mini\antigravity\playg
+round\partypack\node_m
+odules\eslint\lib\conf
+ig\config-loader.js:58
+9:23)
+    at async 
+#calculateConfigArray 
+(C:\Users\JT_Os\.gemin
+i\antigravity\playgrou
+nd\partypack\node_modu
+les\eslint\lib\config\
+config-loader.js:743:2
+3)
+    at async 
+directoryFilter (C:\Us
+ers\JT_Os\.gemini\anti
+gravity\playground\par
+typack\node_modules\es
+lint\lib\eslint\eslint
+-helpers.js:309:5)
+    at async 
+NodeHfs.<anonymous> (f
+ile:///C:/Users/JT_Os/
+.gemini/antigravity/pl
+ayground/partypack/nod
+e_modules/@humanfs/cor
+e/src/hfs.js:586:29)
+    at async 
+NodeHfs.walk (file:///
+C:/Users/JT_Os/.gemini
+/antigravity/playgroun
+d/partypack/node_modul
+es/@humanfs/core/src/h
+fs.js:614:3)

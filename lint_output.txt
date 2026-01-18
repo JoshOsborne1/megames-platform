@@ -1,0 +1,69 @@
+﻿
+> nextjs-new@0.1.0 lint
+> eslint
+
+node.exe : 
+At line:1 char:1
++ & "E:\Program Files\
+nodejs/node.exe" "C:\U
+sers\JT_Os\AppData\Roa
+ming\ ...
++ ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: (:String) [   
+ ], RemoteExceptio    
+n
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+Oops! Something went 
+wrong! :(
+
+ESLint: 9.39.2
+
+Error [ERR_MODULE_NOT_
+FOUND]: Cannot find 
+module 'C:\Users\JT_Os
+\.gemini\antigravity\p
+layground\partypack\no
+de_modules\eslint-conf
+ig-next\core-web-vital
+s' imported from C:\Us
+ers\JT_Os\.gemini\anti
+gravity\playground\par
+typack\eslint.config.m
+js
+Did you mean to 
+import "eslint-config-
+next/core-web-vitals.j
+s"?
+    at 
+finalizeResolution (no
+de:internal/modules/es
+m/resolve:274:11)
+    at moduleResolve (
+node:internal/modules/
+esm/resolve:864:10)
+    at defaultResolve 
+(node:internal/modules
+/esm/resolve:990:11)
+    at 
+#cachedDefaultResolve 
+(node:internal/modules
+/esm/loader:737:20)
+    at 
+ModuleLoader.resolve (
+node:internal/modules/
+esm/loader:714:38)
+    at ModuleLoader.ge
+tModuleJobForImport (n
+ode:internal/modules/e
+sm/loader:293:38)
+    at #link (node:int
+ernal/modules/esm/modu
+le_job:208:49)

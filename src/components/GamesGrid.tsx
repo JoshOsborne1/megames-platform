@@ -101,7 +101,7 @@ export function GamesGrid() {
             className="text-base md:text-xl lg:text-2xl max-w-3xl mx-auto font-space font-medium px-4 opacity-80"
           >
             From quick card games to epic strategy battles -{" "}
-            <span className="text-gradient-neon font-bold">there's something for everyone</span>
+            <span className="text-gradient-neon font-bold">there&apos;s something for everyone</span>
           </motion.p>
         </motion.div>
 
