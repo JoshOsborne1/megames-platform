@@ -2,10 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
 
-// Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-    apiVersion: '2025-12-15.clover',
-});
+// Initialize Stripe lazily
+const getStripe = () => {
+    if (!process.env.STRIPE_SECRET_KEY) {
+        throw new Error('STRIPE_SECRET_KEY is missing. Please set it in your environment variables.');
+    }
+    return new Stripe(process.env.STRIPE_SECRET_KEY, {
+        apiVersion: '2025-12-15.clover',
+    });
+};
 
 // Initialize Supabase with service role for webhook operations
 const supabase = createClient(
@@ -26,6 +31,7 @@ export async function POST(request: NextRequest) {
     let event: Stripe.Event;
 
     try {
+        const stripe = getStripe();
         event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (err) {
         console.error('Webhook signature verification failed:', err);
@@ -90,6 +96,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
 
     // For one-time payments (day passes)
     if (session.mode === 'payment' && session.payment_intent) {
+        const stripe = getStripe();
         const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent as string);
         
         // Extract plan ID from metadata or line items
