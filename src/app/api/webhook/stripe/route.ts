@@ -12,11 +12,17 @@ const getStripe = () => {
     });
 };
 
-// Initialize Supabase with service role for webhook operations
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-);
+// Initialize Supabase lazily with service role
+const getSupabase = () => {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseKey) {
+        throw new Error('Supabase URL and Key must be defined');
+    }
+
+    return createClient(supabaseUrl, supabaseKey);
+};
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
 
@@ -113,6 +119,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
         const expiresAt = new Date();
         expiresAt.setHours(expiresAt.getHours() + 24);
 
+        const supabase = getSupabase();
         await supabase.from('one_time_purchases').insert({
             stripe_payment_intent_id: paymentIntent.id,
             stripe_customer_id: customerId,
@@ -149,6 +156,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     };
 
     // Upsert subscription record
+    const supabase = getSupabase();
     const { error } = await supabase
         .from('subscriptions')
         .upsert(subscriptionData, {
@@ -164,6 +172,7 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
+    const supabase = getSupabase();
     const { error } = await supabase
         .from('subscriptions')
         .update({ status: 'canceled' })
