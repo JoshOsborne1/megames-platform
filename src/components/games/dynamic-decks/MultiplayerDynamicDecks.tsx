@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { GameState, Difficulty, GameMode } from "@/lib/games/dynamic-decks/types";
@@ -47,7 +47,7 @@ export function MultiplayerDynamicDecks({
   gameMode = "question-master" // Default to QM mode for multiplayer
 }: MultiplayerDynamicDecksProps) {
   const router = useRouter();
-  const { room } = useRoom();
+  const { room, setReady } = useRoom();
   const { setFullscreen } = useAppShell();
   const supabase = createClient();
   
@@ -56,6 +56,13 @@ export function MultiplayerDynamicDecks({
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("easy");
   const [channel, setChannel] = useState<RealtimeChannel | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Use ref for game state to access it in event listeners without re-subscribing
+  const gameStateRef = useRef<GameState | null>(null);
+  
+  useEffect(() => {
+    gameStateRef.current = gameState;
+  }, [gameState]);
   
   // Get current user
   useEffect(() => {
@@ -87,21 +94,49 @@ export function MultiplayerDynamicDecks({
   useEffect(() => {
     if (!roomCode) return;
     
-    const gameChannel = supabase
-      .channel(`game:${roomCode}`)
+    // Define channel but don't subscribe yet in chain to allow saving reference
+    const gameChannel = supabase.channel(`game:${roomCode}`);
+    
+    gameChannel
       .on("broadcast", { event: "game_state" }, ({ payload }: { payload: { gameState: GameState } }) => {
+        console.log("Received game state update:", payload.gameState.phase);
         if (payload.gameState) {
           setGameState(payload.gameState);
         }
       })
-      .subscribe();
+      .on("broadcast", { event: "request_state" }, () => {
+        // If we are host and have a game state, broadcast it
+        // Use ref to avoid re-subscribing when state changes
+        if (isHost && gameStateRef.current) {
+          console.log("Received state request, broadcasting current state");
+          gameChannel.send({
+            type: "broadcast",
+            event: "game_state",
+            payload: { gameState: gameStateRef.current },
+          });
+        }
+      })
+      .subscribe((status: string) => {
+        if (status === "SUBSCRIBED") {
+          console.log("Channel subscribed");
+          // If we're not host, ask for current state immediately
+          if (!isHost) {
+            console.log("Requesting initial game state");
+            gameChannel.send({
+              type: "broadcast",
+              event: "request_state",
+              payload: {},
+            });
+          }
+        }
+      });
     
     setChannel(gameChannel);
     
     return () => {
       supabase.removeChannel(gameChannel);
     };
-  }, [roomCode, supabase]);
+  }, [roomCode, supabase, isHost]); // Removed gameState from deps
   
   // Broadcast game state when it changes (host only)
   const broadcastState = useCallback((state: GameState) => {
@@ -237,12 +272,38 @@ export function MultiplayerDynamicDecks({
                     {player.name.charAt(0).toUpperCase()}
                   </div>
                   <span className="text-white font-medium">{player.name}</span>
+                  {player.isReady && (
+                    <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase">
+                      Ready
+                    </span>
+                  )}
                 </div>
                 {player.isHost && <Crown className="w-4 h-4 text-amber-400" />}
               </div>
             ))}
           </div>
         </div>
+
+        {/* Ready Up Button (Non-Host) */}
+        {!isHost && (
+          <motion.button
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setReady(!room.players.find(p => p.id === user?.id)?.isReady)}
+            className={`w-full py-4 rounded-xl font-display font-bold text-lg mb-6 flex items-center justify-center gap-2 transition-colors ${
+              room.players.find(p => p.id === user?.id)?.isReady
+                ? 'bg-emerald-500 text-white'
+                : 'bg-white/10 text-white/60 hover:bg-white/20'
+            }`}
+          >
+            {room.players.find(p => p.id === user?.id)?.isReady ? (
+              <>
+                <Check className="w-5 h-5" /> Ready!
+              </>
+            ) : (
+              "Ready Up"
+            )}
+          </motion.button>
+        )}
         
         {/* Deck selection info */}
         <div className="p-4 rounded-xl bg-neon-pink/10 border border-neon-pink/30 mb-6">

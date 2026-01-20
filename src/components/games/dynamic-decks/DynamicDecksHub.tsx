@@ -11,8 +11,10 @@ import {
   handlePass,
   startNextTurn,
   endTurn,
+  INITIAL_TIMER,
 } from "@/lib/games/dynamic-decks/gameLogic";
 
+import { RoundHistory } from "./RoundHistory";
 import { DynamicCard } from "./DynamicCard";
 import { GameSetup } from "./GameSetup";
 import { MultiplayerDynamicDecks } from "./MultiplayerDynamicDecks";
@@ -57,10 +59,11 @@ export function DynamicDecksHub({ mode = "local" }: { mode?: "local" | "online" 
     const stateWithCard = drawNextCard({
       ...stateWithDifficulty,
       phase: "playing",
-      timer: 60,
+      timer: INITIAL_TIMER,
       skipsUsed: 0,
       roundScore: 0,
-      cardsInRound: 0
+      cardsInRound: 0,
+      roundHistory: [],
     }, true);
     setGameState(stateWithCard);
   };
@@ -351,8 +354,14 @@ export function DynamicDecksHub({ mode = "local" }: { mode?: "local" | "online" 
               <p className="text-white/40 text-sm">{isQMMode ? 'Check the leaderboard' : `${guesser.name}'s turn complete`}</p>
             </div>
 
+            {/* Round History */}
+            <RoundHistory 
+              history={gameState.roundHistory} 
+              roundNumber={gameState.currentRound}
+            />
+
             {/* Leaderboard */}
-            <div className="p-4 rounded-xl bg-white/5 border border-white/10 mb-6">
+            <div className="mt-4 p-4 rounded-xl bg-white/5 border border-white/10 mb-6">
               <div className="flex items-center gap-2 text-white/40 mb-3">
                 <Trophy className="w-4 h-4" />
                 <span className="text-xs font-medium uppercase tracking-wider">Leaderboard</span>
