@@ -1,0 +1,24 @@
+﻿src/app/games/page.tsx(24,45): error TS7031: Binding element 'user' implicitly has an 'any' type.
+src/app/lobbies/page.tsx(64,40): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/app/lobbies/page.tsx(70,54): error TS7006: Parameter 'p' implicitly has an 'any' type.
+src/app/lobbies/page.tsx(72,71): error TS7006: Parameter 'room' implicitly has an 'any' type.
+src/app/multiplayer/page.tsx(53,49): error TS7031: Binding element 'user' implicitly has an 'any' type.
+src/app/page.tsx(28,45): error TS7031: Binding element 'user' implicitly has an 'any' type.
+src/app/page.tsx(37,20): error TS7031: Binding element 'data' implicitly has an 'any' type.
+src/app/page.tsx(43,73): error TS7006: Parameter '_event' implicitly has an 'any' type.
+src/app/page.tsx(43,81): error TS7006: Parameter 'session' implicitly has an 'any' type.
+src/app/profile/page.tsx(54,20): error TS7031: Binding element 'data' implicitly has an 'any' type.
+src/app/profile/page.tsx(64,20): error TS7031: Binding element 'data' implicitly has an 'any' type.
+src/app/shop/manage/page.tsx(26,49): error TS7031: Binding element 'user' implicitly has an 'any' type.
+src/components/AppHeader.tsx(28,49): error TS7031: Binding element 'user' implicitly has an 'any' type.
+src/components/AppHeader.tsx(32,77): error TS7006: Parameter '_event' implicitly has an 'any' type.
+src/components/AppHeader.tsx(32,85): error TS7006: Parameter 'session' implicitly has an 'any' type.
+src/components/Header.tsx(32,45): error TS7031: Binding element 'user' implicitly has an 'any' type.
+src/components/Header.tsx(38,73): error TS7006: Parameter '_event' implicitly has an 'any' type.
+src/components/Header.tsx(38,81): error TS7006: Parameter 'session' implicitly has an 'any' type.
+src/hooks/useMultiplayerRoom.ts(56,49): error TS7031: Binding element 'user' implicitly has an 'any' type.
+src/hooks/useMultiplayerRoom.ts(70,18): error TS7006: Parameter 'payload' implicitly has an 'any' type.
+src/hooks/useMultiplayerRoom.ts(82,24): error TS7006: Parameter 'payload' implicitly has an 'any' type.
+src/lib/multiplayer/room-manager.ts(103,9): error TS2531: Object is possibly 'null'.
+src/lib/multiplayer/room-manager.ts(129,9): error TS2531: Object is possibly 'null'.
+src/lib/multiplayer/room-manager.ts(166,15): error TS2531: Object is possibly 'null'.

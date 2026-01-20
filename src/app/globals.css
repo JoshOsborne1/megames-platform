@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -33,7 +33,6 @@
   }
 
   @keyframes float {
-
     0%,
     100% {
       transform: translateY(0);
@@ -56,9 +55,9 @@
 }
 
 :root {
-  --font-press-start: 'Press Start 2P', cursive;
-  --font-orbitron: 'Orbitron', sans-serif;
-  --font-space: 'Space Grotesk', sans-serif;
+  --font-press-start: "Press Start 2P", cursive;
+  --font-orbitron: "Orbitron", sans-serif;
+  --font-space: "Space Grotesk", sans-serif;
 
   --background: #0a0015;
   --foreground: #ffffff;
@@ -110,7 +109,11 @@
     background-image:
       radial-gradient(at 0% 0%, rgba(131, 56, 236, 0.4) 0px, transparent 50%),
       radial-gradient(at 100% 0%, rgba(255, 0, 110, 0.35) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(0, 245, 255, 0.35) 0px, transparent 50%),
+      radial-gradient(
+        at 100% 100%,
+        rgba(0, 245, 255, 0.35) 0px,
+        transparent 50%
+      ),
       radial-gradient(at 0% 100%, rgba(131, 56, 236, 0.4) 0px, transparent 50%);
     background-size: 100% 100%;
     animation: aurora 20s ease-in-out infinite alternate;
@@ -145,7 +148,11 @@
   }
 
   .glass-card {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.03) 100%);
+    background: linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.07) 0%,
+      rgba(255, 255, 255, 0.03) 100%
+    );
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow:
@@ -154,7 +161,11 @@
   }
 
   .glass-card:hover {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    background: linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.05) 100%
+    );
     border-color: rgba(255, 255, 255, 0.2);
     box-shadow:
       0 8px 32px -4px rgba(131, 56, 236, 0.15),
@@ -189,7 +200,11 @@
   }
 
   .widget-card {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.03) 100%);
+    background: linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.07) 0%,
+      rgba(255, 255, 255, 0.03) 100%
+    );
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow:
@@ -200,7 +215,11 @@
   }
 
   .widget-card:hover {
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    background: linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.05) 100%
+    );
     border-color: rgba(255, 255, 255, 0.2);
     box-shadow:
       0 8px 32px -4px rgba(131, 56, 236, 0.15),
@@ -235,6 +254,16 @@
   /* Safe area padding for bottom nav */
   .pb-safe {
     padding-bottom: max(env(safe-area-inset-bottom), 1.5rem);
+  }
+
+  /* Safe area padding for top (dynamic island on iPhone 14 Pro+) */
+  .pt-safe {
+    padding-top: max(env(safe-area-inset-top), 59px);
+  }
+
+  /* For elements that need to clear the dynamic island */
+  .mt-safe {
+    margin-top: max(env(safe-area-inset-top), 59px);
   }
 
   /* Mobile input styling */

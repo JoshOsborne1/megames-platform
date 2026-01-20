@@ -6,10 +6,10 @@ import { AppShell } from "@/components/AppShell";
 import { QuizProBanner } from "@/components/QuizProBanner";
 import { InstallPrompt } from "@/components/InstallPrompt";
 import {
-  Users, ChevronRight, Globe, Gamepad2, Loader2
+  Users, ChevronRight, Globe, Gamepad2
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import type { User as SupabaseUser } from "@supabase/supabase-js";
+import type { User as SupabaseUser, AuthChangeEvent, Session } from "@supabase/supabase-js";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useHaptic } from "@/hooks/useHaptic";
@@ -17,7 +17,6 @@ import { GAMES, GameConfig } from "@/config/games";
 
 export default function HomePage() {
   const [user, setUser] = useState<SupabaseUser | null>(null);
-  const [loading, setLoading] = useState(true);
   const [isPro, setIsPro] = useState(false);
   const { trigger } = useHaptic();
   const router = useRouter();
@@ -25,22 +24,23 @@ export default function HomePage() {
   useEffect(() => {
     const supabase = createClient();
 
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    supabase.auth.getUser().then((response: { data: { user: SupabaseUser | null } }) => {
+      const user = response.data.user;
       setUser(user);
-      setLoading(false);
       if (user) {
         supabase
           .from("profiles")
           .select("is_pro")
           .eq("id", user.id)
           .single()
-          .then(({ data }) => {
+          .single()
+          .then(({ data }: { data: { is_pro: boolean } | null }) => {
             setIsPro(data?.is_pro || false);
           });
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
       setUser(session?.user ?? null);
     });
 
@@ -55,21 +55,13 @@ export default function HomePage() {
     router.push(`${game.route}?mode=local`);
   };
 
-  const username = user?.user_metadata?.username || user?.email?.split("@")[0] || "Player";
+
 
   // Categorize games from config
   const featuredGames = GAMES.filter(g => g.isHot);
   const moreGames = GAMES.filter(g => !g.isHot);
 
-  if (loading) {
-    return (
-      <AppShell>
-        <div className="flex items-center justify-center min-h-screen">
-          <Loader2 className="w-8 h-8 text-white animate-spin" />
-        </div>
-      </AppShell>
-    )
-  }
+
 
   return (
     <AppShell>
@@ -88,7 +80,7 @@ export default function HomePage() {
               key={game.id}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleGameSelect(game)}
-              className="widget-card !p-0 h-48 group overflow-visible"
+              className="widget-card p-0! h-48 group overflow-visible"
               style={{
                 borderColor: `${game.color}50`,
                 boxShadow: `0 0 40px ${game.color}20`
@@ -102,12 +94,6 @@ export default function HomePage() {
               <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20" />
 
               <div className="relative z-10 h-full p-5 flex flex-col justify-end">
-                <div
-                  className="absolute top-4 right-4 text-black text-[10px] font-bold px-2.5 py-1 rounded-full shadow-lg animate-pulse"
-                  style={{ backgroundColor: game.color, boxShadow: `0 0 25px ${game.color}60` }}
-                >
-                  HOT 🔥
-                </div>
 
                 <div
                   className="absolute top-5 left-5 p-3 rounded-2xl transition-transform duration-500 group-hover:rotate-6 group-hover:scale-110"
@@ -158,10 +144,10 @@ export default function HomePage() {
           <motion.div
             whileTap={{ scale: 0.96 }}
             onClick={() => user ? router.push("/multiplayer") : router.push("/login")}
-            className="widget-card aspect-square flex flex-col justify-between bg-gradient-to-br from-[#8338ec]/20 to-[#8338ec]/5 border-[#8338ec]/30 group"
+            className="widget-card aspect-square flex flex-col justify-between bg-linear-to-br from-neon-purple/20 to-neon-purple/5 border-neon-purple/30 group"
           >
             <div className="flex justify-between items-start">
-              <div className="p-2 rounded-xl bg-[#8338ec]/20 text-[#8338ec]">
+              <div className="p-2 rounded-xl bg-neon-purple/20 text-neon-purple">
                 <Globe className="w-5 h-5" />
               </div>
             </div>
@@ -175,10 +161,10 @@ export default function HomePage() {
           <motion.div
             whileTap={{ scale: 0.96 }}
             onClick={() => router.push("/games?mode=local")}
-            className="widget-card aspect-square flex flex-col justify-between bg-gradient-to-br from-[#ff006e]/20 to-[#ff006e]/5 border-[#ff006e]/30 group"
+            className="widget-card aspect-square flex flex-col justify-between bg-linear-to-br from-neon-pink/20 to-neon-pink/5 border-neon-pink/30 group"
           >
             <div className="flex justify-between items-start">
-              <div className="p-2 rounded-xl bg-[#ff006e]/20 text-[#ff006e]">
+              <div className="p-2 rounded-xl bg-neon-pink/20 text-neon-pink">
                 <Gamepad2 className="w-5 h-5" />
               </div>
             </div>
@@ -193,16 +179,15 @@ export default function HomePage() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-3 px-1">
             <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest">More Games</h3>
-            <Link href="/games" className="text-[10px] font-bold text-[#8338ec] uppercase tracking-wider hover:text-white transition-colors">View All</Link>
+            <Link href="/games" className="text-[10px] font-bold text-neon-purple uppercase tracking-wider hover:text-white transition-colors">View All</Link>
           </div>
-
           <div className="space-y-3">
             {moreGames.map(game => (
               <motion.div
                 key={game.id}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => handleGameSelect(game)}
-                className="widget-card !p-3.5 flex items-center justify-between group"
+                className="widget-card p-3.5! flex items-center justify-between group"
                 style={{
                   borderColor: `${game.color}40`,
                   background: `linear-gradient(135deg, ${game.color}08, transparent 50%)`,
@@ -258,7 +243,7 @@ export default function HomePage() {
 
         {!isPro && (
           <div className="pb-10">
-            <QuizProBanner compact onSubscribeClick={() => { }} />
+            <QuizProBanner compact />
           </div>
         )}
 

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ColorSpectrum } from "@/components/games/shade-signals/ColorSpectrum";
+import { MultiplayerShadeSignals } from "@/components/games/shade-signals/MultiplayerShadeSignals";
 import { InGameNav, WatchAdButton, PlayersModal, InfoButton, GameModeSelector, Modal } from "@/components/games/shared";
 import { usePlayerSetup } from "@/hooks/usePlayerSetup";
 import { X, Trophy, ArrowRight, Palette, Users, Droplet, ChevronRight, Plus, Minus, Users2, Crown, RefreshCw } from "lucide-react";
@@ -76,7 +77,6 @@ function ShadeSignalsContent() {
   const [firstClue, setFirstClue] = useState("");
   const [secondClue, setSecondClue] = useState("");
   const [currentGuesserIndex, setCurrentGuesserIndex] = useState(0);
-  const [showTarget, setShowTarget] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPassPhone, setShowPassPhone] = useState(false);
   const [passPhoneTarget, setPassPhoneTarget] = useState("");
@@ -113,16 +113,15 @@ function ShadeSignalsContent() {
     setPlayers(newPlayers);
     setCurrentRound(1);
     setSignalGiverIndex(0);
-    startRound(newPlayers, 0);
+    startRound(newPlayers);
   };
 
-  const startRound = (playerList = players, sigIdx = signalGiverIndex) => {
+  const startRound = (playerList = players) => {
     const options = generateColorOptions(4);
     setColorOptions(options);
     setPhase("signal-pick");
     setFirstClue("");
     setSecondClue("");
-    setShowTarget(false);
     setTargetColor(null);
     setPlayers(playerList.map(p => ({ ...p, markers: [] })));
     setCurrentGuesserIndex(0);
@@ -205,7 +204,6 @@ function ShadeSignalsContent() {
   const revealResults = () => {
     if (!targetColor) return;
     setPhase("reveal");
-    setShowTarget(true);
     setPlayers(prev => prev.map((player, idx) => {
       if (idx === signalGiverIndex) return player;
 
@@ -229,7 +227,7 @@ function ShadeSignalsContent() {
       const nextSignalIdx = (signalGiverIndex + 1) % playerCount;
       setCurrentRound(prev => prev + 1);
       setSignalGiverIndex(nextSignalIdx);
-      triggerPassPhone(players[nextSignalIdx]?.name || "Next Player", () => startRound(players, nextSignalIdx));
+      triggerPassPhone(players[nextSignalIdx]?.name || "Next Player", () => startRound(players));
     } else {
       setPhase("finished");
     }
@@ -237,6 +235,11 @@ function ShadeSignalsContent() {
 
   // SETUP SCREEN
   if (phase === "setup") {
+    // If online mode with room, use multiplayer component
+    if (mode === "online" && isFromRoom && roomCode) {
+      return <MultiplayerShadeSignals roomCode={roomCode} />;
+    }
+
     // If online mode without room, redirect to multiplayer
     if (mode === "online" && !isFromRoom) {
       router.push("/multiplayer?game=shade-signals");
@@ -396,7 +399,7 @@ function ShadeSignalsContent() {
                   <motion.button
                     whileTap={{ scale: 0.95 }}
                     onClick={handleAdReroll}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-[#8338ec]/30 to-[#ff006e]/30 border border-[#8338ec]/40 text-white text-sm font-medium hover:from-[#8338ec]/40 hover:to-[#ff006e]/40 transition-colors"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg bg-linear-to-r from-neon-purple/30 to-neon-pink/30 border border-neon-purple/40 text-white text-sm font-medium hover:from-neon-purple/40 hover:to-neon-pink/40 transition-colors"
                   >
                     <RefreshCw className="w-4 h-4" />
                     Watch Ad to Reroll
@@ -445,10 +448,10 @@ function ShadeSignalsContent() {
               </div>
               <h2 className="font-display font-bold text-xl text-white mb-2">Give a clarifying clue</h2>
               <p className="text-white/40 text-sm mb-4">Any words, or skip</p>
-              <input type="text" value={secondClue} onChange={(e) => setSecondClue(e.target.value)} placeholder="e.g., deep ocean waves..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-[#ff006e] mb-4" />
+              <input type="text" value={secondClue} onChange={(e) => setSecondClue(e.target.value)} placeholder="e.g., deep ocean waves..." className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-neon-pink mb-4" />
               <div className="grid grid-cols-2 gap-3">
                 <button onClick={() => submitSecondClue(true)} className="py-3 rounded-xl bg-white/5 border border-white/10 text-white/60 font-bold">Skip</button>
-                <motion.button whileTap={{ scale: 0.98 }} onClick={() => submitSecondClue(false)} className="py-3 rounded-xl bg-[#ff006e] text-white font-bold">Submit</motion.button>
+                <motion.button whileTap={{ scale: 0.98 }} onClick={() => submitSecondClue(false)} className="py-3 rounded-xl bg-neon-pink text-white font-bold">Submit</motion.button>
               </div>
             </motion.div>
           )}
@@ -457,10 +460,10 @@ function ShadeSignalsContent() {
           {(phase === "guess-1" || phase === "guess-2") && currentPlayer && (
             <motion.div key="guess" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
               <div className="text-center mb-4">
-                <h2 className="font-display font-bold text-xl text-white mb-2">{currentPlayer.name}'s Turn</h2>
+                <h2 className="font-display font-bold text-xl text-white mb-2">{currentPlayer.name}&apos;s Turn</h2>
                 <p className="text-white/50">
-                  Clues: <span className="text-[#00FFFF] font-bold">{firstClue}</span>
-                  {phase === "guess-2" && secondClue && <> • <span className="text-[#ff006e] font-bold">{secondClue}</span></>}
+                  Clues: <span className="text-electric-cyan font-bold">{firstClue}</span>
+                  {phase === "guess-2" && secondClue && <> • <span className="text-neon-pink font-bold">{secondClue}</span></>}
                 </p>
               </div>
               <ColorSpectrum
@@ -481,8 +484,8 @@ function ShadeSignalsContent() {
                 <p className="text-[#00FFFF] text-xs uppercase tracking-wider mb-1">Round {currentRound} Complete</p>
                 <h2 className="font-display font-black text-3xl text-white mb-2">The Reveal!</h2>
                 <p className="text-white/50">
-                  <span className="text-[#00FFFF] font-bold">{firstClue}</span>
-                  {secondClue && <> • <span className="text-[#ff006e] font-bold">{secondClue}</span></>}
+                  <span className="text-electric-cyan font-bold">{firstClue}</span>
+                  {secondClue && <> • <span className="text-neon-pink font-bold">{secondClue}</span></>}
                 </p>
               </div>
 
@@ -631,18 +634,18 @@ function ShadeSignalsContent() {
             <p className="font-display font-bold text-2xl text-[#00FFFF]">{passPhoneTarget}</p>
           </div>
           <p className="text-white/30 text-xs mb-6">Make sure no one else can see the screen!</p>
-          <motion.button whileTap={{ scale: 0.98 }} onClick={() => { setShowPassPhone(false); nextAction(); }} className="w-full py-4 rounded-xl bg-[#00FFFF] text-black font-display font-bold flex items-center justify-center gap-2">I'm Ready <ArrowRight className="w-5 h-5" /></motion.button>
+          <motion.button whileTap={{ scale: 0.98 }} onClick={() => { setShowPassPhone(false); nextAction(); }} className="w-full py-4 rounded-xl bg-[#00FFFF] text-black font-display font-bold flex items-center justify-center gap-2">I&apos;m Ready <ArrowRight className="w-5 h-5" /></motion.button>
         </div>
       </Modal>
 
       {/* ERROR MODAL */}
       <Modal isOpen={!!errorMessage} onClose={() => setErrorMessage(null)}>
-        <div className="p-5 border border-[#ff006e]/30 rounded-2xl">
+        <div className="p-5 border border-neon-pink/30 rounded-2xl">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-lg bg-[#ff006e]/20 flex items-center justify-center"><X className="w-5 h-5 text-[#ff006e]" /></div>
+            <div className="w-10 h-10 rounded-lg bg-neon-pink/20 flex items-center justify-center"><X className="w-5 h-5 text-neon-pink" /></div>
             <div><h3 className="font-display font-bold text-white">Oops!</h3><p className="text-white/60 text-sm">{errorMessage}</p></div>
           </div>
-          <button onClick={() => setErrorMessage(null)} className="w-full py-3 rounded-xl bg-[#ff006e] text-white font-bold">Got it</button>
+          <button onClick={() => setErrorMessage(null)} className="w-full py-3 rounded-xl bg-neon-pink text-white font-bold">Got it</button>
         </div>
       </Modal>
     </div>

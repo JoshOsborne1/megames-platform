@@ -1,184 +1,87 @@
 export const LYRIC_WORDS = [
-  // Original words
-  "love", "baby", "heart", "dance", "night", "time", "you", "me", "forever", "party",
-  "fire", "rain", "home", "dream", "fly", "break", "shake", "rock", "roll", "girl",
-  "boy", "money", "car", "light", "dark", "blue", "red", "sun", "moon", "star",
-  "world", "life", "way", "feel", "touch", "eyes", "smile", "tears", "cry", "smile",
-  "kiss", "hug", "hand", "mind", "soul", "body", "breath", "voice", "sing", "song",
-  "music", "beat", "rhythm", "sound", "radio", "loud", "quiet", "fast", "slow", "high",
-  "low", "good", "bad", "crazy", "wild", "sweet", "bitter", "hot", "cold", "summer",
-  "winter", "spring", "fall", "rainy", "storm", "wind", "sky", "cloud", "ocean", "sea",
-  "river", "mountain", "road", "street", "city", "town", "country", "world", "space", "earth",
-  "name", "face", "place", "space", "time", "moment", "second", "minute", "hour", "day",
-  "week", "month", "year", "yesterday", "today", "tomorrow", "tonight", "morning", "afternoon", "evening",
-  "friend", "enemy", "lover", "stranger", "family", "mother", "father", "sister", "brother", "son",
-  "daughter", "king", "queen", "prince", "princess", "God", "angel", "devil", "hell", "heaven",
-  "true", "false", "real", "fake", "right", "wrong", "left", "right", "up", "down",
-  "black", "white", "gold", "silver", "diamond", "ring", "wedding", "lonely", "alone", "together",
-  "happy", "sad", "angry", "scared", "brave", "strong", "weak", "easy", "hard", "simple",
-  "complex", "beautiful", "ugly", "pretty", "cute", "nice", "mean", "kind", "cruel", "magic",
-  "miracle", "wonder", "secret", "truth", "lie", "promise", "regret", "hope", "wish", "luck",
-  "chance", "fate", "destiny", "war", "peace", "fight", "game", "play", "win", "lose",
-  "gold", "chain", "shoes", "dress", "jeans", "shirt", "hat", "glass", "bottle", "drink",
-  "food", "hungry", "thirsty", "tired", "sleep", "wake", "run", "jump", "walk", "dance",
-  "work", "school", "college", "boss", "job", "pay", "buy", "sell", "shop", "wait",
-  "stop", "go", "start", "end", "begin", "finish", "ready", "set", "go", "fast",
-  "slow", "heavy", "light", "small", "big", "large", "tiny", "huge", "tall", "short",
-  "old", "new", "young", "future", "past", "present", "now", "never", "always", "sometimes",
-  "maybe", "definitely", "probably", "sure", "certain", "lost", "found", "hidden", "open", "closed",
-  "inside", "outside", "between", "among", "with", "without", "before", "after", "again", "once",
-  "twice", "thrice", "million", "billion", "thousands", "hundreds", "zero", "one", "two", "three",
-  "four", "five", "six", "seven", "eight", "nine", "ten", "easy", "harder", "better", "faster",
-  "stronger", "power", "glory", "shame", "pain", "pleasure", "joy", "peace", "calm", "stormy",
-  "bright", "shiny", "sparkle", "glow", "shade", "shadow", "sunlight", "moonlight", "starlight", "firelight",
-
-  // NEW WORDS - BATCH 1 (Emotions & Feelings)
+  // --- CORE LYRICAL CATEGORIES (KEEP & EXPAND) ---
+  
+  // Emotions & Feelings
+  "love", "heart", "break", "cry", "happy", "sad", "lonely", "alone", "together", "forever",
   "jealous", "proud", "humble", "grateful", "excited", "nervous", "anxious", "worried", "confident", "shy",
-  "embarrassed", "guilty", "innocent", "curious", "bored", "inspired", "motivated", "confused", "surprised", "shocked",
-  "amazed", "terrified", "horrified", "disgusted", "frustrated", "annoyed", "content", "peaceful", "relaxed", "stressed",
-  "overwhelmed", "determined", "hopeful", "desperate", "lonely", "melancholy", "nostalgic", "sentimental", "romantic", "passionate",
-  "obsessed", "addicted", "attached", "detached", "numb", "alive", "dead", "dying", "living", "breathing",
+  "scared", "brave", "strong", "weak", "easy", "hard", "simple", "complex", "beautiful", "ugly",
+  "pretty", "cute", "nice", "mean", "kind", "cruel", "magic", "miracle", "wonder", "secret",
+  "truth", "lie", "promise", "regret", "hope", "wish", "luck", "chance", "fate", "destiny",
+  "soul", "mind", "life", "dream", "numb", "alive", "dead", "living", "feeling",
 
-  // NEW WORDS - BATCH 2 (Actions & Verbs)
-  "whisper", "scream", "shout", "yell", "call", "answer", "ask", "tell", "say", "speak",
-  "talk", "listen", "hear", "watch", "see", "look", "stare", "gaze", "glance", "peek",
-  "hide", "seek", "find", "search", "discover", "explore", "wander", "roam", "travel", "journey",
-  "arrive", "leave", "stay", "return", "escape", "chase", "follow", "lead", "guide", "push",
-  "pull", "lift", "drop", "throw", "catch", "hold", "grab", "reach", "stretch", "bend",
-  "twist", "turn", "spin", "roll", "slide", "glide", "float", "sink", "rise", "fall",
-  "climb", "descend", "soar", "dive", "crash", "burn", "freeze", "melt", "shatter", "crumble",
-  "build", "destroy", "create", "make", "break", "fix", "repair", "heal", "hurt", "wound",
-  "bleed", "suffer", "endure", "survive", "thrive", "struggle", "fight", "defend", "attack", "protect",
-  "save", "rescue", "help", "support", "carry", "burden", "relieve", "comfort", "soothe", "calm",
+  // Directions
+  "up", "down", "left", "right", "north", "south", "east", "west", "around", "inside",
+  "outside", "between", "among", "high", "low", "top", "bottom", "side", "front", "back",
 
-  // NEW WORDS - BATCH 3 (Nature & Elements)
-  "thunder", "lightning", "hurricane", "tornado", "blizzard", "flood", "drought", "earthquake", "volcano", "wave",
-  "tide", "shore", "beach", "sand", "dirt", "soil", "grass", "tree", "flower", "leaf",
-  "branch", "root", "seed", "bloom", "wither", "fade", "grow", "shrink", "expand", "contract",
-  "forest", "jungle", "desert", "valley", "canyon", "cave", "cliff", "hill", "peak", "summit",
-  "horizon", "sunset", "sunrise", "dawn", "dusk", "twilight", "midnight", "noon", "eclipse", "aurora",
-  "rainbow", "fog", "mist", "haze", "frost", "ice", "snow", "hail", "sleet", "drizzle",
-  "pour", "splash", "spray", "drip", "flow", "stream", "creek", "lake", "pond", "swamp",
-  "marsh", "meadow", "field", "farm", "garden", "orchard", "vineyard", "harvest", "crop", "fruit",
-  "vegetable", "flower", "rose", "lily", "tulip", "daisy", "sunflower", "violet", "orchid", "jasmine",
-  "lavender", "mint", "sage", "thyme", "basil", "pepper", "salt", "sugar", "honey", "nectar",
+  // Colors & Descriptions
+  "blue", "red", "black", "white", "gold", "silver", "pink", "purple", "green", "yellow",
+  "orange", "grey", "brown", "violet", "indigo", "crimson", "scarlet", "ruby", "emerald", "jade",
+  "neon", "vibrant", "vivid", "bright", "dark", "faded", "clear", "cloudy", "smoky", "golden",
 
-  // NEW WORDS - BATCH 4 (Relationships & People)
-  "husband", "wife", "spouse", "partner", "companion", "soulmate", "crush", "ex", "date", "romance",
-  "affair", "fling", "relationship", "marriage", "divorce", "engagement", "proposal", "ceremony", "vow", "oath",
-  "bond", "connection", "chemistry", "attraction", "desire", "lust", "passion", "affection", "devotion", "loyalty",
-  "betrayal", "trust", "faith", "belief", "doubt", "suspicion", "jealousy", "envy", "rivalry", "competition",
-  "neighbor", "colleague", "coworker", "boss", "employee", "client", "customer", "vendor", "partner", "rival",
-  "mentor", "student", "teacher", "coach", "captain", "leader", "follower", "hero", "villain", "savior",
-  "victim", "survivor", "witness", "judge", "jury", "lawyer", "doctor", "nurse", "patient", "healer",
-  "artist", "musician", "singer", "dancer", "actor", "writer", "poet", "painter", "sculptor", "photographer",
-  "director", "producer", "manager", "agent", "celebrity", "superstar", "legend", "icon", "idol", "diva",
-  "genius", "prodigy", "master", "expert", "amateur", "novice", "beginner", "veteran", "rookie", "champion",
+  // Names (Iconic or common in song)
+  "mary", "johnny", "sue", "sarah", "bill", "jack", "rose", "jude", "roxanne", "jolene",
+  "valerie", "delilah", "alejandro", "rhiannon", "mandy", "angie", "cecilia", "nikita", "layla", "diana",
 
-  // NEW WORDS - BATCH 5 (Time & Change)
-  "eternity", "infinity", "decade", "century", "millennium", "era", "epoch", "age", "period", "phase",
-  "stage", "chapter", "episode", "scene", "act", "beginning", "middle", "ending", "finale", "climax",
-  "turning", "point", "milestone", "landmark", "threshold", "boundary", "limit", "edge", "brink", "verge",
-  "change", "transform", "evolve", "develop", "progress", "advance", "retreat", "decline", "rise", "falling",
-  "growing", "aging", "maturing", "fading", "disappearing", "vanishing", "appearing", "emerging", "surfacing", "revealing",
-  "hiding", "concealing", "exposing", "uncovering", "discovering", "realizing", "understanding", "learning", "teaching", "knowing",
-  "remembering", "forgetting", "recalling", "reminiscing", "reflecting", "pondering", "wondering", "questioning", "answering", "solving",
+  // Time, Days & Months
+  "time", "moment", "second", "minute", "hour", "day", "week", "month", "year", "yesterday",
+  "today", "tomorrow", "tonight", "morning", "afternoon", "evening", "midnight", "noon",
+  "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
+  "january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december",
+  "summer", "winter", "spring", "fall", "autumn", "weekend", "holiday", "birthday",
 
-  // NEW WORDS - BATCH 6 (Places & Spaces)
-  "bedroom", "kitchen", "bathroom", "living", "room", "hallway", "basement", "attic", "garage", "porch",
-  "balcony", "terrace", "rooftop", "ceiling", "floor", "wall", "window", "door", "gate", "fence",
-  "yard", "lawn", "driveway", "sidewalk", "pavement", "highway", "freeway", "bridge", "tunnel", "station",
-  "airport", "harbor", "dock", "pier", "terminal", "platform", "track", "path", "trail", "route",
-  "destination", "origin", "departure", "arrival", "checkpoint", "border", "frontier", "territory", "region", "zone",
-  "area", "district", "neighborhood", "suburb", "downtown", "uptown", "midtown", "outskirts", "countryside", "wilderness",
-  "paradise", "utopia", "dystopia", "kingdom", "empire", "nation", "state", "province", "county", "county",
-  "village", "hamlet", "settlement", "colony", "community", "society", "civilization", "culture", "tradition", "custom",
+  // Places & Spaces
+  "home", "city", "town", "country", "world", "street", "road", "highway", "bridge", "river",
+  "ocean", "sea", "beach", "shore", "mountain", "valley", "forest", "jungle", "desert", "garden",
+  "california", "london", "paris", "new york", "hollywood", "vegas", "rome", "georgia", "texas", "tennessee",
+  "room", "house", "door", "window", "bar", "club", "dance", "floor", "stage", "hotel",
 
-  // NEW WORDS - BATCH 7 (Objects & Things)
-  "mirror", "picture", "painting", "photograph", "frame", "canvas", "statue", "sculpture", "trophy", "medal",
-  "crown", "throne", "sword", "shield", "armor", "weapon", "gun", "bullet", "knife", "blade",
-  "key", "lock", "safe", "vault", "treasure", "chest", "box", "package", "gift", "present",
-  "letter", "note", "message", "card", "postcard", "stamp", "envelope", "paper", "pen", "pencil",
-  "book", "novel", "story", "tale", "poem", "verse", "lyric", "melody", "harmony", "chord",
-  "instrument", "guitar", "piano", "drum", "violin", "trumpet", "saxophone", "flute", "harp", "microphone",
-  "speaker", "headphone", "screen", "phone", "computer", "camera", "remote", "controller", "button", "switch",
-  "lever", "handle", "knob", "dial", "meter", "gauge", "clock", "watch", "timer", "alarm",
-  "bell", "whistle", "horn", "siren", "signal", "sign", "symbol", "logo", "brand", "label",
-  "tag", "ticket", "pass", "badge", "card", "token", "coin", "bill", "cash", "credit",
+  // --- NATURE & ELEMENTS ---
+  "sun", "moon", "star", "sky", "cloud", "rain", "storm", "wind", "snow", "ice",
+  "fire", "flame", "smoke", "light", "shadow", "thunder", "lightning", "hurricane", "tornado", "wave",
+  "tide", "sand", "dirt", "soil", "grass", "tree", "flower", "leaf", "bloom", "wither",
+  "horizon", "sunset", "sunrise", "dawn", "dusk", "twilight", "eclipse", "rainbow", "fog", "mist",
 
-  // NEW WORDS - BATCH 8 (Abstract Concepts)
+  // --- ACTIONS & VERBS ---
+  "whisper", "scream", "shout", "yell", "call", "answer", "speak", "talk", "listen", "hear",
+  "watch", "see", "look", "stare", "gaze", "hide", "seek", "find", "search", "wander",
+  "roam", "travel", "journey", "arrive", "leave", "stay", "return", "escape", "chase", "follow",
+  "lead", "push", "pull", "lift", "drop", "throw", "catch", "hold", "grab", "reach",
+  "stretch", "bend", "twist", "turn", "spin", "roll", "slide", "glide", "float", "sink",
+  "rise", "fall", "climb", "descend", "soar", "dive", "crash", "burn", "freeze", "melt",
+  "shatter", "crumble", "build", "destroy", "create", "make", "fix", "heal", "hurt", "bleed",
+  "suffer", "endure", "survive", "thrive", "struggle", "fight", "defend", "attack", "protect", "save",
+
+  // --- RELATIONSHIPS & PEOPLE ---
+  "baby", "girl", "boy", "man", "woman", "lover", "friend", "enemy", "stranger", "family",
+  "mother", "father", "sister", "brother", "son", "daughter", "king", "queen", "prince", "princess",
+  "angel", "devil", "hell", "heaven", "husband", "wife", "partner", "soulmate", "crush", "ex",
+  "hero", "villain", "savior", "legend", "icon", "idol", "diva", "superstar", "champion",
+
+  // --- OBJECTS & THINGS (MUSICAL/POETIC) ---
+  "mirror", "picture", "photo", "frame", "canvas", "trophy", "medal", "crown", "throne", "sword",
+  "shield", "armor", "key", "lock", "safe", "treasure", "chest", "box", "gift", "present",
+  "letter", "note", "message", "card", "paper", "pen", "book", "story", "tale", "poem",
+  "ring", "wedding", "diamond", "gold", "silver", "chain", "shoes", "dress", "jeans", "shirt",
+  "hat", "glass", "bottle", "wine", "whiskey", "drink", "cigarette", "smoke", "gun", "bullet",
+  "knife", "blade", "telephone", "radio", "clock", "watch", "money", "dollar", "cash", "diamond",
+
+  // --- MUSIC & SOUND ---
+  "melody", "harmony", "rhythm", "beat", "note", "chord", "song", "lyric", "voice", "sing",
+  "dance", "rock", "roll", "jazz", "blues", "disco", "pop", "guitar", "piano", "drum",
+  "violin", "trumpet", "saxophone", "bass", "treble", "stereo", "speaker", "microphone", "radio", "record",
+  "echo", "silence", "noise", "static", "loud", "quiet", "fast", "slow",
+
+  // --- ABSTRACT & EVOCATIVE ---
   "freedom", "liberty", "justice", "equality", "dignity", "honor", "respect", "pride", "shame", "guilt",
-  "innocence", "wisdom", "knowledge", "intelligence", "genius", "talent", "skill", "ability", "potential", "power",
-  "control", "authority", "influence", "impact", "effect", "cause", "reason", "purpose", "meaning", "significance",
-  "value", "worth", "price", "cost", "expense", "profit", "loss", "gain", "benefit", "advantage",
-  "disadvantage", "risk", "danger", "safety", "security", "protection", "defense", "offense", "attack", "resistance",
-  "surrender", "victory", "defeat", "success", "failure", "achievement", "accomplishment", "triumph", "disaster", "tragedy",
-  "comedy", "drama", "romance", "adventure", "mystery", "fantasy", "reality", "illusion", "delusion", "hallucination",
-  "vision", "nightmare", "fantasy", "imagination", "creativity", "innovation", "invention", "discovery", "breakthrough", "revelation",
-  "revolution", "evolution", "tradition", "heritage", "legacy", "inheritance", "birthright", "privilege", "responsibility", "duty",
-  "obligation", "commitment", "dedication", "devotion", "sacrifice", "offering", "tribute", "homage", "worship", "prayer",
+  "innocence", "wisdom", "knowledge", "power", "control", "authority", "reason", "purpose", "meaning", "value",
+  "worth", "victory", "defeat", "success", "failure", "triumph", "disaster", "tragedy", "comedy", "drama",
+  "romance", "adventure", "mystery", "fantasy", "reality", "illusion", "vision", "nightmare", "imagination", "revolution",
+  "legacy", "sacrifice", "prayer", "worship", "holy", "sacred", "sin", "mercy", "grace",
 
-  // NEW WORDS - BATCH 9 (Colors & Descriptions)
-  "crimson", "scarlet", "ruby", "burgundy", "maroon", "coral", "salmon", "pink", "magenta", "fuchsia",
-  "violet", "purple", "lavender", "indigo", "navy", "azure", "cyan", "turquoise", "teal", "aqua",
-  "emerald", "jade", "olive", "lime", "chartreuse", "neon", "fluorescent", "pastel", "muted", "vibrant",
-  "vivid", "dull", "faded", "bleached", "stained", "tinted", "shaded", "colored", "painted", "dyed",
-  "transparent", "translucent", "opaque", "clear", "cloudy", "murky", "foggy", "misty", "hazy", "smoky",
-  "dusty", "sandy", "rocky", "stony", "metallic", "wooden", "plastic", "leather", "velvet", "silk",
-  "satin", "cotton", "wool", "linen", "denim", "lace", "mesh", "net", "web", "thread",
-  "string", "rope", "chain", "wire", "cable", "cord", "strip", "band", "ribbon", "bow",
-
-  // NEW WORDS - BATCH 10 (Body & Physical)
-  "skin", "bone", "muscle", "blood", "vein", "artery", "nerve", "brain", "spine", "skull",
-  "chest", "stomach", "belly", "waist", "hip", "thigh", "knee", "ankle", "foot", "toe",
-  "shoulder", "elbow", "wrist", "palm", "finger", "thumb", "nail", "hair", "scalp", "forehead",
-  "eyebrow", "eyelash", "eyelid", "cheek", "jaw", "chin", "lip", "tongue", "tooth", "throat",
-  "neck", "ear", "nose", "nostril", "lung", "rib", "spine", "back", "front", "side",
-  "arm", "leg", "limb", "torso", "trunk", "core", "center", "heart", "liver", "kidney",
-  "scar", "wound", "bruise", "cut", "scratch", "burn", "rash", "bump", "swelling", "ache",
-  "pain", "sting", "throb", "pulse", "heartbeat", "breathing", "exhale", "inhale", "gasp", "sigh",
-
-  // NEW WORDS - BATCH 11 (Music & Sound)
-  "melody", "harmony", "rhythm", "tempo", "pitch", "tone", "note", "chord", "scale", "octave",
-  "bass", "treble", "tenor", "alto", "soprano", "baritone", "crescendo", "decrescendo", "forte", "piano",
-  "staccato", "legato", "vibrato", "tremolo", "reverb", "echo", "feedback", "distortion", "amplify", "mute",
-  "silence", "noise", "static", "buzz", "hum", "ring", "chime", "jingle", "rattle", "rustle",
-  "crackle", "snap", "pop", "bang", "boom", "crash", "thud", "thump", "slam", "clap",
-  "applause", "cheer", "roar", "howl", "growl", "bark", "meow", "chirp", "tweet", "squawk",
-  "coo", "purr", "hiss", "buzz", "whir", "click", "tick", "tock", "beep", "ping",
-
-  // NEW WORDS - BATCH 12 (Food & Drink)
-  "breakfast", "lunch", "dinner", "supper", "brunch", "snack", "meal", "feast", "banquet", "buffet",
-  "appetizer", "entree", "dessert", "course", "serving", "portion", "plate", "bowl", "cup", "mug",
-  "fork", "spoon", "knife", "chopstick", "napkin", "table", "chair", "restaurant", "cafe", "bar",
-  "kitchen", "stove", "oven", "microwave", "refrigerator", "freezer", "pantry", "cabinet", "shelf", "counter",
-  "recipe", "ingredient", "flavor", "taste", "aroma", "scent", "smell", "texture", "crunch", "chew",
-  "swallow", "sip", "gulp", "chug", "pour", "stir", "mix", "blend", "whip", "beat",
-  "bake", "roast", "grill", "fry", "boil", "steam", "simmer", "sauté", "broil", "char",
-  "season", "spice", "herb", "sauce", "gravy", "marinade", "dressing", "topping", "garnish", "presentation",
-
-  // NEW WORDS - BATCH 13 (Weather & Seasons)
-  "weather", "climate", "temperature", "humidity", "pressure", "forecast", "prediction", "warning", "alert", "advisory",
-  "sunny", "cloudy", "partly", "overcast", "clear", "fair", "mild", "warm", "cool", "chilly",
-  "freezing", "scorching", "sweltering", "humid", "dry", "arid", "tropical", "arctic", "polar", "temperate",
-  "seasonal", "annual", "monthly", "weekly", "daily", "hourly", "constant", "variable", "changing", "shifting",
-  "approaching", "arriving", "passing", "clearing", "forming", "building", "intensifying", "weakening", "dissipating", "ending",
-
-  // NEW WORDS - BATCH 14 (Technology & Modern)
-  "digital", "analog", "virtual", "online", "offline", "wireless", "bluetooth", "wifi", "network", "internet",
-  "website", "app", "software", "hardware", "download", "upload", "stream", "buffer", "load", "sync",
-  "update", "upgrade", "install", "uninstall", "delete", "save", "backup", "restore", "reset", "reboot",
-  "login", "logout", "password", "username", "profile", "account", "settings", "preferences", "options", "menu",
-  "notification", "alert", "message", "email", "text", "call", "video", "chat", "post", "share",
-  "like", "follow", "subscribe", "comment", "reply", "mention", "tag", "hashtag", "trending", "viral",
-  "influencer", "content", "creator", "platform", "algorithm", "feed", "timeline", "story", "reel", "live",
-
-  // NEW WORDS - BATCH 15 (Miscellaneous Common Words)
-  "everything", "nothing", "something", "anything", "everyone", "nobody", "somebody", "anybody", "everywhere", "nowhere",
-  "somewhere", "anywhere", "every", "none", "some", "any", "all", "most", "many", "few",
-  "several", "both", "either", "neither", "other", "another", "each", "every", "whole", "half",
-  "quarter", "third", "double", "triple", "single", "multiple", "various", "different", "same", "similar",
-  "opposite", "equal", "unequal", "fair", "unfair", "just", "unjust", "legal", "illegal", "moral",
-  "immoral", "ethical", "unethical", "proper", "improper", "correct", "incorrect", "accurate", "inaccurate", "precise",
-  "vague", "specific", "general", "particular", "ordinary", "extraordinary", "common", "rare", "unique", "universal"
+  // --- GENERIC FILLERS & PRONOUNS (USER REQUESTED) ---
+  "you", "me", "my", "your", "we", "us", "our", "they", "them", "their",
+  "everything", "nothing", "something", "anything", "everyone", "nobody", "somebody", "anybody",
+  "everywhere", "nowhere", "somewhere", "anywhere", "every", "none", "some", "any", "all", "most", "many", "few",
+  "several", "both", "either", "neither", "other", "another", "each", "whole", "half",
+  "now", "never", "always", "sometimes", "maybe", "definitely", "probably", "sure", "certain"
 ];

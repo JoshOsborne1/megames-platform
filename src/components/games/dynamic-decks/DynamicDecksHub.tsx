@@ -15,10 +15,11 @@ import {
 
 import { DynamicCard } from "./DynamicCard";
 import { GameSetup } from "./GameSetup";
+import { MultiplayerDynamicDecks } from "./MultiplayerDynamicDecks";
 import { InGameNav } from "../shared";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRoom } from "@/context/RoomContext";
-import { Timer, Trophy, ArrowRight, Check, X, Zap, ShieldAlert, Smile, Brain, Flame, Crown, ChevronRight } from "lucide-react";
+import { Trophy, ArrowRight, Check, X, Zap, ShieldAlert, Smile, Brain, Flame, Crown, ChevronRight } from "lucide-react";
 import { useAppShell } from "@/components/AppShell";
 
 const DIFFICULTY_OPTIONS: { id: Difficulty; label: string; icon: React.ReactNode; multiplier: string; color: string }[] = [
@@ -101,15 +102,15 @@ export function DynamicDecksHub({ mode = "local" }: { mode?: "local" | "online" 
   }, [gameState?.phase, gameState?.timer]);
 
   // Handle leaving - if from room, go back to multiplayer
-  const handleLeave = () => {
-    if (isFromRoom) {
-      router.push("/multiplayer");
-    } else {
-      setGameState(null);
-    }
-  };
+
 
   if (!gameState) {
+    // If online mode with room, use multiplayer component
+    if (mode === "online" && isFromRoom && roomCode) {
+      const deckId = searchParams.get("deck") || "classic";
+      return <MultiplayerDynamicDecks roomCode={roomCode} deckId={deckId} />;
+    }
+    
     // If online mode without room, redirect to multiplayer
     if (mode === "online" && !isFromRoom) {
       router.push("/multiplayer?game=dynamic-decks");
@@ -160,10 +161,10 @@ export function DynamicDecksHub({ mode = "local" }: { mode?: "local" | "online" 
             <div className="space-y-3 mb-6">
               {isQMMode ? (
                 <>
-                  <div className="p-4 rounded-xl bg-[#8338ec]/10 border border-[#8338ec]/30">
+                  <div className="p-4 rounded-xl bg-neon-purple/10 border border-neon-purple/30">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-[#8338ec]/20 flex items-center justify-center">
-                        <Crown className="w-5 h-5 text-[#8338ec]" />
+                      <div className="w-10 h-10 rounded-lg bg-neon-purple/20 flex items-center justify-center">
+                        <Crown className="w-5 h-5 text-neon-purple" />
                       </div>
                       <div>
                         <p className="text-[10px] text-white/40 uppercase tracking-wider font-medium">Question Master</p>
@@ -184,13 +185,13 @@ export function DynamicDecksHub({ mode = "local" }: { mode?: "local" | "online" 
                 </>
               ) : (
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="p-4 rounded-xl bg-[#ff006e]/10 border border-[#ff006e]/30">
+                  <div className="p-4 rounded-xl bg-neon-pink/10 border border-neon-pink/30">
                     <p className="text-[10px] text-white/40 uppercase tracking-wider font-medium mb-1">Clue Giver</p>
-                    <p className="font-display font-bold text-lg text-[#ff006e] truncate">{clueGiver.name}</p>
+                    <p className="font-display font-bold text-lg text-neon-pink truncate">{clueGiver.name}</p>
                   </div>
-                  <div className="p-4 rounded-xl bg-[#00f5ff]/10 border border-[#00f5ff]/30">
+                  <div className="p-4 rounded-xl bg-electric-cyan/10 border border-electric-cyan/30">
                     <p className="text-[10px] text-white/40 uppercase tracking-wider font-medium mb-1">Guesser</p>
-                    <p className="font-display font-bold text-lg text-[#00f5ff] truncate">{guesser.name}</p>
+                    <p className="font-display font-bold text-lg text-electric-cyan truncate">{guesser.name}</p>
                   </div>
                 </div>
               )}
@@ -248,7 +249,7 @@ export function DynamicDecksHub({ mode = "local" }: { mode?: "local" | "online" 
             <motion.button
               whileTap={{ scale: 0.98 }}
               onClick={beginRound}
-              className="w-full py-4 rounded-xl bg-[#ff006e] text-white font-display font-bold text-lg flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-xl bg-neon-pink text-white font-display font-bold text-lg flex items-center justify-center gap-2"
             >
               Start Round <ChevronRight className="w-5 h-5" />
             </motion.button>
@@ -295,7 +296,7 @@ export function DynamicDecksHub({ mode = "local" }: { mode?: "local" | "online" 
                       key={player.id}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => onCorrectPlayer(player.id)}
-                      className="py-3 rounded-xl bg-[#00f5ff]/10 border border-[#00f5ff]/30 text-[#00f5ff] font-bold text-sm flex items-center justify-center gap-2"
+                      className="py-3 rounded-xl bg-electric-cyan/10 border border-electric-cyan/30 text-electric-cyan font-bold text-sm flex items-center justify-center gap-2"
                     >
                       <Check className="w-4 h-4" /> {player.name}
                     </motion.button>
@@ -322,7 +323,7 @@ export function DynamicDecksHub({ mode = "local" }: { mode?: "local" | "online" 
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   onClick={onCorrect}
-                  className="py-4 rounded-xl bg-[#00f5ff]/10 border border-[#00f5ff]/40 text-[#00f5ff] font-bold flex flex-col items-center gap-1"
+                  className="py-4 rounded-xl bg-electric-cyan/10 border border-electric-cyan/40 text-electric-cyan font-bold flex flex-col items-center gap-1"
                 >
                   <Check className="w-5 h-5" />
                   <span>Correct</span>
@@ -369,7 +370,7 @@ export function DynamicDecksHub({ mode = "local" }: { mode?: "local" | "online" 
                       <span className={`w-6 h-6 rounded flex items-center justify-center text-xs font-bold ${i === 0 ? 'bg-yellow-500 text-black' : 'bg-white/10 text-white/50'}`}>{i + 1}</span>
                       <span className="font-medium text-white">{player.name}</span>
                       {player.id === clueGiver.id && isQMMode && (
-                        <span className="text-[10px] bg-[#8338ec]/20 text-[#8338ec] px-2 py-0.5 rounded font-medium">QM</span>
+                        <span className="text-[10px] bg-neon-purple/20 text-neon-purple px-2 py-0.5 rounded font-medium">QM</span>
                       )}
                     </div>
                     <span className={`font-display font-bold ${i === 0 ? 'text-yellow-500' : 'text-white/60'}`}>{player.score}</span>
@@ -385,7 +386,7 @@ export function DynamicDecksHub({ mode = "local" }: { mode?: "local" | "online" 
             <motion.button
               whileTap={{ scale: 0.98 }}
               onClick={nextTurnHandler}
-              className="w-full py-4 rounded-xl bg-[#ff006e] text-white font-display font-bold text-lg flex items-center justify-center gap-2"
+              className="w-full py-4 rounded-xl bg-neon-pink text-white font-display font-bold text-lg flex items-center justify-center gap-2"
             >
               Continue <ArrowRight className="w-5 h-5" />
             </motion.button>

@@ -1,5 +1,5 @@
-import { getDeckCards, getDeckCardsByDifficulty, DYNAMIC_CARDS } from "./data";
-import { GameState, Player, Difficulty, Card, GameMode } from "./types";
+import { getDeckCards, getDeckCardsByDifficulty } from "./data";
+import { GameState, Player, Difficulty, Card, GameMode, CardHistory } from "./types";
 
 export const INITIAL_TIMER = 60;
 export const CARDS_PER_ROUND = 10;
@@ -63,6 +63,7 @@ export function createInitialState(
     maxCardsInRound: CARDS_PER_ROUND,
     deckId,
     lastWinnerId: undefined,
+    roundHistory: [],
   };
 }
 
@@ -98,7 +99,7 @@ export function drawNextCard(state: GameState, forceReload: boolean = false): Ga
 }
 
 // Calculate points with difficulty multiplier
-export function calculatePoints(card: Card, difficulty: Difficulty, deckId: string): number {
+export function calculatePoints(card: Card, difficulty: Difficulty): number {
   // For "random" difficulty, use base points without multiplier
   if (difficulty === "random") {
     return card.points;
@@ -120,9 +121,18 @@ export function getForbiddenWords(card: Card, difficulty: Difficulty): string[] 
 export function handleCorrect(state: GameState): GameState {
   if (!state.currentCard) return state;
 
-  const points = calculatePoints(state.currentCard, state.difficulty, state.deckId);
+  const points = calculatePoints(state.currentCard, state.difficulty);
   const updatedPlayers = [...state.players];
   updatedPlayers[state.currentPlayerIndex].score += points;
+
+  // Track card history
+  const cardHistory: CardHistory = {
+    word: state.currentCard.word || state.currentCard.answer || "",
+    forbidden: state.currentCard.forbidden,
+    wasCorrect: true,
+    answeredBy: state.players[state.currentPlayerIndex].name,
+    points,
+  };
 
   const nextState = {
     ...state,
@@ -130,6 +140,7 @@ export function handleCorrect(state: GameState): GameState {
     roundScore: state.roundScore + points,
     cardsInRound: state.cardsInRound + 1,
     lastWinnerId: state.players[state.currentPlayerIndex].id,
+    roundHistory: [...state.roundHistory, cardHistory],
   };
 
   return drawNextCard(nextState);
@@ -142,9 +153,18 @@ export function handleCorrectByPlayer(state: GameState, playerId: string): GameS
   const playerIndex = state.players.findIndex(p => p.id === playerId);
   if (playerIndex === -1) return state;
 
-  const points = calculatePoints(state.currentCard, state.difficulty, state.deckId);
+  const points = calculatePoints(state.currentCard, state.difficulty);
   const updatedPlayers = [...state.players];
   updatedPlayers[playerIndex].score += points;
+
+  // Track card history
+  const cardHistory: CardHistory = {
+    word: state.currentCard.word || state.currentCard.answer || "",
+    forbidden: state.currentCard.forbidden,
+    wasCorrect: true,
+    answeredBy: state.players[playerIndex].name,
+    points,
+  };
 
   const nextState = {
     ...state,
@@ -152,16 +172,26 @@ export function handleCorrectByPlayer(state: GameState, playerId: string): GameS
     roundScore: state.roundScore + points,
     cardsInRound: state.cardsInRound + 1,
     lastWinnerId: playerId,
+    roundHistory: [...state.roundHistory, cardHistory],
   };
 
   return drawNextCard(nextState);
 }
 
 export function handlePass(state: GameState): GameState {
+  // Track skipped card
+  const cardHistory: CardHistory | null = state.currentCard ? {
+    word: state.currentCard.word || state.currentCard.answer || "",
+    forbidden: state.currentCard.forbidden,
+    wasCorrect: false,
+    points: calculatePoints(state.currentCard, state.difficulty),
+  } : null;
+
   const nextState = {
     ...state,
     skipsUsed: state.skipsUsed + 1,
     cardsInRound: state.cardsInRound + 1,
+    roundHistory: cardHistory ? [...state.roundHistory, cardHistory] : state.roundHistory,
   };
 
   return drawNextCard(nextState);
@@ -210,6 +240,7 @@ export function startNextTurn(state: GameState): GameState {
     cardsInRound: 0,
     currentCard: null,
     lastWinnerId: undefined,
+    roundHistory: [], // Reset history for new round
   };
 }
 

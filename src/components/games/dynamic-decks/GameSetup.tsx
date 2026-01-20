@@ -66,12 +66,16 @@ export function GameSetup({ onStart }: GameSetupProps) {
         <p className="text-white/40 text-sm">Choose your deck to begin</p>
       </div>
 
-      {/* How to Play - Collapsible */}
+      {/* How to Play - Collapsible, dynamic based on deck */}
       <InfoButton
         title="How to Play"
-        content="Draw cards with words or phrases. Give creative clues to help your teammate guess without using forbidden words. Score points for each correct guess!"
-        icon={<ShieldAlert className="w-4 h-4 text-[#ff006e]" />}
-        accentColor="#ff006e"
+        content={
+          selectedDeckId === "randomRhymes"
+            ? "Read the clue aloud. Your team guesses the rhyming answer! For example: 'A long-eared animal with a signal light' = 'A hare with a flare'."
+            : "Describe the word without using the forbidden words shown! Give creative clues to help your teammate guess. Score points for each correct guess!"
+        }
+        icon={<ShieldAlert className="w-4 h-4" style={{ color: selectedDeckId === "randomRhymes" ? "#8338ec" : "#ff006e" }} />}
+        accentColor={selectedDeckId === "randomRhymes" ? "#8338ec" : "#ff006e"}
       />
 
       {/* DECK SELECTION - Main Focus */}

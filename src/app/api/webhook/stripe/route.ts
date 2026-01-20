@@ -12,16 +12,25 @@ const getStripe = () => {
     });
 };
 
-// Initialize Supabase lazily with service role
+// Initialize Supabase with service role - REQUIRED for webhook operations
 const getSupabase = () => {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    if (!supabaseUrl || !supabaseKey) {
-        throw new Error('Supabase URL and Key must be defined');
+    if (!supabaseUrl) {
+        throw new Error('NEXT_PUBLIC_SUPABASE_URL must be defined');
     }
 
-    return createClient(supabaseUrl, supabaseKey);
+    if (!supabaseServiceKey) {
+        throw new Error('SUPABASE_SERVICE_ROLE_KEY must be defined for webhook operations');
+    }
+
+    return createClient(supabaseUrl, supabaseServiceKey, {
+        auth: {
+            autoRefreshToken: false,
+            persistSession: false,
+        },
+    });
 };
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
@@ -92,11 +101,13 @@ export async function POST(request: NextRequest) {
 async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
     const customerId = session.customer as string;
     const customerEmail = session.customer_email || session.customer_details?.email;
+    const userId = session.metadata?.user_id; // Linked from checkout API
 
     console.log('Checkout completed:', {
         sessionId: session.id,
         customerId,
         customerEmail,
+        userId,
         mode: session.mode,
     });
 
@@ -121,6 +132,7 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
 
         const supabase = getSupabase();
         await supabase.from('one_time_purchases').insert({
+            user_id: userId || null,
             stripe_payment_intent_id: paymentIntent.id,
             stripe_customer_id: customerId,
             customer_email: customerEmail,
@@ -135,8 +147,13 @@ async function handleCheckoutComplete(session: Stripe.Checkout.Session) {
 }
 
 async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
+    const stripe = getStripe();
     const customerId = subscription.customer as string;
     const priceId = subscription.items.data[0]?.price?.id;
+    
+    // Fetch customer to get email
+    const customer = await stripe.customers.retrieve(customerId);
+    const customerEmail = (customer as Stripe.Customer).email;
     
     // Determine plan type from price ID
     let planId = 'partypro_monthly'; // default
@@ -146,32 +163,68 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
         planId = 'partypro_yearly';
     }
 
+    const currentPeriodEnd = new Date((subscription as unknown as { current_period_end: number }).current_period_end * 1000);
+
     const subscriptionData = {
         stripe_subscription_id: subscription.id,
         stripe_customer_id: customerId,
+        customer_email: customerEmail,
         status: subscription.status,
         plan_id: planId,
-        // Access current_period_end from the subscription item
-        current_period_end: new Date((subscription as unknown as { current_period_end: number }).current_period_end * 1000).toISOString(),
+        current_period_end: currentPeriodEnd.toISOString(),
     };
 
     // Upsert subscription record
     const supabase = getSupabase();
-    const { error } = await supabase
+    const { error: subError } = await supabase
         .from('subscriptions')
         .upsert(subscriptionData, {
             onConflict: 'stripe_subscription_id',
         });
 
-    if (error) {
-        console.error('Failed to update subscription:', error);
-        throw error;
+    if (subError) {
+        console.error('Failed to update subscription:', subError);
+        throw subError;
+    }
+
+    // Update user profile is_pro status if we have their email
+    if (customerEmail && subscription.status === 'active') {
+        // First find the user by email
+        const { data: authUsers } = await supabase.auth.admin.listUsers();
+        const user = authUsers?.users.find(u => u.email === customerEmail);
+        
+        if (user) {
+            // Map planId to pro_tier
+            const proTier = planId.replace('partypro_', ''); // weekly, monthly, yearly
+            
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .update({
+                    is_pro: true,
+                    pro_tier: proTier,
+                    pro_expires_at: currentPeriodEnd.toISOString(),
+                })
+                .eq('id', user.id);
+
+            if (profileError) {
+                console.error('Failed to update profile is_pro:', profileError);
+            } else {
+                console.log('Updated profile is_pro for user:', user.id);
+            }
+        }
     }
 
     console.log('Subscription updated:', subscription.id, subscription.status);
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
+    const stripe = getStripe();
+    const customerId = subscription.customer as string;
+    
+    // Fetch customer to get email
+    const customer = await stripe.customers.retrieve(customerId);
+    const customerEmail = (customer as Stripe.Customer).email;
+
     const supabase = getSupabase();
     const { error } = await supabase
         .from('subscriptions')
@@ -181,6 +234,29 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     if (error) {
         console.error('Failed to update canceled subscription:', error);
         throw error;
+    }
+
+    // Update user profile to remove pro status
+    if (customerEmail) {
+        const { data: authUsers } = await supabase.auth.admin.listUsers();
+        const user = authUsers?.users.find(u => u.email === customerEmail);
+        
+        if (user) {
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .update({
+                    is_pro: false,
+                    pro_tier: null,
+                    pro_expires_at: null,
+                })
+                .eq('id', user.id);
+
+            if (profileError) {
+                console.error('Failed to update profile is_pro:', profileError);
+            } else {
+                console.log('Removed pro status for user:', user.id);
+            }
+        }
     }
 
     console.log('Subscription canceled:', subscription.id);

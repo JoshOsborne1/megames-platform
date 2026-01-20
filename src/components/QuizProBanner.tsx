@@ -4,61 +4,63 @@ import { motion } from "framer-motion";
 import { Crown, Check, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PRICING, QUIZPRO_BENEFITS } from "@/lib/subscription";
+import Link from "next/link";
 
 interface QuizProBannerProps {
     compact?: boolean;
-    onSubscribeClick?: () => void;
 }
 
-export function QuizProBanner({ compact = false, onSubscribeClick }: QuizProBannerProps) {
+export function QuizProBanner({ compact = false }: QuizProBannerProps) {
     if (compact) {
         return (
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="mb-6"
-            >
-                <div
-                    onClick={onSubscribeClick}
-                    className="bg-gradient-to-r from-[#FFD700]/20 to-[#ff006e]/20 border border-[#FFD700]/30 rounded-xl p-4 cursor-pointer hover:border-[#FFD700]/50 transition-colors"
+            <Link href="/shop" className="block">
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 }}
+                    className="mb-6"
                 >
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <div className="p-2 bg-[#FFD700]/20 rounded-lg">
-                                <Crown className="w-5 h-5 text-[#FFD700]" />
+                    <div
+                        className="bg-linear-to-r from-[#FFD700]/20 to-neon-pink/20 border border-[#FFD700]/30 rounded-xl p-4 cursor-pointer hover:border-[#FFD700]/50 transition-colors"
+                    >
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-[#FFD700]/20 rounded-lg">
+                                    <Crown className="w-5 h-5 text-[#FFD700]" />
+                                </div>
+                                <div>
+                                    <span className="font-display font-bold text-white block">
+                                        PartyPro
+                                    </span>
+                                    <span className="text-gray-400 text-sm">
+                                        Unlock all content
+                                    </span>
+                                </div>
                             </div>
-                            <div>
-                                <span className="font-display font-bold text-white block">
-                                    QuizPro
+                            <div className="text-right">
+                                <span className="text-[#FFD700] font-bold">
+                                    {PRICING.yearly.label}
                                 </span>
-                                <span className="text-gray-400 text-sm">
-                                    Unlock all content
+                                <span className="text-[#39ff14] text-xs block">
+                                    {PRICING.yearly.savings}
                                 </span>
                             </div>
-                        </div>
-                        <div className="text-right">
-                            <span className="text-[#FFD700] font-bold">
-                                {PRICING.yearly.label}
-                            </span>
-                            <span className="text-[#39ff14] text-xs block">
-                                {PRICING.yearly.savings}
-                            </span>
                         </div>
                     </div>
-                </div>
-            </motion.div>
+                </motion.div>
+            </Link>
         );
     }
 
     return (
-        <motion.div
+        <Link href="/shop" className="block">
+            <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="mb-6"
         >
-            <div className="bg-gradient-to-br from-[#1a0f2e] to-[#0a0015] border border-[#FFD700]/30 rounded-2xl p-6 relative overflow-hidden">
+            <div className="bg-linear-to-br from-[#1a0f2e] to-[#0a0015] border border-[#FFD700]/30 rounded-2xl p-6 relative overflow-hidden">
                 {/* Sparkle decoration */}
                 <div className="absolute top-4 right-4 text-[#FFD700]/20">
                     <Sparkles className="w-24 h-24" />
@@ -71,7 +73,7 @@ export function QuizProBanner({ compact = false, onSubscribeClick }: QuizProBann
                     </div>
                     <div>
                         <h2 className="font-display text-2xl font-bold text-white">
-                            QuizPro
+                            PartyPro
                         </h2>
                         <p className="text-gray-400 text-sm">
                             Unlock the full experience
@@ -112,13 +114,13 @@ export function QuizProBanner({ compact = false, onSubscribeClick }: QuizProBann
                 </div>
 
                 <Button
-                    onClick={onSubscribeClick}
-                    className="w-full bg-gradient-to-r from-[#FFD700] to-[#ff006e] text-black font-bold py-6 text-lg"
+                    className="w-full bg-linear-to-r from-[#FFD700] to-neon-pink text-black font-bold py-6 text-lg"
                 >
                     <Crown className="w-5 h-5 mr-2" />
-                    Get QuizPro
+                    Get PartyPro
                 </Button>
             </div>
-        </motion.div>
+            </motion.div>
+        </Link>
     );
 }

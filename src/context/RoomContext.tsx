@@ -1,8 +1,8 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
+import { createContext, useContext, ReactNode, useCallback } from "react";
 import { GameConfig, GAMES } from "@/config/games";
-import { useMultiplayerRoom, Room, RoomPlayer } from "@/hooks/useMultiplayerRoom";
+import { useMultiplayerRoom } from "@/hooks/useMultiplayerRoom";
 
 interface RoomContextPlayer {
     id: string;
@@ -35,6 +35,7 @@ interface RoomContextType {
     setMaxPlayers: (max: number) => Promise<void>;
     setReady: (isReady: boolean) => Promise<void>;
     startGame: () => Promise<boolean>;
+    kickPlayer: (playerId: string) => Promise<boolean>;
 }
 
 const defaultRoom: RoomState = {
@@ -66,6 +67,7 @@ export function RoomProvider({ children }: { children: ReactNode }) {
         setMaxPlayers: dbSetMaxPlayers,
         setReady: dbSetReady,
         startGame: dbStartGame,
+        kickPlayer: dbKickPlayer,
     } = useMultiplayerRoom();
 
     // Transform DB data to context format
@@ -120,6 +122,10 @@ export function RoomProvider({ children }: { children: ReactNode }) {
         return dbStartGame();
     }, [dbStartGame]);
 
+    const kickPlayer = useCallback(async (playerId: string): Promise<boolean> => {
+        return dbKickPlayer(playerId);
+    }, [dbKickPlayer]);
+
     return (
         <RoomContext.Provider
             value={{
@@ -134,6 +140,7 @@ export function RoomProvider({ children }: { children: ReactNode }) {
                 setMaxPlayers,
                 setReady,
                 startGame,
+                kickPlayer,
             }}
         >
             {children}

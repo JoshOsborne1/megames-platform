@@ -11,11 +11,11 @@ interface DynamicCardProps {
   deckId?: string;
 }
 
-export function DynamicCard({ card, difficulty, deckId = "classic" }: DynamicCardProps) {
+export function DynamicCard({ card, difficulty }: DynamicCardProps) {
   const isRhymesCard = Boolean(card.clue && card.answer);
   const forbiddenCount = difficulty === "easy" ? 2 : difficulty === "medium" ? 3 : 4;
   const activeForbidden = card.forbidden.slice(0, forbiddenCount);
-  const actualPoints = calculatePoints(card, difficulty, deckId);
+  const actualPoints = calculatePoints(card, difficulty);
 
   const getCardDifficulty = (points: number): "easy" | "medium" | "hard" => {
     if (points <= 20) return "easy";
@@ -61,20 +61,20 @@ export function DynamicCard({ card, difficulty, deckId = "classic" }: DynamicCar
         </div>
 
         {/* Answer Section */}
-        <div className="bg-white/5 border border-[#8338ec]/30 rounded-xl p-5">
+        <div className="bg-white/5 border border-neon-purple/30 rounded-xl p-5">
           <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2 text-[#8338ec]">
+            <div className="flex items-center gap-2 text-neon-purple">
               <Sparkles className="w-4 h-4" />
               <span className="text-[10px] font-medium uppercase tracking-wider">The Answer</span>
             </div>
-            <span className="text-[10px] text-[#ff006e] bg-[#ff006e]/10 px-2 py-0.5 rounded uppercase">Don&apos;t Say!</span>
+            <span className="text-[10px] text-neon-pink bg-neon-pink/10 px-2 py-0.5 rounded uppercase">Don&apos;t Say!</span>
           </div>
           <motion.div
             initial={{ scale: 0.95 }}
             animate={{ scale: 1 }}
-            className="py-3 px-4 bg-[#8338ec]/10 border border-[#8338ec]/20 rounded-lg"
+            className="py-3 px-4 bg-neon-purple/10 border border-neon-purple/20 rounded-lg"
           >
-            <p className="font-display font-bold text-[#8338ec] text-xl text-center uppercase">{card.answer}</p>
+            <p className="font-display font-bold text-neon-purple text-xl text-center uppercase">{card.answer}</p>
           </motion.div>
           <p className="text-center text-[10px] text-white/30 mt-3 italic">This is what they&apos;re trying to guess</p>
         </div>
@@ -115,10 +115,10 @@ export function DynamicCard({ card, difficulty, deckId = "classic" }: DynamicCar
       </div>
 
       {/* Forbidden Words */}
-      <div className="bg-white/5 border border-[#ff006e]/30 rounded-xl p-5">
-        <div className="flex items-center gap-2 text-[#ff006e] mb-3">
+      <div className="bg-white/5 border border-neon-pink/30 rounded-xl p-5">
+        <div className="flex items-center gap-2 text-neon-pink mb-3">
           <Ban className="w-4 h-4" />
-          <span className="text-[10px] font-medium uppercase tracking-wider">Don't Say</span>
+          <span className="text-[10px] font-medium uppercase tracking-wider">Don&apos;t Say</span>
         </div>
         <div className="grid grid-cols-2 gap-2">
           {activeForbidden.map((word, i) => (
@@ -129,7 +129,7 @@ export function DynamicCard({ card, difficulty, deckId = "classic" }: DynamicCar
               // Double check the implementation plan or ask the developer.
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="py-2 px-3 bg-[#ff006e]/10 border border-[#ff006e]/20 rounded-lg text-[#ff006e] text-sm font-medium text-center uppercase"
+              className="py-2 px-3 bg-neon-pink/10 border border-neon-pink/20 rounded-lg text-neon-pink text-sm font-medium text-center uppercase"
             >
               {word}
             </motion.div>

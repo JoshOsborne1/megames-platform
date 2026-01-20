@@ -64,13 +64,13 @@ export function Header() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${scrolled
+        className={`fixed top-0 left-0 right-0 z-40 pt-safe transition-all duration-300 ${scrolled
           ? "bg-[#0a0015]/95 backdrop-blur-xl border-b-2 border-[#ff006e]/30 shadow-[0_0_30px_rgba(255,0,110,0.2)]"
           : "bg-[#0a0015]/70 backdrop-blur-md border-b border-[#8338ec]/20"
           }`}
       >
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative flex items-center justify-between h-16 md:h-20">
+          <div className="relative flex items-center justify-between h-14 md:h-16">
             <Link href="/" className="flex items-center gap-3 group z-10">
               <motion.div
                 whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}

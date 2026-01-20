@@ -74,8 +74,8 @@ export function AppShell({ children, hideNav = false }: AppShellProps) {
             {/* Minimal App Header */}
             {!shouldHideNav && <AppHeader title="" showBack={false} />}
 
-            {/* Main Content */}
-            <main className={`flex-1 relative z-10 ${!shouldHideNav ? "pt-14 pb-20" : ""}`}>
+            {/* Main Content - pt-safe accounts for dynamic island, pt-14 for header height */}
+            <main className={`flex-1 relative z-10 ${!shouldHideNav ? "pt-safe pb-20" : ""}`} style={!shouldHideNav ? { paddingTop: "calc(max(env(safe-area-inset-top), 59px) + 56px)" } : {}}>
                 {children}
             </main>
 

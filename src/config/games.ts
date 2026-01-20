@@ -3,6 +3,7 @@ import {
     ShieldAlert,
     Eye,
     Brain,
+    Wrench,
     LucideIcon
 } from "lucide-react";
 
@@ -69,10 +70,23 @@ export const GAMES: GameConfig[] = [
         icon: Brain,
         color: "#22C55E",
         route: "/games/quiz-quarter",
-        isHot: true,
         playerCount: "2-10",
         duration: "5-15m",
         slogan: "Know It All",
         tags: ["Trivia", "Knowledge", "Solo/Party"],
+    },
+    {
+        id: "game-gadgets",
+        name: "Game Gadgets",
+        description: "Dice, timers, and random generators.",
+        fullDescription: "A toolkit of animated party game utilities. Roll dice, generate random words/numbers, set timers - all with satisfying 3D animations and haptics.",
+        icon: Wrench,
+        color: "#F59E0B",
+        route: "/games/game-gadgets",
+        isHot: true,
+        playerCount: "Any",
+        duration: "Utility",
+        slogan: "Power Your Party",
+        tags: ["Utility", "Tools", "Dice"],
     }
 ];

@@ -1,30 +1,19 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-
+import { Suspense } from "react";
 import { motion } from "framer-motion";
 import { AppShell } from "@/components/AppShell";
 import { ChevronRight } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { GAMES, GameConfig } from "@/config/games";
-import { createClient } from "@/lib/supabase/client";
-import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { useHaptic } from "@/hooks/useHaptic";
 import { QuizProBanner } from "@/components/QuizProBanner";
 
 function GamesContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const mode = searchParams.get("mode"); // "local" or "online" from home page
-  const [user, setUser] = useState<SupabaseUser | null>(null);
   const { trigger } = useHaptic();
 
-  useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
-    });
-  }, []);
+
 
   const handleGameSelect = (game: GameConfig) => {
     trigger();
@@ -53,7 +42,7 @@ function GamesContent() {
               transition={{ delay: index * 0.1 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleGameSelect(game)}
-              className="widget-card !p-3 flex items-center gap-3 group !rounded-2xl"
+              className="widget-card p-3! flex items-center gap-3 group rounded-2xl!"
               style={{
                 borderColor: `${game.color}40`,
                 background: `linear-gradient(135deg, ${game.color}08, transparent 60%)`
@@ -79,7 +68,7 @@ function GamesContent() {
                     {game.name}
                   </h3>
                   {game.isHot && (
-                    <span className="px-1.5 py-0.5 text-[9px] font-bold uppercase rounded bg-gradient-to-r from-orange-500 to-red-500 text-white">
+                    <span className="px-1.5 py-0.5 text-[9px] font-bold uppercase rounded bg-linear-to-r from-orange-500 to-red-500 text-white">
                       New
                     </span>
                   )}
@@ -104,7 +93,7 @@ function GamesContent() {
 
         {/* PRO BANNER */}
         <div className="mb-8">
-          <QuizProBanner compact onSubscribeClick={() => { }} />
+          <QuizProBanner compact />
         </div>
       </div>
     </AppShell>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { STRIPE_PRICE_IDS, isSubscription } from '@/lib/stripe';
+import { createClient } from '@/lib/supabase/server';
 
 // Initialize Stripe lazily to avoid build errors if env vars are missing
 const getStripe = () => {
@@ -15,7 +16,7 @@ const getStripe = () => {
 export async function POST(request: NextRequest) {
     try {
         const stripe = getStripe();
-        const { planId, mode } = await request.json();
+        const { planId } = await request.json();
 
         if (!planId) {
             return NextResponse.json(
@@ -33,13 +34,17 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        // Get current user for linking
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+
         // Determine checkout mode based on plan type
         const checkoutMode = isSubscription(planId) ? 'subscription' : 'payment';
 
         // Get the origin for redirect URLs
         const origin = request.headers.get('origin') || 'http://localhost:3000';
 
-        // Create Stripe Checkout Session
+        // Create Stripe Checkout Session with user metadata
         const session = await stripe.checkout.sessions.create({
             mode: checkoutMode,
             payment_method_types: ['card'],
@@ -51,6 +56,13 @@ export async function POST(request: NextRequest) {
             ],
             success_url: `${origin}/shop/success?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${origin}/shop/cancel`,
+            // Pre-fill customer email if logged in
+            customer_email: user?.email || undefined,
+            // Link user_id in metadata for webhook processing
+            metadata: {
+                user_id: user?.id || '',
+                plan_id: planId,
+            },
             // Enable Apple Pay and Google Pay automatically through Link
             payment_method_options: {
                 card: {

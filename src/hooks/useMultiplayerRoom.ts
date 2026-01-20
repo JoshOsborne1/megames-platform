@@ -38,6 +38,7 @@ interface UseMultiplayerRoomReturn {
     setMaxPlayers: (max: number) => Promise<void>;
     setReady: (isReady: boolean) => Promise<void>;
     startGame: () => Promise<boolean>;
+    kickPlayer: (playerId: string) => Promise<boolean>;
 }
 
 export function useMultiplayerRoom(): UseMultiplayerRoomReturn {
@@ -78,7 +79,23 @@ export function useMultiplayerRoom(): UseMultiplayerRoomReturn {
             .on(
                 "postgres_changes",
                 { event: "*", schema: "public", table: "room_players", filter: `room_id=eq.${roomId}` },
-                async () => {
+                async (payload) => {
+                    // Handle player removal (kicked or left)
+                    if (payload.eventType === "DELETE") {
+                        const deletedPlayer = payload.old as RoomPlayer;
+                        // If current user was kicked, clean up
+                        if (deletedPlayer.user_id === userId) {
+                            setRoom(null);
+                            setPlayers([]);
+                            setError("You were removed from the room");
+                            if (channel) {
+                                supabase.removeChannel(channel);
+                                setChannel(null);
+                            }
+                            return;
+                        }
+                    }
+                    
                     // Refetch all players when there's a change
                     const { data } = await supabase
                         .from("room_players")
@@ -92,7 +109,7 @@ export function useMultiplayerRoom(): UseMultiplayerRoomReturn {
 
         setChannel(roomChannel);
         return roomChannel;
-    }, [supabase]);
+    }, [supabase, userId]);
 
     // Cleanup subscription on unmount
     useEffect(() => {
@@ -270,7 +287,7 @@ export function useMultiplayerRoom(): UseMultiplayerRoomReturn {
         }
     };
 
-    // Leave room
+    // Leave room with host migration
     const leaveRoom = async (): Promise<void> => {
         if (!room || !userId) return;
 
@@ -282,9 +299,28 @@ export function useMultiplayerRoom(): UseMultiplayerRoomReturn {
                 .eq("room_id", room.id)
                 .eq("user_id", userId);
 
-            // If host leaves, delete the room
+            // If host leaves, try to migrate or delete
             if (isHost) {
-                await supabase.from("rooms").delete().eq("id", room.id);
+                // Get remaining players
+                const { data: remainingPlayers } = await supabase
+                    .from("room_players")
+                    .select("*")
+                    .eq("room_id", room.id)
+                    .order("joined_at")
+                    .limit(1);
+
+                if (remainingPlayers && remainingPlayers.length > 0) {
+                    // Migrate host to oldest player
+                    const newHost = remainingPlayers[0];
+                    await supabase
+                        .from("rooms")
+                        .update({ host_id: newHost.user_id })
+                        .eq("id", room.id);
+                    console.log("Host migrated to:", newHost.display_name);
+                } else {
+                    // No players left, delete the room
+                    await supabase.from("rooms").delete().eq("id", room.id);
+                }
             }
 
             // Cleanup
@@ -296,6 +332,36 @@ export function useMultiplayerRoom(): UseMultiplayerRoomReturn {
             setPlayers([]);
         } catch (err) {
             setError(err instanceof Error ? err.message : "Failed to leave room");
+        }
+    };
+
+    // Host: Kick a player from the room
+    const kickPlayer = async (playerId: string): Promise<boolean> => {
+        if (!room || !isHost) {
+            setError("Only the host can kick players");
+            return false;
+        }
+
+        // Can't kick yourself
+        if (playerId === userId) {
+            setError("Cannot kick yourself");
+            return false;
+        }
+
+        try {
+            const { error: kickError } = await supabase
+                .from("room_players")
+                .delete()
+                .eq("room_id", room.id)
+                .eq("user_id", playerId);
+
+            if (kickError) throw kickError;
+            
+            console.log("Kicked player:", playerId);
+            return true;
+        } catch (err) {
+            setError(err instanceof Error ? err.message : "Failed to kick player");
+            return false;
         }
     };
 
@@ -386,5 +452,6 @@ export function useMultiplayerRoom(): UseMultiplayerRoomReturn {
         setMaxPlayers,
         setReady,
         startGame,
+        kickPlayer,
     };
 }

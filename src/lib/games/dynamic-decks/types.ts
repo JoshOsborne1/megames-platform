@@ -41,6 +41,15 @@ export interface Player {
   score: number;
 }
 
+// Track cards played during a round for history display
+export interface CardHistory {
+  word: string;
+  forbidden: string[];
+  wasCorrect: boolean;
+  answeredBy?: string; // Player name who got it
+  points: number;
+}
+
 export interface GameState {
   players: Player[];
   currentPlayerIndex: number;
@@ -61,4 +70,6 @@ export interface GameState {
   maxCardsInRound: number;
   deckId: string;
   lastWinnerId?: string;  // NEW: Track who won the last card (for QM mode display)
+  roundHistory: CardHistory[];  // Cards played this round
 }
+

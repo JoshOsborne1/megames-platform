@@ -33,7 +33,8 @@ function MultiplayerContent() {
         setIsPublic,
         setMaxPlayers,
         setReady,
-        startGame
+        startGame,
+        kickPlayer
     } = useRoom();
 
     const [user, setUser] = useState<SupabaseUser | null>(null);
@@ -342,11 +343,22 @@ function MultiplayerContent() {
                                             {player.isHost && <Crown className="w-3 h-3 text-amber-400" />}
                                         </div>
                                     </div>
-                                    {player.isReady && (
-                                        <div className="px-2 py-1 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase">
-                                            Ready
-                                        </div>
-                                    )}
+                                    <div className="flex items-center gap-2">
+                                        {player.isReady && (
+                                            <div className="px-2 py-1 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase">
+                                                Ready
+                                            </div>
+                                        )}
+                                        {room.isHost && !player.isHost && (
+                                            <button
+                                                onClick={() => kickPlayer(player.id)}
+                                                className="p-1.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-colors"
+                                                title="Kick player"
+                                            >
+                                                <X className="w-3 h-3" />
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             ))}
 

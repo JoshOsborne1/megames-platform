@@ -92,7 +92,7 @@ export class RoomManager {
     private async subscribeToRoom(roomCode: string) {
         const channelName = `room:${roomCode}`;
 
-        this.channel = this.supabase.channel(channelName, {
+        const channel = this.supabase.channel(channelName, {
             config: {
                 broadcast: { self: true },
                 presence: { key: this.playerId },
@@ -100,8 +100,8 @@ export class RoomManager {
         });
 
         // Handle presence (players joining/leaving)
-        this.channel.on("presence", { event: "sync" }, () => {
-            const presenceState = this.channel?.presenceState() || {};
+        channel.on("presence", { event: "sync" }, () => {
+            const presenceState = channel.presenceState() || {};
             const players: RoomPlayer[] = [];
 
             Object.entries(presenceState).forEach(([key, presences]) => {
@@ -126,7 +126,7 @@ export class RoomManager {
         });
 
         // Handle broadcast events (game state, actions)
-        this.channel.on("broadcast", { event: "game_event" }, ({ payload }) => {
+        channel.on("broadcast", { event: "game_event" }, ({ payload }: { payload: unknown }) => {
             const event = payload as BroadcastEvent;
             console.log("[Multiplayer] Received event:", event.type);
 
@@ -163,9 +163,9 @@ export class RoomManager {
         });
 
         // Subscribe and track presence
-        await this.channel.subscribe(async (status) => {
+        await channel.subscribe(async (status: string) => {
             if (status === "SUBSCRIBED") {
-                await this.channel?.track({
+                await channel.track({
                     id: this.playerId,
                     name: this.playerName,
                     online_at: new Date().toISOString(),
@@ -173,6 +173,8 @@ export class RoomManager {
                 console.log(`[Multiplayer] Joined room ${roomCode} as ${this.playerName}`);
             }
         });
+
+        this.channel = channel;
     }
 
     // Broadcast game state to all players (host only)

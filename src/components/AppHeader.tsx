@@ -47,14 +47,14 @@ export function AppHeader({ title, showBack = false }: AppHeaderProps) {
 
     return (
         <motion.header
-            className="fixed top-0 left-0 right-0 z-40 h-16 transition-colors duration-300"
+            className="fixed top-0 left-0 right-0 z-40 pt-safe transition-colors duration-300"
             style={{
                 backgroundColor: `rgba(10, 0, 21, ${bgOpacity.get()})`,
                 backdropFilter: `blur(${blur.get()}px)`,
                 borderBottom: `1px solid ${borderColor.get()}`
             }}
         >
-            <div className="flex items-center justify-between h-full px-6 max-w-7xl mx-auto">
+            <div className="flex items-center justify-between h-14 px-6 max-w-7xl mx-auto">
                 {/* Left: Back button or Logo */}
                 <div className="flex items-center gap-3 w-24">
                     {showBack ? (
