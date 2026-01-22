@@ -3,18 +3,16 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useRoom } from "@/context/RoomContext";
 import { useRouter, usePathname } from "next/navigation";
-import { Users, Copy, X, ChevronRight } from "lucide-react";
+import { Users, X, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
 
 export function RoomBanner() {
     const { room, leaveRoom } = useRoom();
     const router = useRouter();
     const pathname = usePathname();
-    const [copied, setCopied] = useState(false);
 
     // Don't show on multiplayer page or game pages (games handle their own UI)
-    const hideOnPaths = ["/multiplayer", "/games/"];
+    const hideOnPaths = ["/multiplayer", "/lobby"];
     const shouldHide = hideOnPaths.some(p => pathname.startsWith(p));
 
     if (!room.isActive || shouldHide) return null;
@@ -22,9 +20,7 @@ export function RoomBanner() {
     const handleCopy = (e: React.MouseEvent) => {
         e.stopPropagation();
         navigator.clipboard.writeText(room.roomCode);
-        setCopied(true);
         toast.success("Code copied!");
-        setTimeout(() => setCopied(false), 2000);
     };
 
     const handleLeave = (e: React.MouseEvent) => {
@@ -47,12 +43,12 @@ export function RoomBanner() {
             >
                 <div
                     onClick={handleGoToRoom}
-                    className="bg-[#0a0015]/95 backdrop-blur-xl border border-[#8338ec]/30 rounded-xl px-3 py-2.5 shadow-xl cursor-pointer flex items-center gap-3"
+                    className="bg-[#0a0015]/95 backdrop-blur-xl border border-neon-purple/30 rounded-xl px-3 py-2.5 shadow-xl cursor-pointer flex items-center gap-3"
                     style={{ boxShadow: '0 0 20px rgba(131, 56, 236, 0.2)' }}
                 >
                     {/* Room Info */}
                     <div className="flex-1 min-w-0 flex items-center gap-2">
-                        <span className="text-[9px] font-bold text-[#8338ec] uppercase tracking-wide shrink-0">
+                        <span className="text-[9px] font-bold text-neon-purple uppercase tracking-wide shrink-0">
                             {room.isHost ? "HOST" : "ROOM"}
                         </span>
                         <button
@@ -83,7 +79,7 @@ export function RoomBanner() {
                         >
                             <X className="w-3.5 h-3.5" />
                         </button>
-                        <div className="p-1.5 rounded-md bg-[#8338ec]/20 text-[#8338ec]">
+                        <div className="p-1.5 rounded-md bg-neon-purple/20 text-neon-purple">
                             <ChevronRight className="w-3.5 h-3.5" />
                         </div>
                     </div>

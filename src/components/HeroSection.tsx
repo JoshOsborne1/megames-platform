@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
-import { Sparkles, Users, Zap, Gamepad2, Play } from "lucide-react";
+import { Zap, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useEffect, useMemo, useRef, useState } from "react";
 
@@ -83,7 +83,7 @@ function Particle({ delay, x, size }: { delay: number; x: number; size: number }
         left: `${x}%`,
         width: size,
         height: size,
-        backgroundImage: `radial-gradient(circle, rgba(255, 0, 110, 0.8), transparent)`,
+        backgroundImage: `radial-gradient(circle, var(--color-neon-pink), transparent)`,
         filter: `blur(${size / 4}px)`,
       }}
     />
@@ -129,7 +129,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section ref={ref} className="relative min-h-[80dvh] md:min-h-[100dvh] flex items-center justify-center overflow-hidden px-4 py-12 md:py-0">
+    <section ref={ref} className="relative min-h-[80dvh] md:min-h-dvh flex items-center justify-center overflow-hidden px-4 py-12 md:py-0">
       <div className="absolute inset-0 scanline" />
 
       <motion.div style={{ y, opacity }} className="absolute inset-0">
@@ -140,7 +140,7 @@ export function HeroSection() {
               opacity: [0.3, 0.5, 0.3],
             }}
             transition={{ duration: 8, repeat: Infinity }}
-            className="absolute top-1/4 left-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-[#ff006e] rounded-full filter blur-[100px] md:blur-[180px]"
+            className="absolute top-1/4 left-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-neon-pink rounded-full filter blur-[100px] md:blur-[180px]"
           />
           <motion.div
             animate={{
@@ -148,7 +148,7 @@ export function HeroSection() {
               opacity: [0.4, 0.6, 0.4],
             }}
             transition={{ duration: 10, repeat: Infinity }}
-            className="absolute bottom-1/4 right-1/4 w-[350px] md:w-[600px] h-[350px] md:h-[600px] bg-[#8338ec] rounded-full filter blur-[120px] md:blur-[200px]"
+            className="absolute bottom-1/4 right-1/4 w-[350px] md:w-[600px] h-[350px] md:h-[600px] bg-neon-purple rounded-full filter blur-[120px] md:blur-[200px]"
           />
           <motion.div
             animate={{
@@ -156,7 +156,7 @@ export function HeroSection() {
               opacity: [0.3, 0.5, 0.3],
             }}
             transition={{ duration: 12, repeat: Infinity }}
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[550px] h-[300px] md:h-[550px] bg-[#00f5ff] rounded-full filter blur-[110px] md:blur-[190px]"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] md:w-[550px] h-[300px] md:h-[550px] bg-electric-cyan rounded-full filter blur-[110px] md:blur-[190px]"
           />
         </div>
       </motion.div>
@@ -228,7 +228,7 @@ export function HeroSection() {
             transition={{ delay: 1.4 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 px-4"
           >
-            <Link href="/games" className="w-full sm:w-auto">
+            <Link href="/multiplayer" className="w-full sm:w-auto">
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -236,9 +236,9 @@ export function HeroSection() {
               >
                 <Button
                   size="lg"
-                  className="w-full sm:w-auto relative font-display font-black text-lg md:text-xl px-8 md:px-10 py-6 md:py-8 rounded-2xl bg-gradient-to-r from-[#ff006e] via-[#8338ec] to-[#00f5ff] text-white overflow-hidden group pulse-glow touch-manipulation min-h-[64px] md:min-h-[80px]"
+                  className="w-full sm:w-auto relative font-display font-black text-lg md:text-xl px-8 md:px-10 py-6 md:py-8 rounded-2xl bg-linear-to-r from-neon-pink via-neon-purple to-electric-cyan text-white overflow-hidden group pulse-glow touch-manipulation min-h-[64px] md:min-h-[80px]"
                 >
-                  <span className="absolute inset-0 bg-gradient-to-r from-[#00f5ff] via-[#fb00ff] to-[#ff006e] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <span className="absolute inset-0 bg-linear-to-r from-electric-cyan via-[#fb00ff] to-neon-pink opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <span className="relative flex items-center gap-2 md:gap-3 justify-center">
                     <Play className="w-5 h-5 md:w-6 md:h-6 fill-white" />
                     PLAY NOW

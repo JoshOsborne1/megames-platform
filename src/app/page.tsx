@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { AppShell } from "@/components/AppShell";
 import { QuizProBanner } from "@/components/QuizProBanner";
 import { InstallPrompt } from "@/components/InstallPrompt";
+import { DailyQuizWidget } from "@/components/DailyQuiz";
 import {
   Users, ChevronRight, Globe, Gamepad2
 } from "lucide-react";
@@ -138,6 +139,11 @@ export default function HomePage() {
           ))}
         </div>
 
+        {/* DAILY QUIZ WIDGET */}
+        <div className="mb-6">
+          <DailyQuizWidget />
+        </div>
+
         {/* PLAY MODE GRID - Online & Local */}
         <div className="grid grid-cols-2 gap-3 mb-6">
           {/* ONLINE WIDGET */}
@@ -160,7 +166,7 @@ export default function HomePage() {
           {/* LOCAL WIDGET */}
           <motion.div
             whileTap={{ scale: 0.96 }}
-            onClick={() => router.push("/games?mode=local")}
+            onClick={() => router.push("/lobby?mode=local")}
             className="widget-card aspect-square flex flex-col justify-between bg-linear-to-br from-neon-pink/20 to-neon-pink/5 border-neon-pink/30 group"
           >
             <div className="flex justify-between items-start">
@@ -179,7 +185,7 @@ export default function HomePage() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-3 px-1">
             <h3 className="text-xs font-bold text-white/40 uppercase tracking-widest">More Games</h3>
-            <Link href="/games" className="text-[10px] font-bold text-neon-purple uppercase tracking-wider hover:text-white transition-colors">View All</Link>
+            <Link href="/lobby" className="text-[10px] font-bold text-neon-purple uppercase tracking-wider hover:text-white transition-colors">View All</Link>
           </div>
           <div className="space-y-3">
             {moreGames.map(game => (

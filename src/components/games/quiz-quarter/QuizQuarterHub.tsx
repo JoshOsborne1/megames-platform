@@ -180,7 +180,7 @@ export function QuizQuarterHub({ mode = "local" }: QuizQuarterHubProps) {
     // Leave game
     const handleLeave = useCallback(() => {
         trigger();
-        router.push("/games");
+        router.push("/lobby");
     }, [router, trigger]);
 
     // Play again with same settings

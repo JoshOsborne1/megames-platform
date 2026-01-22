@@ -30,7 +30,7 @@ const DIFFICULTY_OPTIONS: { id: MixedDifficulty; label: string; color: string; i
     { id: "mixed", label: "All", color: "#8338ec", icon: <Sparkles className="w-3 h-3" /> },
 ];
 
-export function QuizGameSetup({ onStart, onBack }: QuizGameSetupProps) {
+export function QuizGameSetup({ onStart }: QuizGameSetupProps) {
     const { trigger } = useHaptic();
 
     // Game mode - default to solo for minimal friction
@@ -133,7 +133,7 @@ export function QuizGameSetup({ onStart, onBack }: QuizGameSetupProps) {
         <div className="w-full max-w-md mx-auto px-4 pb-8">
             {/* Header */}
             <div className="text-center pt-4 mb-4">
-                <Link href="/games" className="inline-block mb-3">
+                <Link href="/lobby" className="inline-block mb-3">
                     <span className="text-white/40 text-sm hover:text-white/60 transition-colors">← Back</span>
                 </Link>
                 <h1 className="font-display font-bold text-2xl text-white">Quiz Quarter</h1>
@@ -181,13 +181,13 @@ export function QuizGameSetup({ onStart, onBack }: QuizGameSetupProps) {
                 <button
                     onClick={() => { trigger(); setGameMode("party"); }}
                     className={`p-5 rounded-2xl border-2 transition-all text-left relative overflow-hidden ${gameMode === "party"
-                        ? "border-[#ff006e] bg-[#ff006e]/10"
+                        ? "border-neon-pink bg-neon-pink/10"
                         : "border-white/10 bg-white/5 hover:bg-white/10"
                         }`}
                 >
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${gameMode === "party" ? "bg-[#ff006e]/20" : "bg-white/10"
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-3 ${gameMode === "party" ? "bg-neon-pink/20" : "bg-white/10"
                         }`}>
-                        <Users2 className={`w-6 h-6 ${gameMode === "party" ? "text-[#ff006e]" : "text-white/50"}`} />
+                        <Users2 className={`w-6 h-6 ${gameMode === "party" ? "text-neon-pink" : "text-white/50"}`} />
                     </div>
                     <h3 className={`font-display font-bold text-lg ${gameMode === "party" ? "text-white" : "text-white/70"}`}>
                         Challenge
@@ -197,7 +197,7 @@ export function QuizGameSetup({ onStart, onBack }: QuizGameSetupProps) {
                     </p>
                     {gameMode === "party" && (
                         <div className="absolute top-3 right-3">
-                            <div className="w-5 h-5 rounded-full bg-[#ff006e] flex items-center justify-center">
+                            <div className="w-5 h-5 rounded-full bg-neon-pink flex items-center justify-center">
                                 <Check className="w-3 h-3 text-white" />
                             </div>
                         </div>
@@ -212,8 +212,8 @@ export function QuizGameSetup({ onStart, onBack }: QuizGameSetupProps) {
                     className="w-full p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors flex items-center justify-between mb-6"
                 >
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-[#ff006e]/20 flex items-center justify-center">
-                            <Users className="w-5 h-5 text-[#ff006e]" />
+                        <div className="w-10 h-10 rounded-lg bg-neon-pink/20 flex items-center justify-center">
+                            <Users className="w-5 h-5 text-neon-pink" />
                         </div>
                         <div className="text-left">
                             <span className="text-white font-medium">{players.filter(n => n.trim()).length} Players</span>
@@ -293,7 +293,7 @@ export function QuizGameSetup({ onStart, onBack }: QuizGameSetupProps) {
                 whileTap={{ scale: 0.98 }}
                 onClick={handleStart}
                 disabled={!canStart}
-                className={`w-full py-4 rounded-xl text-white font-display font-bold text-lg disabled:opacity-50 flex items-center justify-center gap-2 ${gameMode === "solo" ? "bg-[#22C55E]" : "bg-[#ff006e]"
+                className={`w-full py-4 rounded-xl text-white font-display font-bold text-lg disabled:opacity-50 flex items-center justify-center gap-2 ${gameMode === "solo" ? "bg-[#22C55E]" : "bg-neon-pink"
                     }`}
             >
                 <Play className="w-5 h-5" />
@@ -329,7 +329,7 @@ export function QuizGameSetup({ onStart, onBack }: QuizGameSetupProps) {
                         >
                             <div className="bg-[#0a0015] border border-white/10 rounded-2xl p-5 shadow-2xl w-full max-w-sm pointer-events-auto">
                                 <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center gap-2 text-[#ff006e]">
+                                    <div className="flex items-center gap-2 text-neon-pink">
                                         <Users className="w-5 h-5" />
                                         <h3 className="font-display font-bold text-lg">Players</h3>
                                     </div>
@@ -378,7 +378,7 @@ export function QuizGameSetup({ onStart, onBack }: QuizGameSetupProps) {
                                         <button
                                             onClick={addPlayer}
                                             disabled={!newPlayerName.trim()}
-                                            className="px-4 bg-[#ff006e] text-white rounded-lg disabled:opacity-30"
+                                            className="px-4 bg-neon-pink text-white rounded-lg disabled:opacity-30"
                                         >
                                             Add
                                         </button>
@@ -387,7 +387,7 @@ export function QuizGameSetup({ onStart, onBack }: QuizGameSetupProps) {
 
                                 <button
                                     onClick={() => setShowPlayersModal(false)}
-                                    className="w-full py-3 rounded-xl bg-[#ff006e] text-white font-bold"
+                                    className="w-full py-3 rounded-xl bg-neon-pink text-white font-bold"
                                 >
                                     Done
                                 </button>

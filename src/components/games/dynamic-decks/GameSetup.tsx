@@ -59,7 +59,7 @@ export function GameSetup({ onStart }: GameSetupProps) {
     <div className="w-full max-w-md mx-auto px-4 pb-8">
       {/* Header */}
       <div className="text-center pt-4 mb-4">
-        <Link href="/games" className="inline-block mb-3">
+        <Link href="/lobby" className="inline-block mb-3">
           <span className="text-white/40 text-sm hover:text-white/60 transition-colors">← Back</span>
         </Link>
         <h1 className="font-display font-bold text-2xl text-white">Dynamic Decks</h1>
@@ -103,7 +103,7 @@ export function GameSetup({ onStart }: GameSetupProps) {
           className="flex-1 p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors flex items-center justify-between"
         >
           <div className="flex items-center gap-2">
-            <Users className="w-4 h-4 text-[#ff006e]" />
+            <Users className="w-4 h-4 text-neon-pink" />
             <span className="text-sm text-white font-medium">{players.length} Players</span>
           </div>
           <ChevronRight className="w-4 h-4 text-white/30" />
@@ -118,7 +118,7 @@ export function GameSetup({ onStart }: GameSetupProps) {
           >
             <Minus className="w-3 h-3" />
           </button>
-          <span className="w-8 text-center text-sm font-bold text-[#00f5ff]">{rounds}</span>
+          <span className="w-8 text-center text-sm font-bold text-electric-cyan">{rounds}</span>
           <button
             onClick={() => setRounds(Math.min(10, rounds + 1))}
             disabled={rounds >= 10}
@@ -143,7 +143,7 @@ export function GameSetup({ onStart }: GameSetupProps) {
         whileTap={{ scale: 0.98 }}
         onClick={handleStart}
         disabled={!canStart}
-        className="w-full py-4 rounded-xl bg-[#ff006e] text-white font-display font-bold text-lg disabled:opacity-50 flex items-center justify-center gap-2"
+        className="w-full py-4 rounded-xl bg-neon-pink text-white font-display font-bold text-lg disabled:opacity-50 flex items-center justify-center gap-2"
       >
         Start Game <ChevronRight className="w-5 h-5" />
       </motion.button>

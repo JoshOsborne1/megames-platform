@@ -357,7 +357,7 @@ export function GameGadgetsHub() {
 
       {/* Header */}
       <div className="text-center mb-3">
-        <Link href="/games" className="inline-block mb-1">
+        <Link href="/lobby" className="inline-block mb-1">
           <span className="text-white/40 text-sm hover:text-white/60">← Back</span>
         </Link>
         <div className="flex items-center justify-center gap-2">

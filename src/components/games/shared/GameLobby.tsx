@@ -36,7 +36,7 @@ export function GameLobby({
     onStart,
     startButtonText = "Begin Game",
     startDisabled = false,
-    backUrl = "/games",
+    backUrl = "/lobby",
     accentColor = "#ff006e",
     wideLayout = false,
 }: GameLobbyProps) {

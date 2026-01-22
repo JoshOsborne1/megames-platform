@@ -4,7 +4,6 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Home, LayoutGrid, ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 
 interface InGameNavProps {
     /** Game name to display in sidebar */
@@ -49,7 +48,7 @@ export function InGameNav({
 
     const navLinks = [
         { href: "/", label: "Home", icon: Home, color: "#00f5ff" },
-        { href: "/games", label: "All Games", icon: LayoutGrid, color: "#ff006e" },
+        { href: "/lobby?mode=local", label: "All Games", icon: LayoutGrid, color: "#ff006e" },
     ];
 
     return (
@@ -155,14 +154,14 @@ export function InGameNav({
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            onClick={() => setConfirmTarget(null)}
-                            className="fixed inset-0 bg-black/80 backdrop-blur-md z-[100]"
+                             onClick={() => setConfirmTarget(null)}
+                            className="fixed inset-0 bg-black/80 backdrop-blur-md z-100"
                         />
                         <motion.div
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
-                            className="fixed inset-0 z-[100] flex items-center justify-center p-4 pointer-events-none"
+                            className="fixed inset-0 z-100 flex items-center justify-center p-4 pointer-events-none"
                         >
                             <div className="bg-[#1a142e] border-2 border-white/10 p-8 rounded-3xl shadow-2xl w-full max-w-sm pointer-events-auto">
                                 <h3 className="font-display font-black text-2xl text-white mb-3 text-center">Leave Game?</h3>

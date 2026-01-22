@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Home, Gamepad2, User, ShoppingBag } from "lucide-react";
+import { Home, Globe, User, ShoppingBag } from "lucide-react";
 
 interface NavItem {
     href: string;
@@ -20,10 +20,10 @@ const navItems: NavItem[] = [
         matchPaths: ["/"]
     },
     {
-        href: "/games",
-        label: "Games",
-        icon: Gamepad2,
-        matchPaths: ["/games"]
+        href: "/multiplayer",
+        label: "Lobby",
+        icon: Globe,
+        matchPaths: ["/multiplayer", "/lobby"]
     },
     {
         href: "/shop",

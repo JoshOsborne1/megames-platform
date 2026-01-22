@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Users, Wifi } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export function QuickPlaySection() {
     return (
@@ -18,14 +17,14 @@ export function QuickPlaySection() {
             </h2>
             <div className="grid grid-cols-2 gap-3">
                 {/* Local Play */}
-                <Link href="/games">
+                <Link href="/lobby?mode=local">
                     <motion.div
                         whileTap={{ scale: 0.98 }}
-                        className="bg-gradient-to-br from-[#ff006e]/20 to-[#ff006e]/5 border border-[#ff006e]/30 rounded-xl p-4 h-full cursor-pointer hover:border-[#ff006e]/50 transition-colors"
+                        className="bg-linear-to-br from-neon-pink/20 to-neon-pink/5 border border-neon-pink/30 rounded-xl p-4 h-full cursor-pointer hover:border-neon-pink/50 transition-colors"
                     >
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="p-2 bg-[#ff006e]/20 rounded-lg">
-                                <Users className="w-5 h-5 text-[#ff006e]" />
+                            <div className="p-2 bg-neon-pink/20 rounded-lg">
+                                <Users className="w-5 h-5 text-neon-pink" />
                             </div>
                             <span className="font-display font-bold text-white">
                                 Play Local
@@ -38,14 +37,14 @@ export function QuickPlaySection() {
                 </Link>
 
                 {/* Multiplayer */}
-                <Link href="/lobbies">
+                <Link href="/multiplayer">
                     <motion.div
                         whileTap={{ scale: 0.98 }}
-                        className="bg-gradient-to-br from-[#8338ec]/20 to-[#8338ec]/5 border border-[#8338ec]/30 rounded-xl p-4 h-full cursor-pointer hover:border-[#8338ec]/50 transition-colors"
+                        className="bg-linear-to-br from-neon-purple/20 to-neon-purple/5 border border-neon-purple/30 rounded-xl p-4 h-full cursor-pointer hover:border-neon-purple/50 transition-colors"
                     >
                         <div className="flex items-center gap-3 mb-2">
-                            <div className="p-2 bg-[#8338ec]/20 rounded-lg">
-                                <Wifi className="w-5 h-5 text-[#8338ec]" />
+                            <div className="p-2 bg-neon-purple/20 rounded-lg">
+                                <Wifi className="w-5 h-5 text-neon-purple" />
                             </div>
                             <span className="font-display font-bold text-white">
                                 Create Lobby

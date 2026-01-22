@@ -76,7 +76,7 @@ export function UniversalGameSetup({
   defaultMode,
   children,
   rulesContent,
-  backUrl = "/games",
+  backUrl = "/lobby",
 }: UniversalGameSetupProps) {
   const {
     players,
