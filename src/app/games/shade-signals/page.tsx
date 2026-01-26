@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ColorSpectrum } from "@/components/games/shade-signals/ColorSpectrum";
 import { MultiplayerShadeSignals } from "@/components/games/shade-signals/MultiplayerShadeSignals";
-import { InGameNav, WatchAdButton, PlayersModal, InfoButton, GameModeSelector, Modal } from "@/components/games/shared";
+import { InGameNav, WatchAdButton, PlayersModal, InfoButton, GameModeSelector, Modal, GameErrorBoundary } from "@/components/games/shared";
 import { usePlayerSetup } from "@/hooks/usePlayerSetup";
 import { X, Trophy, ArrowRight, Palette, Users, Droplet, ChevronRight, Plus, Minus, Users2, Crown, RefreshCw } from "lucide-react";
 import Link from "next/link";
@@ -237,7 +237,11 @@ function ShadeSignalsContent() {
   if (phase === "setup") {
     // If online mode with room, use multiplayer component
     if (mode === "online" && isFromRoom && roomCode) {
-      return <MultiplayerShadeSignals roomCode={roomCode} />;
+      return (
+        <GameErrorBoundary gameName="Shade Signals" fallbackUrl="/multiplayer">
+          <MultiplayerShadeSignals roomCode={roomCode} />
+        </GameErrorBoundary>
+      );
     }
 
     // If online mode without room, redirect to multiplayer

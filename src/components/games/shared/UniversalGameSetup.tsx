@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Play, Users } from "lucide-react";
 import Link from "next/link";
 import { usePlayerSetup } from "@/hooks/usePlayerSetup";
-import { InfoButton, GameModeSelector, STANDARD_GAME_MODES } from "./InfoButton";
+import { InfoButton, GameModeSelector } from "./InfoButton";
 
 export interface GameModeOption {
   id: string;
@@ -25,7 +25,7 @@ export interface GameStartConfig {
 export interface UniversalGameSetupProps {
   // Required
   gameName: string;
-  gameId: string;
+  gameId?: string;
   accentColor: string;
   onStartGame: (config: GameStartConfig) => void;
 
@@ -59,7 +59,6 @@ export interface UniversalGameSetupProps {
 
 export function UniversalGameSetup({
   gameName,
-  gameId,
   accentColor,
   onStartGame,
   minPlayers = 2,

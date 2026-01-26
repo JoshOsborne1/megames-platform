@@ -3,6 +3,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { RealtimeChannel } from "@supabase/supabase-js";
+import { checkRateLimit, RATE_LIMITS } from "@/lib/security";
+import { validatePlayerName, validateRoomCode } from "@/lib/security";
+import { generateRoomCode } from "@/lib/core";
 
 export interface RoomPlayer {
     id: string;
@@ -120,15 +123,8 @@ export function useMultiplayerRoom(): UseMultiplayerRoomReturn {
         };
     }, [channel, supabase]);
 
-    // Generate room code
-    const generateCode = (): string => {
-        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-        let code = "";
-        for (let i = 0; i < 5; i++) {
-            code += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return code;
-    };
+    // Generate room code - using shared utility
+    const getUniqueRoomCode = generateRoomCode;
 
     // Create a new room
     const createRoom = async (displayName: string): Promise<string | null> => {
@@ -137,12 +133,25 @@ export function useMultiplayerRoom(): UseMultiplayerRoomReturn {
             return null;
         }
 
+        // Rate limiting check
+        if (!checkRateLimit(`${userId}:createRoom`, RATE_LIMITS.createRoom)) {
+            setError("Too many rooms created. Please wait a minute.");
+            return null;
+        }
+
+        // Validate display name
+        const nameValidation = validatePlayerName(displayName);
+        if (!nameValidation.valid) {
+            setError(nameValidation.error || "Invalid display name");
+            return null;
+        }
+
         setIsLoading(true);
         setError(null);
 
         try {
             // Generate unique code
-            let code = generateCode();
+            let code = getUniqueRoomCode();
             let attempts = 0;
             const maxAttempts = 10;
 
@@ -154,8 +163,8 @@ export function useMultiplayerRoom(): UseMultiplayerRoomReturn {
                     .single();
 
                 if (!existing) break;
-                code = generateCode();
-                attempts++;
+                code = getUniqueRoomCode();
+                attempts++;;
             }
 
             // Create room
@@ -212,6 +221,26 @@ export function useMultiplayerRoom(): UseMultiplayerRoomReturn {
     const joinRoom = async (code: string, displayName: string): Promise<boolean> => {
         if (!userId) {
             setError("You must be logged in to join a room");
+            return false;
+        }
+
+        // Rate limiting check
+        if (!checkRateLimit(`${userId}:joinRoom`, RATE_LIMITS.joinRoom)) {
+            setError("Too many join attempts. Please wait a minute.");
+            return false;
+        }
+
+        // Validate room code
+        const codeValidation = validateRoomCode(code);
+        if (!codeValidation.valid) {
+            setError(codeValidation.error || "Invalid room code");
+            return false;
+        }
+
+        // Validate display name
+        const nameValidation = validatePlayerName(displayName);
+        if (!nameValidation.valid) {
+            setError(nameValidation.error || "Invalid display name");
             return false;
         }
 

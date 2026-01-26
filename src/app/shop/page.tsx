@@ -70,7 +70,7 @@ export default function ShopPage() {
                         <button
                             onClick={() => setSelectedCategory("passes")}
                             className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${selectedCategory === "passes"
-                                ? "bg-[#ff006e] text-white shadow-lg"
+                                ? "bg-neon-pink text-white shadow-lg"
                                 : "text-white/50 hover:text-white"
                                 }`}
                         >
@@ -94,14 +94,14 @@ export default function ShopPage() {
                                 key={currentPlan.id}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="relative bg-gradient-to-br from-[#1a142e] to-[#0d0a16] border border-[#FFD700]/30 rounded-2xl overflow-hidden"
+                                className="relative bg-linear-to-br from-[#1a142e] to-[#0d0a16] border border-[#FFD700]/30 rounded-2xl overflow-hidden"
                                 style={{ boxShadow: "0 0 40px rgba(255, 215, 0, 0.1)" }}
                             >
                                 {/* Header with price */}
                                 <div className="p-4 pb-3 border-b border-white/10">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FFD700] to-[#ff006e] flex items-center justify-center">
+                                            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-[#FFD700] to-neon-pink flex items-center justify-center">
                                                 <Crown className="w-5 h-5 text-black" />
                                             </div>
                                             <div>
@@ -133,7 +133,7 @@ export default function ShopPage() {
                                                 key={plan.id}
                                                 onClick={() => setSelectedPlanIndex(index)}
                                                 className={`flex-1 py-1.5 rounded-md text-[10px] font-bold transition-all ${selectedPlanIndex === index
-                                                    ? "bg-gradient-to-r from-[#FFD700] to-[#ff006e] text-black"
+                                                    ? "bg-linear-to-r from-[#FFD700] to-neon-pink text-black"
                                                     : "text-white/50 hover:text-white"
                                                     }`}
                                             >
@@ -151,7 +151,7 @@ export default function ShopPage() {
                                                 key={feature.label}
                                                 className="flex items-center gap-2 p-2 rounded-lg bg-white/5"
                                             >
-                                                <feature.icon className="w-3.5 h-3.5 flex-shrink-0" style={{ color: feature.color }} />
+                                                <feature.icon className="w-3.5 h-3.5 shrink-0" style={{ color: feature.color }} />
                                                 <span className="text-white/70 text-[10px] font-medium truncate">{feature.label}</span>
                                             </div>
                                         ))}
@@ -176,7 +176,7 @@ export default function ShopPage() {
                                         whileTap={{ scale: 0.98 }}
                                         onClick={() => handleSubscribe(currentPlan.id)}
                                         disabled={isLoading}
-                                        className="w-full py-3 rounded-xl font-display font-bold text-sm uppercase tracking-wider bg-gradient-to-r from-[#FFD700] to-[#ff006e] text-black flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                                        className="w-full py-3 rounded-xl font-display font-bold text-sm uppercase tracking-wider bg-linear-to-r from-[#FFD700] to-neon-pink text-black flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                                         style={{ boxShadow: "0 0 20px rgba(255, 215, 0, 0.25)" }}
                                     >
                                         {isLoading ? (
@@ -202,14 +202,14 @@ export default function ShopPage() {
                                 key={currentPass.id}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="relative bg-gradient-to-br from-[#1a142e] to-[#0d0a16] border border-[#ff006e]/30 rounded-2xl overflow-hidden"
+                                className="relative bg-linear-to-br from-[#1a142e] to-[#0d0a16] border border-neon-pink/30 rounded-2xl overflow-hidden"
                                 style={{ boxShadow: "0 0 40px rgba(255, 0, 110, 0.1)" }}
                             >
                                 {/* Header with price */}
                                 <div className="p-4 pb-3 border-b border-white/10">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#ff006e] to-[#8338ec] flex items-center justify-center">
+                                            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-neon-pink to-neon-purple flex items-center justify-center">
                                                 <Zap className="w-5 h-5 text-white" />
                                             </div>
                                             <div>
@@ -219,7 +219,7 @@ export default function ShopPage() {
                                         </div>
                                         <div className="text-right">
                                             <div className="flex items-baseline gap-1">
-                                                <span className="font-display font-black text-2xl text-[#ff006e]">
+                                                <span className="font-display font-black text-2xl text-neon-pink">
                                                     £{currentPass.price}
                                                 </span>
                                             </div>
@@ -236,7 +236,7 @@ export default function ShopPage() {
                                                 key={pass.id}
                                                 onClick={() => setSelectedPassIndex(index)}
                                                 className={`flex-1 py-1.5 rounded-md text-[10px] font-bold transition-all ${selectedPassIndex === index
-                                                    ? "bg-gradient-to-r from-[#ff006e] to-[#8338ec] text-white"
+                                                    ? "bg-linear-to-r from-neon-pink to-neon-purple text-white"
                                                     : "text-white/50 hover:text-white"
                                                     }`}
                                             >
@@ -254,15 +254,15 @@ export default function ShopPage() {
                                                 key={feature}
                                                 className="flex items-center gap-2 p-2 rounded-lg bg-white/5"
                                             >
-                                                <Check className="w-3 h-3 text-[#ff006e] flex-shrink-0" />
+                                                <Check className="w-3 h-3 text-neon-pink shrink-0" />
                                                 <span className="text-white/70 text-[10px] font-medium">{feature}</span>
                                             </div>
                                         ))}
                                     </div>
 
                                     {/* Perfect for - inline */}
-                                    <div className="p-2 rounded-lg bg-[#ff006e]/10 border border-[#ff006e]/20 mb-4">
-                                        <p className="text-[#ff006e] text-[10px]">
+                                    <div className="p-2 rounded-lg bg-neon-pink/10 border border-neon-pink/20 mb-4">
+                                        <p className="text-neon-pink text-[10px]">
                                             <span className="font-bold">Perfect for: </span>
                                             {currentPass.id === "partypack_party"
                                                 ? "Large parties & house parties"
@@ -276,7 +276,7 @@ export default function ShopPage() {
                                         whileTap={{ scale: 0.98 }}
                                         onClick={() => handleSubscribe(currentPass.id)}
                                         disabled={isLoading}
-                                        className="w-full py-3 rounded-xl font-display font-bold text-sm uppercase tracking-wider bg-gradient-to-r from-[#ff006e] to-[#8338ec] text-white flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                                        className="w-full py-3 rounded-xl font-display font-bold text-sm uppercase tracking-wider bg-linear-to-r from-neon-pink to-neon-purple text-white flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                                         style={{ boxShadow: "0 0 20px rgba(255, 0, 110, 0.25)" }}
                                     >
                                         {isLoading ? (

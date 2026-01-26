@@ -386,7 +386,6 @@ export function GameGadgetsHub() {
         setToolOrder([...newOrder, ...inactive]);
       }} className="space-y-2">
         {activeToolsList.map(toolId => {
-          const tool = TOOLS.find(t => t.id === toolId)!;
           const isTimerActive = toolId === "timer" && timerState.isRunning;
 
           return (

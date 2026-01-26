@@ -18,6 +18,7 @@ interface PvPViewProps {
   onSubmitClue: (clue: string) => void;
   onSubmitGuess: (targetPlayerId: string, color: ColorWithPosition) => void;
   onAdvancePhase: () => void;
+  colorOptions?: ColorWithPosition[];
 }
 
 // Validate clue
@@ -42,6 +43,7 @@ export function PvPView({
   onSubmitClue,
   onSubmitGuess,
   onAdvancePhase,
+  colorOptions = [],
 }: PvPViewProps) {
   const [selectedColor, setSelectedColor] = useState<ColorWithPosition | null>(null);
   const [clueInput, setClueInput] = useState("");
@@ -145,18 +147,25 @@ export function PvPView({
             <>
               <div className="text-center mb-4">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neon-pink/10 border border-neon-pink/30 text-neon-pink text-xs font-medium mb-3">
-                  <Users className="w-3 h-3" /> Everyone picks at once!
+                  <Users className="w-3 h-3" /> Everyone picks a color!
                 </div>
                 <h2 className="font-display font-bold text-xl text-white">Pick Your Secret Color</h2>
                 <p className="text-white/40 text-sm">Others will try to guess it!</p>
               </div>
               
-              <ColorSpectrum
-                onColorSelect={(color) => setSelectedColor(color)}
-                markers={selectedColor ? [selectedColor] : []}
-                showMarkers={true}
-                disabled={false}
-              />
+              <div className="grid grid-cols-2 gap-3 mb-6">
+                {colorOptions.map((color, i) => (
+                  <motion.button
+                    key={i}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setSelectedColor(color)}
+                    className={`aspect-square rounded-xl border-4 transition-all ${
+                      selectedColor?.hex === color.hex ? 'border-white scale-105' : 'border-white/20'
+                    }`}
+                    style={{ backgroundColor: color.hex }}
+                  />
+                ))}
+              </div>
               
               {selectedColor && (
                 <motion.button

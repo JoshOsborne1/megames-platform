@@ -2,19 +2,16 @@
 import {
     GameState,
     GameSettings,
-    GamePhase,
     GameMode,
     Player,
     Question,
     AnswerResult,
-    Difficulty,
-    MixedDifficulty,
     DIFFICULTY_POINTS,
     SPEED_BONUS,
     STREAK_MULTIPLIERS,
     GAME_CONFIG,
 } from "./types";
-import { ALL_QUESTIONS, getQuestionsByDeck, getQuestionsByDifficulty } from "./data";
+import { getQuestionsByDeck, getDeckInfo } from "./data";
 
 // =============================================================================
 // GAME INITIALIZATION
@@ -40,8 +37,18 @@ export function createInitialState(
     // Build question pool from selected decks
     let availableQuestions: Question[] = [];
 
-    for (const deckId of settings.selectedDeckIds) {
-        const deckQuestions = getQuestionsByDeck(deckId);
+    // Support both simple deck IDs and pack:deck format
+    for (const id of settings.selectedDeckIds) {
+        const deckId = id.includes(':') ? id.split(':')[1] : id;
+        let deckQuestions = getQuestionsByDeck(deckId);
+        
+        // Enforce limits for free users
+        if (!settings.isPremium) {
+            const deckInfo = getDeckInfo(deckId);
+            const limit = deckInfo?.freeQuestionLimit || GAME_CONFIG.freeQuestionLimit;
+            deckQuestions = deckQuestions.slice(0, limit);
+        }
+
         availableQuestions = [...availableQuestions, ...deckQuestions];
     }
 
@@ -78,6 +85,13 @@ export function createInitialState(
         streakBonus: 0,
         eliminatedAnswers: [],
         doublePointsActive: false,
+        hintSkipState: {
+            freeSkipsRemaining: GAME_CONFIG.freeSkipsPerSession,
+            freeHintsRemaining: GAME_CONFIG.freeHintsPerSession,
+            poolRemaining: settings.isPremium ? GAME_CONFIG.proWeeklySkips : 0,
+            usedAdSkip: false,
+            usedAdHint: false,
+        },
     };
 }
 
@@ -108,14 +122,17 @@ export function drawNextQuestion(state: GameState): GameState {
     const allAnswers = [question.correctAnswer, ...question.incorrectAnswers];
     const shuffledAnswers = shuffleArray(allAnswers);
 
+    const isTimeMode = state.settings.challengeMode === "time";
+    const timer = isTimeMode ? 10 : state.settings.timePerQuestion;
+
     return {
         ...state,
         currentQuestion: question,
         shuffledAnswers,
         selectedAnswer: null,
         isCorrect: null,
-        timeRemaining: state.settings.timePerQuestion,
-        timer: state.settings.timePerQuestion,
+        timeRemaining: timer,
+        timer: timer,
         usedQuestionIds: new Set([...state.usedQuestionIds, question.id]),
         currentQuestionNumber: state.currentQuestionNumber + 1,
         questionsInCurrentRound: state.questionsInCurrentRound + 1,
@@ -241,6 +258,20 @@ export function handleSkip(state: GameState): GameState {
         streak: 0, // Reset streak on skip
     };
 
+    const newHintSkipState = { ...state.hintSkipState };
+    if (state.settings.isPremium) {
+        if (newHintSkipState.poolRemaining > 0) {
+            newHintSkipState.poolRemaining -= 1;
+        }
+    } else {
+        if (newHintSkipState.freeSkipsRemaining > 0) {
+            newHintSkipState.freeSkipsRemaining -= 1;
+        } else {
+            // Used ad skip
+            newHintSkipState.usedAdSkip = true;
+        }
+    }
+
     return {
         ...state,
         players: updatedPlayers,
@@ -250,6 +281,7 @@ export function handleSkip(state: GameState): GameState {
         lastPointsEarned: 0,
         speedBonus: 0,
         streakBonus: 0,
+        hintSkipState: newHintSkipState,
     };
 }
 
@@ -275,9 +307,13 @@ export function startQuestion(state: GameState): GameState {
 export function proceedAfterAnswer(state: GameState): GameState {
     const questionsPerRound = state.settings.questionsPerRound;
     const totalRounds = state.settings.totalRounds;
-
+    
+    // In streak mode, round is only complete on game over (handled by handleAnswer)
+    // but we can just use a large number or check the mode specifically
+    const isStreakMode = state.settings.challengeMode === "streak";
+    
     // Check if round is complete
-    if (state.questionsInCurrentRound >= questionsPerRound) {
+    if (state.questionsInCurrentRound >= questionsPerRound && !isStreakMode) {
         // Check if game is over
         if (state.currentRound >= totalRounds) {
             return {
@@ -321,13 +357,9 @@ export function startNextRound(state: GameState): GameState {
         phase: "countdown",
     });
 }
-
-// =============================================================================
-// POWER-UPS (Phase 2 - Stubs)
-// =============================================================================
-
-export function useFiftyFifty(state: GameState): GameState {
-    if (!state.currentQuestion) return state;
+// Hint (50/50)
+export function handleHint(state: GameState): GameState {
+    if (!state.currentQuestion || state.phase !== "question") return state;
 
     // Randomly select 2 incorrect answers to eliminate
     const incorrectAnswers = state.shuffledAnswers.filter(
@@ -335,9 +367,24 @@ export function useFiftyFifty(state: GameState): GameState {
     );
     const toEliminate = shuffleArray(incorrectAnswers).slice(0, 2);
 
+    const newHintSkipState = { ...state.hintSkipState };
+    if (state.settings.isPremium) {
+        if (newHintSkipState.poolRemaining > 0) {
+            newHintSkipState.poolRemaining -= 1;
+        }
+    } else {
+        if (newHintSkipState.freeHintsRemaining > 0) {
+            newHintSkipState.freeHintsRemaining -= 1;
+        } else {
+            // Used ad hint
+            newHintSkipState.usedAdHint = true;
+        }
+    }
+
     return {
         ...state,
         eliminatedAnswers: toEliminate,
+        hintSkipState: newHintSkipState,
     };
 }
 

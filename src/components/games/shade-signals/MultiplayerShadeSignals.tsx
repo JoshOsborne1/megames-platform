@@ -259,9 +259,8 @@ export function MultiplayerShadeSignals({ roomCode }: MultiplayerShadeSignalsPro
     
     const initialState = createInitialOnlineState(roomCode, onlinePlayers, selectedMode, totalRounds);
     
-    if (selectedMode === "qm") {
-      initialState.colorOptions = generateColorOptions(4);
-    }
+    // Generate color options for BOTH modes now
+    initialState.colorOptions = generateColorOptions(4);
     
     initialState.phase = "color-pick";
     setGameState(initialState);
@@ -406,7 +405,7 @@ export function MultiplayerShadeSignals({ roomCode }: MultiplayerShadeSignalsPro
       ...gameState,
       currentRound: gameState.currentRound + 1,
       signalGiverIndex: (gameState.signalGiverIndex + 1) % gameState.players.length,
-      colorOptions: generateColorOptions(4),
+      colorOptions: generateColorOptions(4), // Regenerate for all rounds,
       targetColor: undefined,
       clues: { first: "" },
       qmGuesses: {},
@@ -753,6 +752,7 @@ export function MultiplayerShadeSignals({ roomCode }: MultiplayerShadeSignalsPro
               gameState={gameState}
               userId={user.id}
               isHost={isHost}
+              colorOptions={gameState.colorOptions}
               onSubmitColor={handlePvPSubmitColor}
               onSubmitClue={handlePvPSubmitClue}
               onSubmitGuess={handlePvPSubmitGuess}

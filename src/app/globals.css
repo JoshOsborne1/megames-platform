@@ -66,6 +66,7 @@
   --primary: #ff006e;
   --secondary: #8338ec;
   --accent: #00f5ff;
+  --color-neon-cyan-dark: #008f95;
 }
 
 @layer base {

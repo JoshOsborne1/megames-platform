@@ -2,6 +2,22 @@
 // Following the established patterns from Dynamic Decks
 
 // =============================================================================
+// QUIZ CATEGORIZATION
+// =============================================================================
+
+export type QuizType = "knowledge" | "pop-culture" | "science" | "riddles" | "math" | "mixed";
+
+export interface QuizTypeInfo {
+    id: QuizType;
+    name: string;
+    description: string;
+    icon: string;
+    accentColor: string;
+    isFreeAccess: boolean;
+    isComingSoon?: boolean;
+}
+
+// =============================================================================
 // DIFFICULTY & SCORING
 // =============================================================================
 
@@ -58,7 +74,7 @@ export interface DeckInfo {
     packId: string;
     questionCount: number;
     isPremium: boolean;
-    freeQuestionLimit: number;  // 50 for free tier
+    freeQuestionLimit: number;  // Default for free tier
 }
 
 export interface PackInfo {
@@ -69,6 +85,7 @@ export interface PackInfo {
     accentColor: string;
     deckIds: string[];
     price: number;          // Display price (e.g., 2.99)
+    type: QuizType;
     priceId?: string;       // For in-app purchase integration
 }
 
@@ -83,7 +100,37 @@ export interface Pack {
 }
 
 // =============================================================================
-// POWER-UPS (Phase 2)
+// HINT & SKIP SYSTEM
+// =============================================================================
+
+export interface HintSkipState {
+    // Session-based (Free)
+    freeSkipsRemaining: number;
+    freeHintsRemaining: number;
+    
+    // Pro Tier (Global/Weekly Pool)
+    poolRemaining: number;
+    weeklyResetAt?: string;
+    
+    // Ad Tracking (for recovery)
+    usedAdSkip: boolean;
+    usedAdHint: boolean;
+}
+
+export const HINT_SKIP_CONFIG = {
+    partyProWeeklyAllocation: 20,
+    freeAdRewardAmount: 1,
+    maxAdWatchesPerDay: 5,
+};
+
+export const FREE_QUESTION_LIMITS = {
+    knowledge: 20, // Only 20 questions available per pack for free users
+    riddles: 100,  // per QuizSet
+    math: 100,     // per QuizSet
+};
+
+// =============================================================================
+// POWER-UPS (Phase 2 Legacy - Integrated into Hint/Skip)
 // =============================================================================
 
 export type PowerUpType = "fifty_fifty" | "skip" | "extra_time" | "double_points";
@@ -145,15 +192,20 @@ export type GamePhase =
     | "game-over";      // Final results
 
 export type GameMode = "solo" | "party";
+export type ChallengeMode = "standard" | "time" | "streak" | "pvp";
 
 export interface GameSettings {
+    quizType: QuizType;
     difficulty: MixedDifficulty;
     timePerQuestion: number;  // Only used in party mode
     questionsPerRound: number;
     totalRounds: number;
+    challengeMode: ChallengeMode;
     selectedDeckIds: string[];
     selectedPackIds: string[];
     timedMode: boolean;  // false for solo (relaxed), true for party
+    isPremium: boolean;
+    packId?: string;
 }
 
 export interface GameState {
@@ -189,9 +241,10 @@ export interface GameState {
     speedBonus: number;
     streakBonus: number;
 
-    // Power-up state (Phase 2)
+    // Power-up / Hint state
     eliminatedAnswers: string[];
     doublePointsActive: boolean;
+    hintSkipState: HintSkipState;
 }
 
 // =============================================================================
@@ -204,9 +257,11 @@ export const GAME_CONFIG = {
     maxTimePerQuestion: 30,
     questionsPerRound: 10,
     defaultRounds: 1,
-    freeQuestionLimit: 50,
+    freeQuestionLimit: 20,     // Only 20 questions available per pack for free users
     countdownDuration: 3,
-    freeSkipsPerSession: 3,  // Free users get 3 skips before needing to watch ads
+    freeSkipsPerSession: 3,    // Free users get 3 skips before needing to watch ads
+    freeHintsPerSession: 3,    // Free users get 3 hints before needing to watch ads
+    proWeeklySkips: 20,        // PartyPro users get 20 skips/hints per week
 };
 
 // =============================================================================

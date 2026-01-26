@@ -2,6 +2,7 @@
 
 import { DynamicDecksHub } from "@/components/games/dynamic-decks/DynamicDecksHub";
 import { AppShell } from "@/components/AppShell";
+import { GameErrorBoundary } from "@/components/games/shared";
 import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 
@@ -11,9 +12,11 @@ function DynamicDecksContent() {
 
   return (
     <AppShell>
-      <div className="text-white flex flex-col font-space overflow-hidden select-none relative touch-manipulation">
-        <DynamicDecksHub mode={mode as "local" | "online"} />
-      </div>
+      <GameErrorBoundary gameName="Dynamic Decks" fallbackUrl="/games">
+        <div className="text-white flex flex-col font-space overflow-hidden select-none relative touch-manipulation">
+          <DynamicDecksHub mode={mode as "local" | "online"} />
+        </div>
+      </GameErrorBoundary>
     </AppShell>
   );
 }

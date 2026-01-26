@@ -114,6 +114,15 @@ function MultiplayerContent() {
 
     const handleStartGame = async () => {
         if (!room.selectedGame) return;
+        
+        // Check if all players are ready
+        const unreadyPlayers = room.players.filter(p => !p.isReady);
+        if (unreadyPlayers.length > 0) {
+            // Optional: You could show a toast here
+             // For now we'll just return, but ideally we show UI feedback
+             return; 
+        }
+
         // Just update the status - the useEffect watching room.status will handle navigation for all players
         await startGame();
     };
@@ -197,7 +206,7 @@ function MultiplayerContent() {
                                     {room.isHost && (
                                         <button
                                             onClick={handleStartGame}
-                                            disabled={!room.selectedGame || roomLoading}
+                                            disabled={!room.selectedGame || roomLoading || room.players.some(p => !p.isReady)}
                                             className="px-4 py-2.5 rounded-xl bg-emerald-500 text-white font-bold flex items-center gap-2 shadow-lg shadow-emerald-500/20 disabled:opacity-40 disabled:cursor-not-allowed"
                                         >
                                             <Play className="w-4 h-4" />
@@ -306,6 +315,17 @@ function MultiplayerContent() {
                                                 <h4 className="font-display font-bold text-lg text-white">{room.selectedGame.name}</h4>
                                                 <p className="text-[10px] text-white/40 font-bold uppercase tracking-wider">{room.selectedGame.playerCount} • {room.selectedGame.duration}</p>
                                             </div>
+                                            {room.isHost && (
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedGame(null);
+                                                    }}
+                                                    className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                                                >
+                                                    <X className="w-4 h-4 text-white/40 hover:text-white" />
+                                                </button>
+                                            )}
                                         </>
                                     ) : (
                                         <>
@@ -536,7 +556,7 @@ function MultiplayerContent() {
                                 className={`w-full py-5 rounded-2xl font-display font-black text-xl transition-all shadow-2xl uppercase tracking-widest border-b-4 ${
                                     room.players.find(p => p.id === user?.id)?.isReady
                                         ? 'bg-emerald-500 text-white border-emerald-700 shadow-emerald-500/30'
-                                        : 'bg-neon-cyan text-black border-neon-cyan-dark shadow-neon-cyan/30'
+                                        : 'bg-electric-cyan text-black border-[#008f95] shadow-electric-cyan/30'
                                 }`}
                             >
                                 {room.players.find(p => p.id === user?.id)?.isReady ? "Ready!" : "Ready Up"}

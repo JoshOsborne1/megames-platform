@@ -1,10 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Flame, SkipForward, Play, Crown } from "lucide-react";
-import { Question, Player, GameMode, GAME_CONFIG } from "@/lib/games/quiz-quarter/types";
+import { Flame, SkipForward, Lightbulb } from "lucide-react";
+import { Question, Player, GameMode, HintSkipState } from "@/lib/games/quiz-quarter/types";
 import { useHaptic } from "@/hooks/useHaptic";
 import { WatchAdButton } from "../shared";
+import { cn } from "@/lib/utils";
 
 interface QuestionCardProps {
     question: Question;
@@ -18,9 +19,10 @@ interface QuestionCardProps {
     gameMode: GameMode;
     timedMode: boolean;
     isPremium?: boolean;
-    freeSkipsRemaining: number;
+    hintSkipState: HintSkipState;
     onAnswer: (answer: string) => void;
     onSkip: () => void;
+    onHint: () => void;
 }
 
 export function QuestionCard({
@@ -35,9 +37,10 @@ export function QuestionCard({
     gameMode,
     timedMode,
     isPremium = false,
-    freeSkipsRemaining,
+    hintSkipState,
     onAnswer,
     onSkip,
+    onHint,
 }: QuestionCardProps) {
     const { trigger } = useHaptic();
     const timePercent = totalTime > 0 ? (timeRemaining / totalTime) * 100 : 100;
@@ -56,102 +59,96 @@ export function QuestionCard({
     const difficultyColor = getDifficultyColor();
     const accentColor = gameMode === "solo" ? "#22C55E" : "#ff006e";
 
-    // Can skip for free?
-    const canSkipFree = isPremium || freeSkipsRemaining > 0;
+    // Resource checks
+    const hasFreeSkip = !isPremium && hintSkipState.freeSkipsRemaining > 0;
+    const hasFreeHint = !isPremium && hintSkipState.freeHintsRemaining > 0;
+    const hasPoolResource = isPremium && hintSkipState.poolRemaining > 0;
+    
+    const canSkip = isPremium ? hasPoolResource : hasFreeSkip;
+    const canHint = (isPremium ? hasPoolResource : hasFreeHint) && eliminatedAnswers.length === 0;
 
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="w-full"
+            className="w-full h-dvh flex flex-col p-4 pt-14 pb-4"
         >
-            {/* HUD */}
-            <div className="flex items-center justify-between mb-6">
-                {/* Left: Score or Question Count */}
-                <div>
-                    {gameMode === "party" ? (
-                        <>
-                            <p className="text-[10px] text-white/40 uppercase tracking-wider">Score</p>
-                            <div className="flex items-center gap-2">
-                                <p className="font-display font-bold text-xl" style={{ color: accentColor }}>{currentPlayer.score}</p>
-                                {currentPlayer.streak >= 3 && (
-                                    <div className="flex items-center gap-1 text-orange-400">
-                                        <Flame className="w-3 h-3" />
-                                        <span className="text-xs font-bold">{currentPlayer.streak}x</span>
-                                    </div>
-                                )}
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <p className="text-[10px] text-white/40 uppercase tracking-wider">Streak</p>
-                            <div className="flex items-center gap-2">
-                                <p className="font-display font-bold text-xl text-orange-400">{currentPlayer.streak}</p>
-                                {currentPlayer.streak >= 3 && <Flame className="w-4 h-4 text-orange-400" />}
-                            </div>
-                        </>
-                    )}
-                </div>
-
-                {/* Center: Timer (only in timed mode) or Question indicator */}
-                {timedMode ? (
-                    <div
-                        className={`w-16 h-16 rounded-full border-4 flex items-center justify-center font-display font-black text-2xl ${timePercent <= 33 ? 'border-red-500 text-red-500 animate-pulse' : 'border-white/20 text-white'
-                            }`}
-                    >
-                        {Math.ceil(timeRemaining)}
+            <div className="flex-1 flex flex-col justify-center gap-5">
+                {/* HUD - Compact */}
+                <div className="flex items-center justify-between px-1">
+                    {/* Left: Score or Streak */}
+                    <div className="space-y-0.5 text-left">
+                        <p className="text-[9px] text-white/30 uppercase font-black tracking-widest">
+                            {gameMode === "party" ? "Score" : "Streak"}
+                        </p>
+                        <div className="flex items-center gap-1.5">
+                            <span className="font-display font-black text-xl tracking-tight" style={{ color: gameMode === "party" ? accentColor : "#FF9F1C" }}>
+                                {gameMode === "party" ? currentPlayer.score : currentPlayer.streak}
+                            </span>
+                            {currentPlayer.streak >= 3 && (
+                                <motion.div animate={{ scale: [1, 1.2, 1] }} transition={{ repeat: Infinity, duration: 2 }}>
+                                    <Flame className="w-4 h-4 text-orange-400" />
+                                </motion.div>
+                            )}
+                        </div>
                     </div>
-                ) : (
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10">
-                        <span className="text-white/50 text-sm">Q</span>
-                        <span className="font-display font-bold text-white">{questionNumber}</span>
+
+                    {/* Center: Progress Indicator */}
+                    <div className="relative">
+                        {timedMode ? (
+                            <div className="relative w-12 h-12 flex items-center justify-center">
+                                <svg className="w-full h-full transform -rotate-90">
+                                    <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="2.5" fill="transparent" className="text-white/5" />
+                                    <motion.circle
+                                        cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="2.5" fill="transparent"
+                                        strokeDasharray="125.6"
+                                        initial={{ strokeDashoffset: 125.6 }}
+                                        animate={{ strokeDashoffset: 125.6 - (125.6 * timePercent) / 100 }}
+                                        className={cn("transition-colors duration-500", timePercent <= 33 ? "text-red-500" : "text-white/40")}
+                                    />
+                                </svg>
+                                <span className={cn("absolute font-display font-black text-lg", timePercent <= 33 ? "text-red-500" : "text-white")}>
+                                    {Math.ceil(timeRemaining)}
+                                </span>
+                            </div>
+                        ) : (
+                            <div className="px-4 py-1.5 rounded-xl bg-white/5 border border-white/10 backdrop-blur-xl">
+                                <span className="text-white/20 font-black text-[9px] uppercase tracking-widest mr-1.5 text-center">Step</span>
+                                <span className="font-display font-black text-lg text-white">{questionNumber}</span>
+                            </div>
+                        )}
                     </div>
-                )}
 
-                {/* Right: Question Progress or Accuracy */}
-                <div className="text-right">
-                    {gameMode === "party" ? (
-                        <>
-                            <p className="text-[10px] text-white/40 uppercase tracking-wider">Question</p>
-                            <p className="font-display font-bold text-xl text-white">{questionNumber}/{totalQuestions}</p>
-                        </>
-                    ) : (
-                        <>
-                            <p className="text-[10px] text-white/40 uppercase tracking-wider">Correct</p>
-                            <p className="font-display font-bold text-xl text-[#22C55E]">{currentPlayer.correctAnswers}</p>
-                        </>
-                    )}
+                    {/* Right: Progress */}
+                    <div className="text-right space-y-0.5">
+                        <p className="text-[10px] text-white/30 uppercase font-black tracking-widest">
+                            {gameMode === "party" ? "Question" : "Correct"}
+                        </p>
+                        <span className="font-display font-black text-xl text-white">
+                            {gameMode === "party" ? `${questionNumber}/${totalQuestions}` : currentPlayer.correctAnswers}
+                        </span>
+                    </div>
                 </div>
-            </div>
 
-            {/* Question Card */}
-            <div
-                className="rounded-xl p-5 mb-4"
-                style={{
-                    backgroundColor: `${difficultyColor}10`,
-                    border: `1px solid ${difficultyColor}30`
-                }}
-            >
-                <div className="flex items-center justify-between mb-3">
-                    <span
-                        className="text-[10px] px-2 py-0.5 rounded uppercase font-medium"
-                        style={{ backgroundColor: `${difficultyColor}20`, color: difficultyColor }}
-                    >
-                        {question.difficulty}
-                    </span>
-                    {isRelaxedMode && (
-                        <span className="text-[10px] text-white/30">Take your time</span>
-                    )}
+                {/* Question Card - Tightened */}
+                <div className="relative group p-0.5">
+                    <div className="glass-panel rounded-2xl p-6 border-white/10 shadow-xl relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-3">
+                            <span
+                                className="text-[8px] px-2 py-0.5 rounded-full font-black uppercase tracking-widest border"
+                                style={{ backgroundColor: `${difficultyColor}15`, color: difficultyColor, borderColor: `${difficultyColor}30` }}
+                            >
+                                {question.difficulty}
+                            </span>
+                        </div>
+                        <p className="text-white text-center text-xl font-display font-bold leading-tight py-2">
+                            {question.question}
+                        </p>
+                    </div>
                 </div>
-                <p className="text-white text-center text-lg font-medium leading-relaxed py-3">
-                    {question.question}
-                </p>
-            </div>
 
-            {/* Answer Options */}
-            <div className="bg-white/5 border border-white/10 rounded-xl p-4 mb-4">
-                <p className="text-[10px] text-white/40 uppercase tracking-wider font-medium mb-3">Select Answer</p>
+                {/* Answer Options - Tightened */}
                 <div className="space-y-2">
                     {shuffledAnswers.map((answer, index) => {
                         const isEliminated = eliminatedAnswers.includes(answer);
@@ -160,41 +157,23 @@ export function QuestionCard({
                             <motion.button
                                 key={answer}
                                 initial={{ opacity: 0, x: -10 }}
-                                animate={{
-                                    opacity: isEliminated ? 0.3 : 1,
-                                    x: 0,
-                                }}
+                                animate={{ opacity: isEliminated ? 0.2 : 1, x: 0 }}
                                 transition={{ delay: index * 0.05 }}
                                 whileTap={{ scale: isEliminated ? 1 : 0.98 }}
-                                onClick={() => {
-                                    if (!isEliminated) {
-                                        trigger();
-                                        onAnswer(answer);
-                                    }
-                                }}
+                                onClick={() => { if (!isEliminated) { trigger(); onAnswer(answer); } }}
                                 disabled={isEliminated}
-                                className={`
-                  w-full flex items-center gap-3 p-3 rounded-lg text-left transition-all
-                  ${isEliminated
-                                        ? "bg-white/5 border border-white/5 cursor-not-allowed"
-                                        : `bg-white/5 border border-white/10 hover:border-white/30`
-                                    }
-                `}
-                                style={!isEliminated ? {
-                                    borderColor: `${accentColor}30`,
-                                    backgroundColor: `${accentColor}05`
-                                } : undefined}
+                                className={cn(
+                                    "group/ans w-full flex items-center gap-3 p-3.5 rounded-xl border transition-all text-left relative overflow-hidden",
+                                    isEliminated ? "bg-white/5 border-transparent cursor-not-allowed" : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20 shadow-lg"
+                                )}
                             >
-                                <div
-                                    className={`
-                    w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm
-                    ${isEliminated ? "bg-white/5 text-white/20" : "bg-white/10 text-white/70"}
-                  `}
-                                    style={!isEliminated ? { backgroundColor: `${accentColor}20`, color: accentColor } : undefined}
-                                >
+                                <div className={cn(
+                                    "w-8 h-8 rounded-lg flex items-center justify-center font-display font-black text-xs border",
+                                    isEliminated ? "bg-white/5 text-white/10 border-transparent" : "bg-white/10 text-white/50 border-white/10"
+                                )} style={!isEliminated ? { color: accentColor, borderColor: `${accentColor}20` } : undefined}>
                                     {answerLetters[index]}
                                 </div>
-                                <span className={`flex-1 text-sm font-medium ${isEliminated ? "text-white/30 line-through" : "text-white"}`}>
+                                <span className={cn("flex-1 text-sm font-bold", isEliminated ? "text-white/20 line-through" : "text-white/90")}>
                                     {answer}
                                 </span>
                             </motion.button>
@@ -203,33 +182,61 @@ export function QuestionCard({
                 </div>
             </div>
 
-            {/* Skip Button - Only in Practice/Solo mode */}
+            {/* Tools (Hints/Skips) - Only in Practice/Solo mode */}
             {isRelaxedMode && (
-                <div className="space-y-2">
-                    {canSkipFree ? (
-                        <button
-                            onClick={() => {
-                                trigger();
-                                onSkip();
-                            }}
-                            className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white/60 font-medium flex items-center justify-center gap-2 hover:bg-white/10 transition-colors"
-                        >
-                            <SkipForward className="w-4 h-4" />
-                            Skip Question
-                            {!isPremium && freeSkipsRemaining > 0 && (
-                                <span className="text-xs text-white/30">({freeSkipsRemaining} left)</span>
-                            )}
-                            {isPremium && (
-                                <Crown className="w-3 h-3 text-yellow-500" />
-                            )}
-                        </button>
-                    ) : (
-                        <WatchAdButton
-                            variant="compact"
-                            label="Watch Ad to Skip"
-                            onReward={onSkip}
-                        />
-                    )}
+                <div className="grid grid-cols-2 gap-2">
+                    {/* Hint Button */}
+                    <div className="flex-1">
+                        {canHint ? (
+                            <button
+                                onClick={() => { trigger(); onHint(); }}
+                                className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white/60 font-medium flex items-center justify-center gap-2 hover:bg-white/10 transition-colors"
+                            >
+                                <Lightbulb className="w-4 h-4 text-yellow-400" />
+                                Hint (50/50)
+                                {isPremium ? (
+                                    <span className="text-xs text-white/30">({hintSkipState.poolRemaining})</span>
+                                ) : (
+                                    <span className="text-xs text-white/30">({hintSkipState.freeHintsRemaining})</span>
+                                )}
+                            </button>
+                        ) : eliminatedAnswers.length > 0 ? (
+                            <div className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white/20 font-medium flex items-center justify-center gap-2 opacity-50">
+                                <Lightbulb className="w-4 h-4" />
+                                Hint Used
+                            </div>
+                        ) : (
+                            <WatchAdButton
+                                variant="compact"
+                                label="Hint for Ad"
+                                onReward={onHint}
+                            />
+                        )}
+                    </div>
+
+                    {/* Skip Button */}
+                    <div className="flex-1">
+                        {canSkip ? (
+                            <button
+                                onClick={() => { trigger(); onSkip(); }}
+                                className="w-full py-3 rounded-xl bg-white/5 border border-white/10 text-white/60 font-medium flex items-center justify-center gap-2 hover:bg-white/10 transition-colors"
+                            >
+                                <SkipForward className="w-4 h-4" />
+                                Skip
+                                {isPremium ? (
+                                    <span className="text-xs text-white/30">({hintSkipState.poolRemaining})</span>
+                                ) : (
+                                    <span className="text-xs text-white/30">({hintSkipState.freeSkipsRemaining})</span>
+                                )}
+                            </button>
+                        ) : (
+                            <WatchAdButton
+                                variant="compact"
+                                label="Skip for Ad"
+                                onReward={onSkip}
+                            />
+                        )}
+                    </div>
                 </div>
             )}
         </motion.div>

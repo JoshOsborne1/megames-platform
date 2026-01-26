@@ -12,7 +12,7 @@ export function RoomBanner() {
     const pathname = usePathname();
 
     // Don't show on multiplayer page or game pages (games handle their own UI)
-    const hideOnPaths = ["/multiplayer", "/lobby"];
+    const hideOnPaths = ["/multiplayer", "/lobby", "/games"];
     const shouldHide = hideOnPaths.some(p => pathname.startsWith(p));
 
     if (!room.isActive || shouldHide) return null;
