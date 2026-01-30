@@ -29,6 +29,17 @@ export function InGameNav({
     const [isOpen, setIsOpen] = useState(false);
     const [confirmTarget, setConfirmTarget] = useState<string | null>(null);
 
+    // Consistent back navigation - always goes to lobby for games
+    const handleBack = () => {
+        if (showConfirmation && onConfirmLeave) {
+            setConfirmTarget("/lobby");
+            setIsOpen(false);
+        } else {
+            onConfirmLeave?.();
+            router.push("/lobby");
+        }
+    };
+
     const handleNavigate = (path: string) => {
         if (showConfirmation) {
             setConfirmTarget(path);
@@ -58,7 +69,7 @@ export function InGameNav({
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 onClick={() => setIsOpen(!isOpen)}
-                className="fixed top-10 left-6 z-50 w-12 h-12 rounded-xl bg-black/50 backdrop-blur-xl border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:border-white/20 transition-all shadow-lg"
+                className="fixed top-12 sm:top-10 left-4 sm:left-6 z-50 w-12 h-12 rounded-xl bg-black/50 backdrop-blur-xl border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:border-white/20 transition-all shadow-lg"
                 style={{ boxShadow: isOpen ? `0 0 20px ${accentColor}40` : undefined }}
             >
                 <AnimatePresence mode="wait">

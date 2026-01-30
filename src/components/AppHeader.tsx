@@ -7,7 +7,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowLeft, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
-import type { User as SupabaseUser } from "@supabase/supabase-js";
+import type { User as SupabaseUser, AuthChangeEvent, Session } from "@supabase/supabase-js";
 
 interface AppHeaderProps {
     title?: string;
@@ -25,11 +25,11 @@ export function AppHeader({ title, showBack = false }: AppHeaderProps) {
 
     useEffect(() => {
         const supabase = createClient();
-        supabase.auth.getUser().then(({ data: { user } }) => {
+        supabase.auth.getUser().then(({ data: { user } }: { data: { user: SupabaseUser | null } }) => {
             setUser(user);
         });
 
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
             setUser(session?.user ?? null);
         });
 
@@ -54,7 +54,7 @@ export function AppHeader({ title, showBack = false }: AppHeaderProps) {
                 borderBottom: `1px solid ${borderColor.get()}`
             }}
         >
-            <div className="flex items-center justify-between h-14 px-6 max-w-7xl mx-auto">
+            <div className="flex items-center justify-between h-12 sm:h-14 px-4 sm:px-6 max-w-7xl mx-auto">
                 {/* Left: Back button or Logo */}
                 <div className="flex items-center gap-3 w-24">
                     {showBack ? (

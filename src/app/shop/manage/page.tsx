@@ -23,7 +23,7 @@ export default function ManageSubscriptionPage() {
 
     useEffect(() => {
         const supabase = createClient();
-        supabase.auth.getUser().then(({ data: { user } }) => {
+        supabase.auth.getUser().then(({ data: { user } }: { data: { user: SupabaseUser | null } }) => {
             setUser(user);
             setLoading(false);
             if (!user) {

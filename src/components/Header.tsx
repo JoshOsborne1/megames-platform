@@ -70,7 +70,7 @@ export function Header() {
           }`}
       >
         <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative flex items-center justify-between h-14 md:h-16">
+          <div className="relative flex items-center justify-between h-12 md:h-14">
             <Link href="/" className="flex items-center gap-3 group z-10">
               <motion.div
                 whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}

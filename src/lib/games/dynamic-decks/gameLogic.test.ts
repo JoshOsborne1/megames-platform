@@ -100,19 +100,19 @@ test("createInitialState starts on round 1", () => {
 
 // Test: calculatePoints
 test("calculatePoints applies easy multiplier (1.0x)", () => {
-  const card: Card = { id: "test", word: "Test", forbiddenWords: [], category: "test", points: 10 };
+  const card: Card = { id: "test", word: "Test", forbidden: [], points: 10, color: "yellow", difficulty: "easy" };
   const points = calculatePoints(card, "easy");
   expect(points).toBe(10);
 });
 
 test("calculatePoints applies medium multiplier (1.5x)", () => {
-  const card: Card = { id: "test", word: "Test", forbiddenWords: [], category: "test", points: 10 };
+  const card: Card = { id: "test", word: "Test", forbidden: [], points: 10, color: "yellow", difficulty: "easy" };
   const points = calculatePoints(card, "medium");
   expect(points).toBe(15);
 });
 
 test("calculatePoints applies hard multiplier (2.0x)", () => {
-  const card: Card = { id: "test", word: "Test", forbiddenWords: [], category: "test", points: 10 };
+  const card: Card = { id: "test", word: "Test", forbidden: [], points: 10, color: "yellow", difficulty: "easy" };
   const points = calculatePoints(card, "hard");
   expect(points).toBe(20);
 });
@@ -122,9 +122,10 @@ test("getForbiddenWords returns 2 words for easy difficulty", () => {
   const card: Card = { 
     id: "test", 
     word: "Test", 
-    forbiddenWords: ["a", "b", "c", "d"], 
-    category: "test", 
-    points: 10 
+    forbidden: ["a", "b", "c", "d"], 
+    points: 10,
+    color: "yellow",
+    difficulty: "easy"
   };
   const words = getForbiddenWords(card, "easy");
   expect(words.length).toBe(2);
@@ -134,9 +135,10 @@ test("getForbiddenWords returns 3 words for medium difficulty", () => {
   const card: Card = { 
     id: "test", 
     word: "Test", 
-    forbiddenWords: ["a", "b", "c", "d"], 
-    category: "test", 
-    points: 10 
+    forbidden: ["a", "b", "c", "d"], 
+    points: 10,
+    color: "yellow",
+    difficulty: "easy"
   };
   const words = getForbiddenWords(card, "medium");
   expect(words.length).toBe(3);
@@ -146,7 +148,7 @@ test("getForbiddenWords returns 3 words for medium difficulty", () => {
 test("handlePass increments skipsUsed", () => {
   const state = createInitialState(["Alice", "Bob"], "easy", 3, "classic");
   state.phase = "playing";
-  state.currentCard = { id: "test", word: "Test", forbiddenWords: [], category: "test", points: 10 };
+  state.currentCard = { id: "test", word: "Test", forbidden: [], points: 10, color: "yellow", difficulty: "easy" };
   
   const newState = handlePass(state);
   expect(newState.skipsUsed).toBe(1);

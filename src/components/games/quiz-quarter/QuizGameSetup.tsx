@@ -131,6 +131,7 @@ export function QuizGameSetup({ onStart, onBack, selectedQuizType, selectedPackI
             quizType: selectedQuizType || "mixed",
             packId: selectedPackId || undefined,
             isPremium: false,
+            challengeMode: "standard", // Default challenge mode
         };
 
         trigger();

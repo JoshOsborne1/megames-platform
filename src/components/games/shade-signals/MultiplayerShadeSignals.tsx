@@ -622,7 +622,7 @@ export function MultiplayerShadeSignals({ roomCode }: MultiplayerShadeSignalsPro
           accentColor="#00FFFF"
           gameIcon={<Droplet className="w-full h-full" />}
           showConfirmation={true}
-          onConfirmLeave={() => router.push("/multiplayer")}
+          onConfirmLeave={() => router.push("/lobby")}
         />
         
         <div className="text-center mb-8">
@@ -722,7 +722,7 @@ export function MultiplayerShadeSignals({ roomCode }: MultiplayerShadeSignalsPro
         accentColor="#00FFFF"
         gameIcon={<Droplet className="w-full h-full" />}
         showConfirmation={gameState.phase !== "finished"}
-        onConfirmLeave={() => router.push("/multiplayer")}
+        onConfirmLeave={() => router.push("/lobby")}
       />
       
       {/* Round Info */}
@@ -1147,7 +1147,7 @@ export function MultiplayerShadeSignals({ roomCode }: MultiplayerShadeSignalsPro
             />
             
             <button
-              onClick={() => router.push("/multiplayer")}
+              onClick={() => router.push("/lobby")}
               className="w-full py-4 rounded-xl bg-white text-black font-display font-bold mt-8"
             >
               Back to Lobby

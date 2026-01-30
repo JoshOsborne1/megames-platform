@@ -131,13 +131,9 @@ export default function LyricLegendsGame({ mode = "local" }: { mode?: "local" | 
     setUsedWords(new Set());
   };
 
-  // Handle leaving - if from room, go back to multiplayer room, otherwise local setup
+  // Handle leaving - always go back to lobby for consistent navigation
   const handleLeave = () => {
-    if (isFromRoom) {
-      router.push("/multiplayer");
-    } else {
-      setGameState("setup");
-    }
+    router.push("/lobby");
   };
 
   // If online mode without a room, redirect to multiplayer to create one

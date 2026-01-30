@@ -253,7 +253,7 @@ export function MultiplayerDynamicDecks({
           accentColor="#ff006e"
           gameIcon={<ShieldAlert className="w-full h-full" />}
           showConfirmation={true}
-          onConfirmLeave={() => router.push("/multiplayer")}
+          onConfirmLeave={() => router.push("/lobby")}
         />
         
         <div className="text-center mb-8">
@@ -341,7 +341,7 @@ export function MultiplayerDynamicDecks({
         accentColor="#ff006e"
         gameIcon={<ShieldAlert className="w-full h-full" />}
         showConfirmation={gameState.phase !== "game-over"}
-        onConfirmLeave={() => router.push("/multiplayer")}
+        onConfirmLeave={() => router.push("/lobby")}
       />
       
       <AnimatePresence mode="wait">
@@ -528,7 +528,7 @@ export function MultiplayerDynamicDecks({
             />
 
             <button
-              onClick={() => router.push("/multiplayer")}
+              onClick={() => router.push("/lobby")}
               className="w-full py-4 rounded-xl bg-white text-black font-display font-bold text-lg mt-8"
             >
               Back to Lobby

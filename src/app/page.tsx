@@ -25,15 +25,13 @@ export default function HomePage() {
   useEffect(() => {
     const supabase = createClient();
 
-    supabase.auth.getUser().then((response: { data: { user: SupabaseUser | null } }) => {
-      const user = response.data.user;
+    supabase.auth.getUser().then(({ data: { user } }: { data: { user: SupabaseUser | null } }) => {
       setUser(user);
       if (user) {
         supabase
           .from("profiles")
           .select("is_pro")
           .eq("id", user.id)
-          .single()
           .single()
           .then(({ data }: { data: { is_pro: boolean } | null }) => {
             setIsPro(data?.is_pro || false);

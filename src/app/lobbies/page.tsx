@@ -60,22 +60,23 @@ export default function LobbiesPage() {
                 return;
             }
 
-            // Fetch host profiles for display names
-            const hostIds = rooms?.map(r => r.host_id) || [];
-            const { data: profiles } = await supabase
-                .from("profiles")
-                .select("id, display_name, username")
-                .in("id", hostIds);
+            // Use RPC for efficient joined query instead of N+1
+            const { data: lobbiesData, error: lobbiesError } = await supabase
+                .rpc("get_public_obbies_with_hosts");
 
-            const profileMap = new Map(profiles?.map(p => [p.id, p.display_name || p.username || "Unknown"]) || []);
+            if (lobbiesError) {
+                console.error("Error fetching lobbies:", lobbiesError);
+                setLoading(false);
+                return;
+            }
 
-            const formattedLobbies: PublicLobby[] = (rooms || []).map(room => ({
+            const formattedLobbies: PublicLobby[] = (lobbiesData || []).map((room: { id: string; code: string; host_id: string; host_name: string; game_id: string | null; max_players: number; created_at: string; player_count: number }) => ({
                 id: room.id,
                 code: room.code,
                 host_id: room.host_id,
-                host_name: profileMap.get(room.host_id) || "Player",
+                host_name: room.host_name || "Player",
                 game_id: room.game_id,
-                player_count: Array.isArray(room.room_players) ? room.room_players.length : 0,
+                player_count: room.player_count || 0,
                 max_players: room.max_players,
                 created_at: room.created_at,
             }));

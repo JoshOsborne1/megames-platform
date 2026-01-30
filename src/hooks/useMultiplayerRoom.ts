@@ -56,7 +56,7 @@ export function useMultiplayerRoom(): UseMultiplayerRoomReturn {
 
     // Get current user
     useEffect(() => {
-        supabase.auth.getUser().then(({ data: { user } }) => {
+        supabase.auth.getUser().then(({ data: { user } }: { data: { user: { id: string } | null } }) => {
             setUserId(user?.id || null);
         });
     }, []);
@@ -70,9 +70,9 @@ export function useMultiplayerRoom(): UseMultiplayerRoomReturn {
             .on(
                 "postgres_changes",
                 { event: "*", schema: "public", table: "rooms", filter: `id=eq.${roomId}` },
-                (payload) => {
+                (payload: { eventType: string; new: Record<string, unknown>; old: Record<string, unknown> }) => {
                     if (payload.eventType === "UPDATE") {
-                        setRoom(payload.new as Room);
+                        setRoom(payload.new as unknown as Room);
                     } else if (payload.eventType === "DELETE") {
                         setRoom(null);
                         setPlayers([]);
@@ -82,7 +82,7 @@ export function useMultiplayerRoom(): UseMultiplayerRoomReturn {
             .on(
                 "postgres_changes",
                 { event: "*", schema: "public", table: "room_players", filter: `room_id=eq.${roomId}` },
-                async (payload) => {
+                async (payload: { eventType: string; new: Record<string, unknown>; old: RoomPlayer }) => {
                     // Handle player removal (kicked or left)
                     if (payload.eventType === "DELETE") {
                         const deletedPlayer = payload.old as RoomPlayer;
@@ -164,7 +164,7 @@ export function useMultiplayerRoom(): UseMultiplayerRoomReturn {
 
                 if (!existing) break;
                 code = getUniqueRoomCode();
-                attempts++;;
+                attempts++;
             }
 
             // Create room

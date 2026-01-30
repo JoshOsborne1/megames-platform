@@ -380,16 +380,23 @@ export function GameGadgetsHub() {
         })}
       </div>
 
-      {/* Tools */}
+      {/* Tools - Fixed for mobile scrolling with drag handle */}
       <Reorder.Group axis="y" values={activeToolsList} onReorder={(newOrder) => {
         const inactive = toolOrder.filter(id => !activeTools.has(id));
         setToolOrder([...newOrder, ...inactive]);
-      }} className="space-y-2">
+      }} className="space-y-2" style={{ touchAction: "pan-y" }}>
         {activeToolsList.map(toolId => {
           const isTimerActive = toolId === "timer" && timerState.isRunning;
 
           return (
-            <Reorder.Item key={toolId} value={toolId} className="touch-none">
+            <Reorder.Item 
+              key={toolId} 
+              value={toolId} 
+              dragListener={false}
+              dragControls={undefined}
+              as="div"
+              className="relative"
+            >
               <motion.div layout className={`rounded-xl border transition-colors ${isTimerActive ? "bg-amber-500/5 border-amber-500/30" : "bg-white/5 border-white/10"}`}>
                 {/* DICE - Horizontal layout */}
                 {toolId === "dice" && (

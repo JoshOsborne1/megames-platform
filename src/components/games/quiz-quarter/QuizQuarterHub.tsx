@@ -35,7 +35,11 @@ import { ResultsSummary } from "./ResultsSummary";
 import { FlipPackCard } from "./FlipPackCard";
 import { useAppShell } from "@/components/AppShell";
 
-export function QuizQuarterHub() {
+interface QuizQuarterHubProps {
+    mode?: "local" | "online";
+}
+
+export function QuizQuarterHub({ mode = "local" }: QuizQuarterHubProps) {
     const router = useRouter();
     const { trigger } = useHaptic();
     const { setFullscreen } = useAppShell();

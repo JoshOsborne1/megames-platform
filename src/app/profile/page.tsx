@@ -51,7 +51,7 @@ export default function ProfilePage() {
           .select("is_pro")
           .eq("id", user.id)
           .single()
-          .then(({ data }) => {
+          .then(({ data }: { data: { is_pro: boolean } | null }) => {
             setIsPro(data?.is_pro || false);
           });
 
@@ -61,7 +61,7 @@ export default function ProfilePage() {
           .select("*")
           .eq("user_id", user.id)
           .single()
-          .then(({ data }) => {
+          .then(({ data }: { data: { games_played: number; games_won: number; total_points: number } | null }) => {
             if (data) {
               setStats({
                 games: data.games_played || 0,
