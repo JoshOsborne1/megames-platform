@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ColorSpectrum } from "@/components/games/shade-signals/ColorSpectrum";
 import { MultiplayerShadeSignals } from "@/components/games/shade-signals/MultiplayerShadeSignals";
-import { InGameNav, WatchAdButton, PlayersModal, InfoButton, GameModeSelector, Modal, GameErrorBoundary } from "@/components/games/shared";
+import { WatchAdButton, PlayersModal, InfoButton, GameModeSelector, Modal, GameErrorBoundary, GameBackButton } from "@/components/games/shared";
+import { MobileMenu, GameMenuButton } from "@/components/MobileMenu";
 import { usePlayerSetup } from "@/hooks/usePlayerSetup";
 import { X, Trophy, ArrowRight, Palette, Users, Droplet, ChevronRight, Plus, Minus, Users2, Crown, RefreshCw } from "lucide-react";
-import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense } from "react";
 import type { ColorWithPosition } from "@/lib/games/shade-signals/types";
@@ -84,6 +84,7 @@ function ShadeSignalsContent() {
   const [showPlayersModal, setShowPlayersModal] = useState(false);
   const [freeRerollsRemaining, setFreeRerollsRemaining] = useState(1);
   const [adRerollAvailable, setAdRerollAvailable] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const playerCount = sharedPlayers.length;
 
@@ -251,14 +252,16 @@ function ShadeSignalsContent() {
     }
 
     return (
-      <div className="min-h-screen text-white pb-24">
+      <div className="min-h-screen text-white pb-[calc(6rem+env(safe-area-inset-bottom))]">
         <div className="max-w-md mx-auto px-4 pb-8">
-          <div className="text-center pt-4 mb-6">
-            <Link href="/games" className="inline-block mb-3">
-              <span className="text-white/40 text-sm hover:text-white/60 transition-colors">← Back</span>
-            </Link>
-            <h1 className="font-display font-bold text-2xl text-white">Shade Signals</h1>
-            <p className="text-white/40 text-sm">Guess the color from cryptic clues</p>
+          <div className="pt-4 mb-6">
+            <div className="flex justify-center mb-3">
+              <GameBackButton />
+            </div>
+            <div className="text-center">
+              <h1 className="font-display font-bold text-2xl text-white">Shade Signals</h1>
+              <p className="text-white/40 text-sm">Guess the color from cryptic clues</p>
+            </div>
           </div>
 
           {/* How to Play - Collapsible */}
@@ -366,7 +369,21 @@ function ShadeSignalsContent() {
 
   return (
     <div className="min-h-screen text-white">
-      <InGameNav gameName="Shade Signals" accentColor="#00FFFF" gameIcon={<Droplet className="w-full h-full" />} showConfirmation={phase !== "finished"} onConfirmLeave={() => { setSharedPlayers([]); setPhase("setup"); }} />
+      <GameMenuButton
+        onClick={() => setMenuOpen(true)}
+        isOpen={menuOpen}
+        accentColor="#00FFFF"
+      />
+      <MobileMenu
+        isOpen={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        isGameMode={true}
+        gameName="Shade Signals"
+        accentColor="#00FFFF"
+        gameIcon={<Droplet className="w-full h-full" />}
+        showConfirmation={phase !== "finished"}
+        onConfirmLeave={() => { setSharedPlayers([]); setPhase("setup"); }}
+      />
 
       <div className="max-w-lg mx-auto px-4 pb-8">
         {/* Round Info */}

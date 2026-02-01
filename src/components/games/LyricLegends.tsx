@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Play, SkipForward, Check, Mic2, Users, ChevronRight } from "lucide-react";
 import { LYRIC_WORDS } from "@/lib/games/lyric-legends/data";
-import { InGameNav, WatchAdButton, PlayersModal, InfoButton, UniversalGameSetup, type GameStartConfig } from "./shared";
+import { WatchAdButton, PlayersModal, InfoButton, UniversalGameSetup, type GameStartConfig } from "./shared";
+import { MobileMenu, GameMenuButton } from "@/components/MobileMenu";
 import { usePlayerSetup } from "@/hooks/usePlayerSetup";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -61,6 +62,7 @@ export default function LyricLegendsGame({ mode = "local" }: { mode?: "local" | 
   const [roundCount, setRoundCount] = useState(0);
   const [usedWords, setUsedWords] = useState<Set<string>>(new Set());
   const [showPlayersModal, setShowPlayersModal] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const MAX_ROUNDS = 10;
   const WINNING_SCORE = 100;
@@ -131,9 +133,9 @@ export default function LyricLegendsGame({ mode = "local" }: { mode?: "local" | 
     setUsedWords(new Set());
   };
 
-  // Handle leaving - always go back to lobby for consistent navigation
+  // Handle leaving - go back to previous page
   const handleLeave = () => {
-    router.push("/lobby");
+    router.back();
   };
 
   // If online mode without a room, redirect to multiplayer to create one
@@ -146,13 +148,23 @@ export default function LyricLegendsGame({ mode = "local" }: { mode?: "local" | 
     <div className={`min-h-screen text-white ${gameState === "setup" ? "pb-24" : ""}`}>
       {/* In-Game Navigation */}
       {gameState !== "setup" && (
-        <InGameNav
-          gameName="Lyric Legends"
-          accentColor="#FF00FF"
-          gameIcon={<Mic2 className="w-full h-full" />}
-          showConfirmation={gameState !== "game-over"}
-          onConfirmLeave={handleLeave}
-        />
+        <>
+          <GameMenuButton
+            onClick={() => setMenuOpen(true)}
+            isOpen={menuOpen}
+            accentColor="#FF00FF"
+          />
+          <MobileMenu
+            isOpen={menuOpen}
+            onClose={() => setMenuOpen(false)}
+            isGameMode={true}
+            gameName="Lyric Legends"
+            gameIcon={<Mic2 className="w-full h-full" />}
+            accentColor="#FF00FF"
+            showConfirmation={gameState !== "game-over"}
+            onConfirmLeave={handleLeave}
+          />
+        </>
       )}
 
       <div className="max-w-md mx-auto px-4 pb-8">

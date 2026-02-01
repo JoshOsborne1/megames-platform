@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Search, Zap, Star, Maximize2, Minimize2, User, Globe } from "lucide-react";
+import { Menu, X, Search, Zap, Star, Maximize2, Minimize2, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useFullscreen } from "@/hooks/use-fullscreen";
 import { createClient } from "@/lib/supabase/client";
 import { type User as SupabaseUser, type AuthChangeEvent, type Session } from "@supabase/supabase-js";
+import { MobileMenu } from "./MobileMenu";
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -42,10 +43,7 @@ export function Header() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const navLinks = [
-    { href: "/", label: "Home", icon: Star },
-    { href: "/multiplayer", label: "Lobby", icon: Globe },
-  ];
+
 
   const getUserInitial = () => {
     if (!user) return "?";
@@ -90,27 +88,38 @@ export function Header() {
             </Link>
 
             <div className="hidden lg:flex items-center gap-1 absolute left-1/2 -translate-x-1/2 transform">
-              {navLinks.map((link) => {
-                const Icon = link.icon;
-                return (
-                  <Link key={link.href} href={link.href}>
-                    <motion.div
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Button
-                        variant="ghost"
-                        className="relative group px-6 py-6 text-white/80 hover:text-white hover:bg-transparent font-display font-semibold text-sm overflow-hidden"
-                      >
-                        <span className="absolute inset-0 bg-linear-to-r from-neon-pink/0 via-neon-purple/10 to-electric-cyan/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        <span className="absolute bottom-0 left-0 w-full h-[2px] bg-linear-to-r from-neon-pink via-neon-purple to-electric-cyan scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-                        <Icon className="w-4 h-4 mr-2 inline-block" />
-                        <span className="relative">{link.label}</span>
-                      </Button>
-                    </motion.div>
-                  </Link>
-                );
-              })}
+              <Link href="/">
+                <motion.div
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    variant="ghost"
+                    className="relative group px-6 py-6 text-white/80 hover:text-white hover:bg-transparent font-display font-semibold text-sm overflow-hidden"
+                  >
+                    <span className="absolute inset-0 bg-linear-to-r from-neon-pink/0 via-neon-purple/10 to-electric-cyan/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <span className="absolute bottom-0 left-0 w-full h-[2px] bg-linear-to-r from-neon-pink via-neon-purple to-electric-cyan scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                    <Star className="w-4 h-4 mr-2 inline-block" />
+                    <span className="relative">Home</span>
+                  </Button>
+                </motion.div>
+              </Link>
+              
+              <Link href="/multiplayer">
+                <motion.div
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Button
+                    variant="ghost"
+                    className="relative group px-6 py-6 text-white/80 hover:text-white hover:bg-transparent font-display font-semibold text-sm overflow-hidden"
+                  >
+                    <span className="absolute inset-0 bg-linear-to-r from-neon-pink/0 via-neon-purple/10 to-electric-cyan/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <span className="absolute bottom-0 left-0 w-full h-[2px] bg-linear-to-r from-neon-pink via-neon-purple to-electric-cyan scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+                    <span className="relative">Lobby</span>
+                  </Button>
+                </motion.div>
+              </Link>
             </div>
 
             <div className="flex items-center gap-2 md:gap-3 z-10">
@@ -225,70 +234,14 @@ export function Header() {
             </div>
           </div>
 
-          <AnimatePresence>
-            {mobileMenuOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden"
-              >
-                <div className="py-6 space-y-3 pb-safe">
-                  {navLinks.map((link) => {
-                    const Icon = link.icon;
-                    return (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        className="flex items-center gap-3 px-4 py-4 text-white/80 hover:text-white hover:bg-neon-pink/10 rounded-lg transition-all font-display font-semibold border border-transparent hover:border-neon-pink/30 touch-manipulation min-h-[44px]"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        <Icon className="w-5 h-5" />
-                        {link.label}
-                      </Link>
-                    );
-                  })}
-
-                  {/* Mobile auth section */}
-                  {!loading && (
-                    <div className="flex gap-3 pt-4 px-4 border-t border-neon-purple/30">
-                      {user ? (
-                        <Link href="/profile" className="flex-1" onClick={() => setMobileMenuOpen(false)}>
-                          <Button
-                            variant="outline"
-                            className="w-full border-neon-purple text-white font-display py-4 touch-manipulation min-h-[44px] flex items-center justify-center gap-2"
-                          >
-                            <User className="w-4 h-4" />
-                            My Profile
-                          </Button>
-                        </Link>
-                      ) : (
-                        <>
-                          <Link href="/login" className="flex-1" onClick={() => setMobileMenuOpen(false)}>
-                            <Button
-                              variant="outline"
-                              className="w-full border-neon-purple text-white font-display py-4 touch-manipulation min-h-[44px]"
-                            >
-                              Login
-                            </Button>
-                          </Link>
-                          <Link href="/signup" className="flex-1" onClick={() => setMobileMenuOpen(false)}>
-                            <Button
-                              className="w-full bg-linear-to-r from-neon-pink to-neon-purple text-white font-display font-bold py-4 touch-manipulation min-h-[44px]"
-                            >
-                              Sign Up
-                            </Button>
-                          </Link>
-                        </>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </nav>
       </header>
+
+      {/* New Mobile Menu */}
+      <MobileMenu 
+        isOpen={mobileMenuOpen} 
+        onClose={() => setMobileMenuOpen(false)} 
+      />
     </>
   );
 }

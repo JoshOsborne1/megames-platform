@@ -3,11 +3,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Minus, Plus, Users, Users2, Crown, ChevronRight, ShieldAlert } from "lucide-react";
-import { WatchAdButton, PlayersModal, InfoButton, GameModeSelector } from "../shared";
+import { WatchAdButton, PlayersModal, InfoButton, GameModeSelector, GameBackButton } from "../shared";
 import { DeckSelector } from "./DeckSelector";
 import { GameMode } from "@/lib/games/dynamic-decks/types";
 import { usePlayerSetup } from "@/hooks/usePlayerSetup";
-import Link from "next/link";
 
 interface GameSetupProps {
   onStart: (players: string[], rounds: number, deckId: string, gameMode: GameMode) => void;
@@ -58,12 +57,14 @@ export function GameSetup({ onStart }: GameSetupProps) {
   return (
     <div className="w-full max-w-md mx-auto px-4 pb-8">
       {/* Header */}
-      <div className="text-center pt-4 mb-4">
-        <Link href="/lobby" className="inline-block mb-3">
-          <span className="text-white/40 text-sm hover:text-white/60 transition-colors">← Back</span>
-        </Link>
-        <h1 className="font-display font-bold text-2xl text-white">Dynamic Decks</h1>
-        <p className="text-white/40 text-sm">Choose your deck to begin</p>
+      <div className="pt-4 mb-4">
+        <div className="flex justify-center mb-3">
+          <GameBackButton />
+        </div>
+        <div className="text-center">
+          <h1 className="font-display font-bold text-2xl text-white">Dynamic Decks</h1>
+          <p className="text-white/40 text-sm">Choose your deck to begin</p>
+        </div>
       </div>
 
       {/* How to Play - Collapsible, dynamic based on deck */}

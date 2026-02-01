@@ -20,7 +20,7 @@ import { ReaderView } from "./ReaderView";
 import { SpectatorView } from "./SpectatorView";
 import { LiveLeaderboard } from "./LiveLeaderboard";
 import { RoundHistory } from "./RoundHistory";
-import { InGameNav } from "../shared";
+import { MobileMenu, GameMenuButton } from "@/components/MobileMenu";
 import { useAppShell } from "@/components/AppShell";
 import { 
   ShieldAlert, Trophy, ArrowRight, Check, Crown, 
@@ -56,6 +56,7 @@ export function MultiplayerDynamicDecks({
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("easy");
   const [channel, setChannel] = useState<RealtimeChannel | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
   
   // Use ref for game state to access it in event listeners without re-subscribing
   const gameStateRef = useRef<GameState | null>(null);
@@ -248,7 +249,15 @@ export function MultiplayerDynamicDecks({
   if (!gameState) {
     return (
       <div className="w-full max-w-lg mx-auto px-4 pt-8 pb-24">
-        <InGameNav
+        <GameMenuButton
+          onClick={() => setMenuOpen(true)}
+          isOpen={menuOpen}
+          accentColor="#ff006e"
+        />
+        <MobileMenu
+          isOpen={menuOpen}
+          onClose={() => setMenuOpen(false)}
+          isGameMode={true}
           gameName="Dynamic Decks"
           accentColor="#ff006e"
           gameIcon={<ShieldAlert className="w-full h-full" />}
@@ -336,7 +345,15 @@ export function MultiplayerDynamicDecks({
   
   return (
     <div className="w-full max-w-lg mx-auto px-4 pb-8">
-      <InGameNav
+      <GameMenuButton
+        onClick={() => setMenuOpen(true)}
+        isOpen={menuOpen}
+        accentColor="#ff006e"
+      />
+      <MobileMenu
+        isOpen={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        isGameMode={true}
         gameName="Dynamic Decks"
         accentColor="#ff006e"
         gameIcon={<ShieldAlert className="w-full h-full" />}

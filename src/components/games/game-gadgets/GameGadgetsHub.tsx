@@ -6,7 +6,7 @@ import { Dice1, Hash, MessageSquare, Timer, Wrench, Maximize2, Minimize2, Minus,
 import { useHaptic } from "@/hooks/useHaptic";
 import { LYRIC_WORDS, MAX_DICE, MIN_DICE } from "@/lib/games/game-gadgets/data";
 import { ToolType, DiceState, NumberState, WordState, TimerState } from "@/lib/games/game-gadgets/types";
-import Link from "next/link";
+import { GameBackButton } from "@/components/games/shared";
 
 const ACCENT_COLOR = "#F59E0B";
 const TIMER_PRESETS = [15, 30, 60, 120];
@@ -357,9 +357,9 @@ export function GameGadgetsHub() {
 
       {/* Header */}
       <div className="text-center mb-3">
-        <Link href="/lobby" className="inline-block mb-1">
-          <span className="text-white/40 text-sm hover:text-white/60">← Back</span>
-        </Link>
+        <div className="mb-1">
+          <GameBackButton />
+        </div>
         <div className="flex items-center justify-center gap-2">
           <Wrench className="w-4 h-4" style={{ color: ACCENT_COLOR }} />
           <h1 className="font-display font-bold text-lg text-white">Game Gadgets</h1>

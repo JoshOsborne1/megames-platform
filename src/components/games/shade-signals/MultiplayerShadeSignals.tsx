@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useRoom } from "@/context/RoomContext";
 import { createClient } from "@/lib/supabase/client";
 import { useAppShell } from "@/components/AppShell";
-import { InGameNav } from "../shared";
+import { MobileMenu, GameMenuButton } from "@/components/MobileMenu";
 import { ColorSpectrum } from "./ColorSpectrum";
 import { PvPView } from "./PvPView";
 import { LiveLeaderboard } from "@/components/games/dynamic-decks/LiveLeaderboard";
@@ -93,6 +93,7 @@ export function MultiplayerShadeSignals({ roomCode }: MultiplayerShadeSignalsPro
   const [clueInput, setClueInput] = useState("");
   const [clueError, setClueError] = useState<string | null>(null);
   const [selectedColor, setSelectedColor] = useState<ColorWithPosition | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   
   const isHost = room.isHost;
 
@@ -617,7 +618,15 @@ export function MultiplayerShadeSignals({ roomCode }: MultiplayerShadeSignalsPro
   if (!gameState || gameState.phase === "waiting") {
     return (
       <div className="w-full max-w-lg mx-auto px-4 pt-8 pb-24">
-        <InGameNav
+        <GameMenuButton
+          onClick={() => setMenuOpen(true)}
+          isOpen={menuOpen}
+          accentColor="#00FFFF"
+        />
+        <MobileMenu
+          isOpen={menuOpen}
+          onClose={() => setMenuOpen(false)}
+          isGameMode={true}
           gameName="Shade Signals"
           accentColor="#00FFFF"
           gameIcon={<Droplet className="w-full h-full" />}
@@ -717,7 +726,15 @@ export function MultiplayerShadeSignals({ roomCode }: MultiplayerShadeSignalsPro
   
   return (
     <div className="w-full max-w-lg mx-auto px-4 pb-8">
-      <InGameNav
+      <GameMenuButton
+        onClick={() => setMenuOpen(true)}
+        isOpen={menuOpen}
+        accentColor="#00FFFF"
+      />
+      <MobileMenu
+        isOpen={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        isGameMode={true}
         gameName="Shade Signals"
         accentColor="#00FFFF"
         gameIcon={<Droplet className="w-full h-full" />}

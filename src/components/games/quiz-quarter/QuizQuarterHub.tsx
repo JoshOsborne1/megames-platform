@@ -28,7 +28,8 @@ import {
 } from "@/lib/games/quiz-quarter/gameLogic";
 import { PACKS, DECKS } from "@/lib/games/quiz-quarter/data";
 
-import { InGameNav } from "../shared";
+import { GameBackButton, GameHeader } from "../shared";
+import { MobileMenu, GameMenuButton } from "@/components/MobileMenu";
 import { QuestionCard } from "./QuestionCard";
 import { AnswerReveal } from "./AnswerReveal";
 import { ResultsSummary } from "./ResultsSummary";
@@ -52,6 +53,7 @@ export function QuizQuarterHub({ mode = "local" }: QuizQuarterHubProps) {
     const [countdown, setCountdown] = useState<number>(0);
     const [isTimerRunning, setIsTimerRunning] = useState(false);
     const [wasSkipped, setWasSkipped] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
 
     // Control bottom nav visibility based on game state
     useEffect(() => {
@@ -110,7 +112,7 @@ export function QuizQuarterHub({ mode = "local" }: QuizQuarterHubProps) {
     // Handle Back Navigation
     const handleBack = () => {
         trigger();
-        router.push("/lobby");
+        router.back();
     };
 
     // Start new game
@@ -264,7 +266,7 @@ export function QuizQuarterHub({ mode = "local" }: QuizQuarterHubProps) {
     // Leave game
     const handleLeave = useCallback(() => {
         trigger();
-        router.push("/lobby");
+        router.back();
     }, [router, trigger]);
 
     // Play again with same settings
@@ -298,24 +300,21 @@ export function QuizQuarterHub({ mode = "local" }: QuizQuarterHubProps) {
         // Selection phase
         if (!gameState) {
             return (
-                <div className="w-full max-w-lg mx-auto px-4 pt-6 pb-44 relative z-10 flex flex-col min-h-[500px]">
+                <div className="w-full max-w-lg mx-auto px-4 pt-4 pb-[calc(8rem+env(safe-area-inset-bottom))] relative z-10 flex flex-col min-h-0">
                     {/* Header */}
-                    <div className="flex items-center justify-between mb-4 shrink-0 px-1">
-                        <Link href="/lobby" className="group/back inline-flex items-center gap-1.5">
-                            <ChevronLeft className="w-3 h-3 text-white/30 group-hover/back:text-white transition-colors" />
-                            <span className="text-white/30 text-[10px] font-bold uppercase tracking-widest group-hover/back:text-white transition-colors">Lobby</span>
-                        </Link>
+                    <div className="flex items-center justify-between mb-4 shrink-0">
+                        <GameBackButton />
                         <button 
                             onClick={toggleAllQuestions}
                             className="text-[9px] font-black uppercase tracking-widest text-white/40 hover:text-neon-pink transition-all border border-white/5 bg-white/5 py-1 px-3 rounded-full"
                         >
-                            {isAllSelected ? "Clear All" : "Select All Questions"}
+                            {isAllSelected ? "Clear All" : "Select All"}
                         </button>
                     </div>
 
                     <div className="text-center mb-6 shrink-0">
                         <h1 className="font-display font-bold text-3xl text-white tracking-tight leading-none mb-1">Knowledge</h1>
-                        <p className="text-white/20 text-[10px] font-bold uppercase tracking-widest">Build your ultimate pool</p>
+                        <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest">Build your ultimate pool</p>
                     </div>
 
                     {/* Info Box */}
@@ -443,8 +442,6 @@ export function QuizQuarterHub({ mode = "local" }: QuizQuarterHubProps) {
                         )}
                     </AnimatePresence>
 
-                    {/* Subtle Overlay */}
-                    <div className="fixed inset-0 pointer-events-none opacity-[0.02] z-1" style={{ backgroundImage: "radial-gradient(#fff 1px, transparent 1px)", backgroundSize: "30px 30px" }} />
                 </div>
             );
         }
@@ -598,8 +595,16 @@ export function QuizQuarterHub({ mode = "local" }: QuizQuarterHubProps) {
         <div className="min-h-screen text-white flex flex-col">
             {/* Background is provided by AppShell/global CSS */}
 
-            {/* InGameNav - Only show when game is active or in selection */}
-            <InGameNav
+            {/* Game Menu Button and Mobile Menu */}
+            <GameMenuButton
+                onClick={() => setMenuOpen(true)}
+                isOpen={menuOpen}
+                accentColor={accentColor}
+            />
+            <MobileMenu
+                isOpen={menuOpen}
+                onClose={() => setMenuOpen(false)}
+                isGameMode={true}
                 gameName="Quiz Quarter"
                 accentColor={accentColor}
                 gameIcon={<Brain className="w-full h-full" />}

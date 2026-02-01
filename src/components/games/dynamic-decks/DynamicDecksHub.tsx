@@ -18,7 +18,7 @@ import { RoundHistory } from "./RoundHistory";
 import { DynamicCard } from "./DynamicCard";
 import { GameSetup } from "./GameSetup";
 import { MultiplayerDynamicDecks } from "./MultiplayerDynamicDecks";
-import { InGameNav } from "../shared";
+import { MobileMenu, GameMenuButton } from "@/components/MobileMenu";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRoom } from "@/context/RoomContext";
 import { Trophy, ArrowRight, Check, X, Zap, ShieldAlert, Smile, Brain, Flame, Crown, ChevronRight } from "lucide-react";
@@ -42,6 +42,7 @@ export function DynamicDecksHub({ mode = "local" }: { mode?: "local" | "online" 
 
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("easy");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Control bottom nav visibility based on game state
   useEffect(() => {
@@ -132,7 +133,15 @@ export function DynamicDecksHub({ mode = "local" }: { mode?: "local" | "online" 
 
   return (
     <div className="w-full max-w-lg mx-auto px-4 pb-8">
-      <InGameNav
+      <GameMenuButton
+        onClick={() => setMenuOpen(true)}
+        isOpen={menuOpen}
+        accentColor="#ff006e"
+      />
+      <MobileMenu
+        isOpen={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        isGameMode={true}
         gameName="Dynamic Decks"
         accentColor="#ff006e"
         gameIcon={<ShieldAlert className="w-full h-full" />}
